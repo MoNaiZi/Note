@@ -9,4 +9,7 @@ module.exports = {
       externals: ['knex', 'sqlite3'],
     },
   },
+  devServer: {
+    port: 55225
+  }
 };

@@ -1,20 +1,18 @@
 import {
     createRouter,
-    createWebHistory
+    createMemoryHistory
 } from 'vue-router'
-
-import HelloWorld from '@/components/HelloWorld'
 
 const routes = [
     {
         path: '/',
-        name: 'HelloWorld',
-        component: HelloWorld
+        name: 'index',
+        component: () => import('@/views/index')
     }
 ]
 
 
 export default createRouter({
-    history: createWebHistory(),
+    history: createMemoryHistory(),
     routes
 })

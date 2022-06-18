@@ -1,5 +1,4 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
   <router-view></router-view>
 </template>
 
@@ -7,6 +6,9 @@
 export default {
   name: "App",
   components: {},
+  created() {
+    console.log("created");
+  },
 };
 </script>
 

@@ -39,15 +39,15 @@ async function createWindow() {
       { allowFileAccess: true } // this is the key line
     )
   }
-
+  const winURL = isDevelopment ? 'http://localhost:55225' : `file://${__dirname}/index.html`;
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    await win.loadURL(winURL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    win.loadURL(winURL)
   }
 
 }
