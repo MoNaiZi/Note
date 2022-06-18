@@ -94,7 +94,7 @@ export default {
     msg: String,
   },
   created() {
-    console.log("window", window);
+    console.log("helloWorld");
     let title = "我是标题";
     window.electronAPI.setTitle(title);
   },

@@ -1,4 +1,12 @@
-# electron-vue-demo
+# Note 使用技术
+
+```
+vue3
+electron19
+vuex
+vur-router
+```
+
 
 ## Project setup
 ```
