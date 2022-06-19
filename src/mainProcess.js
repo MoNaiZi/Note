@@ -17,18 +17,20 @@ function mainWindows() {
         frame: false,
         webPreferences
     }
-    const winURL = isDevelopment ? 'http://localhost:55225' : `file://${__dirname}/index.html`;
+    const winURL = isDevelopment ? 'http://localhost:55226' : `file://${__dirname}/index.html`;
     return { config, winURL }
 }
 
 async function initDevTool(session) {
-    const getVueDevTool = await session.defaultSession.getExtension('nhdogjmejiglipccpnnnanhbledajbpd')
-    if (!getVueDevTool) {
-        await session.defaultSession.loadExtension(
-            'C:/Users/JIEKE/AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.1.4_1',
-            { allowFileAccess: true } // this is the key line
-        )
-    }
+    // const result = await session.defaultSession.removeExtension('nhdogjmejiglipccpnnnanhbledajbpd')
+    // console.log('result', result)
+    // const getVueDevTool = await session.defaultSession.getExtension('nhdogjmejiglipccpnnnanhbledajbpd')
+    // if (!getVueDevTool) {
+    //     await session.defaultSession.loadExtension(
+    //         'C:/Users/JIEKE/AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.1.4_0',
+    //         { allowFileAccess: true } // this is the key line
+    //     )
+    // }
 }
 
 

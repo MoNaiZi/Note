@@ -1,20 +1,31 @@
 <template>
-  <Search></Search>
+  <el-input
+    v-model="input3"
+    class="w-50 m-2"
+    placeholder="请输入标题"
+    :suffix-icon="'Search'"
+  />
   <div class="list">
     <div v-for="item in 20" :key="item" class="item"></div>
   </div>
 </template>
 
 <script>
-import Search from "@/components/search.vue";
+import { store } from "@/store";
 export default {
-  components: {
-    Search,
+  components: {},
+  created() {
+    // window.electronAPI.setTitle("1111");
+    store.dispatch("header/setPageTypeText", "home");
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.w-50 {
+  width: 91%;
+  margin-left: -12px;
+}
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;

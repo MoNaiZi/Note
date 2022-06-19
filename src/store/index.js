@@ -1,14 +1,10 @@
+import header from './modules/header'
 import { createStore } from 'vuex'
 
 
 export const store = createStore({
-    state() {
-        return {
-            msg: 'state'
-        }
-    },
-    mutations: {
-
+    modules: {
+        header
     }
 })
 

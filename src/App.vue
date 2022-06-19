@@ -3,6 +3,11 @@
   <transition name="main-fade">
     <router-view></router-view>
   </transition>
+  <!-- <router-view v-slot="{ Component }">
+    <transition name="main-fade">
+      <component :is="Component" />
+    </transition>
+  </router-view> -->
 </template>
 
 <script>
@@ -11,12 +16,23 @@ export default {
   name: "App",
   components: { Header },
   created() {
-    console.log("created", window.electronAPI.setTitle("1111111"));
+    console.log("created", this.$store);
   },
 };
 </script>
 
 <style>
+.main-fade-enter,
+.main-fade-leave-to {
+  display: none;
+  opacity: 0;
+  animation: main-fade 0.4s reverse;
+}
+.main-fade-enter-active,
+.main-fade-leave-active {
+  opacity: 0;
+  animation: main-fade 0.4s;
+}
 @keyframes main-fade {
   from {
     opacity: 0;

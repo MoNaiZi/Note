@@ -1,6 +1,6 @@
 import {
     createRouter,
-    createMemoryHistory
+    createWebHashHistory
 } from 'vue-router'
 
 const routes = [
@@ -13,11 +13,16 @@ const routes = [
         path: '/set',
         name: 'set',
         component: () => import('@/views/setting')
+    },
+    {
+        path: '/edited',
+        name: 'edited',
+        component: () => import('@/views/edited')
     }
 ]
 
 
 export default createRouter({
-    history: createMemoryHistory(),
+    history: createWebHashHistory(), //createMemoryHistory(),
     routes
 })
