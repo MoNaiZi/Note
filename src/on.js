@@ -14,7 +14,7 @@ ipcMain.on('newWindow', async (event, data) => {
     const { config, winURL } = mainWindows
     let newOjb = {
         width: 280,
-        height: 400,
+        height: 300,
         minWidth: 100,
         minHeight: 48,
         frame: false
@@ -24,4 +24,12 @@ ipcMain.on('newWindow', async (event, data) => {
     let win = new BrowserWindow(newOjb)
 
     win.loadURL(`${winURL}/#/edited`)
+})
+
+
+ipcMain.on('closeWindow', async (event, id) => {
+    // console.log('event', event)
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    win.close()
 })
