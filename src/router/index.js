@@ -8,6 +8,11 @@ const routes = [
         path: '/',
         name: 'index',
         component: () => import('@/views/index')
+    },
+    {
+        path: '/set',
+        name: 'set',
+        component: () => import('@/views/setting')
     }
 ]
 

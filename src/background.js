@@ -5,45 +5,42 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
+const mainProcess = require('./mainProcess')
+import('@/on')
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
-ipcMain.on('set-title', (event, title) => {
-  const webContents = event.sender
-  const win = BrowserWindow.fromWebContents(webContents)
-  win.setTitle(title)
+// ipcMain.on('set-title', mainProcess.windowsOn)
+
+
+//此方法将在Electron完成后调用
+//初始化并准备创建浏览器窗口。
+//某些API只能在此事件发生后使用。
+app.on('ready', async () => {
+  if (isDevelopment && !process.env.IS_TEST) {
+    // Install Vue Devtools
+    try {
+      await installExtension(VUEJS3_DEVTOOLS)
+    } catch (e) {
+      console.error('Vue Devtools failed to install:', e.toString())
+    }
+  }
+  createWindow()
 })
 
 async function createWindow() {
-  // Create the browser window.
+  const mainWindows = mainProcess.mainWindows()
+  const { config, winURL } = mainWindows
+  const win = new BrowserWindow(config)
 
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      enableRemoteModule: true,
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
-    }
-  })
+  await mainProcess.initDevTool(session)
 
-  const getVueDevTool = await session.defaultSession.getExtension('nhdogjmejiglipccpnnnanhbledajbpd')
-  if (!getVueDevTool) {
-    await session.defaultSession.loadExtension(
-      'C:/Users/JIEKE/AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.1.4_1',
-      { allowFileAccess: true } // this is the key line
-    )
-  }
-  const winURL = isDevelopment ? 'http://localhost:55225' : `file://${__dirname}/index.html`;
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(winURL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    // if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -67,20 +64,6 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
-    try {
-      await installExtension(VUEJS3_DEVTOOLS)
-    } catch (e) {
-      console.error('Vue Devtools failed to install:', e.toString())
-    }
-  }
-  createWindow()
-})
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
