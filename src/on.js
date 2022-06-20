@@ -1,4 +1,5 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { ipcMain, BrowserWindow, Menu, Tray } from 'electron'
+const path = require('path')
 const mainProcess = require('./mainProcess')
 
 ipcMain.on('set-title', async (event, data) => {
@@ -28,8 +29,36 @@ ipcMain.on('newWindow', async (event, data) => {
 
 
 ipcMain.on('closeWindow', async (event, id) => {
+    console.log('id', id)
     // console.log('event', event)
     const webContents = event.sender
     const win = BrowserWindow.fromWebContents(webContents)
+
+    if (!id) {
+        console.log('global.isMenu', global.isMenu)
+        if (!global.isMenu) {
+            const tray = new Tray('D:/A_Project/electron/Note/public/favicon.ico');
+            const contextMenu = Menu.buildFromTemplate([{
+                label: '显示',
+                click: () => { win.show() }
+            },
+            {
+                label: '退出',
+                click: () => { win.destroy() }
+            }
+            ]);
+            tray.setContextMenu(contextMenu);
+            tray.on('double-click', () => {
+                // 双击通知区图标实现应用的显示或隐藏
+                win.isVisible() ? win.hide() : win.show()
+                win.isVisible() ? win.setSkipTaskbar(false) : win.setSkipTaskbar(true);
+            });
+            global.isMenu = true
+        }
+
+        win.minimize()
+        return
+    }
     win.close()
+
 })

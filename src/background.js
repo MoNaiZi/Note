@@ -6,6 +6,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
 const mainProcess = require('./mainProcess')
+// import { initServer } from './server'
 import('@/on')
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -19,6 +20,7 @@ protocol.registerSchemesAsPrivileged([
 //初始化并准备创建浏览器窗口。
 //某些API只能在此事件发生后使用。
 app.on('ready', async () => {
+  // console.log('initServer', initServer)
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
