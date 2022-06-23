@@ -6,7 +6,10 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { createNumberString } from '@/utils'
+// import { initServer } from './server'
 
+
+// initServer()
 
 const app = createApp(App)
 

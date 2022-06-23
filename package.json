@@ -14,13 +14,15 @@
   "main": "background.js",
   "dependencies": {
     "core-js": "^3.8.3",
+    "electron-rebuild": "^3.2.7",
     "element-plus": "^2.2.6",
+    "lowdb": "1.0.0",
     "pg-hstore": "2.3.4",
     "rimraf": "3.0.2",
     "sass": "1.51.0",
     "sass-loader": "7.3.1",
     "sequelize": "6.6.5",
-    "sqlite3": "5.0.2",
+    "sqlite3": "5.0.0",
     "vue": "^3.2.13",
     "vue-router": "4",
     "vuex": "^4.0.2"

@@ -20,9 +20,9 @@
         @click="this.$router.push('/')"
       ></i>
     </div>
-    <div class="title" v-show="pageTypeText === 'home'">便利贴</div>
+    <div class="title" v-show="pageTypeText != 'edited'">便利贴</div>
     <div class="input_title" v-show="pageTypeText === 'edited'">
-      <input placeholder="请输入标题" />
+      <input @blur="setTitle" placeholder="请输入标题" />
     </div>
     <div class="right">
       <i v-show="pageTypeText === 'edited'" class="iconfont icon-thepin"></i>
@@ -53,12 +53,17 @@ export default {
     console.log("home", this.$router);
   },
   methods: {
+    setTitle(e) {
+      const value = e.target.value;
+      let obj = { winId: this.winId, title: value };
+      window.electronAPI.setTitle(obj);
+    },
     close() {
       console.log("winId", this.winId);
       window.electronAPI.closeWindow(this.winId);
     },
     addNote() {
-      window.electronAPI.newWindow();
+      window.electronAPI.newWindow(this.winId);
     },
     toSet() {
       this.$router.push("/set");

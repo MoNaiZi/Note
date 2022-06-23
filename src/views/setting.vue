@@ -1,11 +1,24 @@
 <template>
-  <div>
-    open
-    <el-switch
-      v-model="value2"
-      class="ml-2"
-      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-    />
+  <div class="main">
+    <h4>通用设置</h4>
+
+    <div class="item">
+      <span>黑夜模式</span>
+      <el-switch
+        v-model="dark"
+        class="ml-2"
+        style="--el-switch-on-color: #13ce66"
+      />
+    </div>
+
+    <div class="item">
+      <span>黑夜模式</span>
+      <el-switch
+        v-model="dark"
+        class="ml-2"
+        style="--el-switch-on-color: #13ce66"
+      />
+    </div>
   </div>
 </template>
 <script>
@@ -19,7 +32,7 @@ export default {
   },
   data() {
     return {
-      value2: false,
+      dark: false,
     };
   },
   created() {
@@ -29,4 +42,20 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.main {
+  text-align: left;
+  .item {
+    display: flex;
+    align-items: center;
+    span {
+      font-size: 14px;
+      margin-right: 10px;
+    }
+  }
+
+  h4 {
+    margin: 0px;
+    margin-bottom: 5px;
+  }
+}
 </style>

@@ -1,21 +1,22 @@
-const { Sequelize } = require('sequelize');
+import Datastore from 'lowdb'
+import FileSync from 'lowdb/adapters/FileSync'
+import path from 'path'
+import { app } from 'electron'
 
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'C:/Users/JIEKE/test.db'
-});
+const STORE_PATH = app.getPath('userData') // 获取electron应用的用户目录
+console.log('STORE_PATH', STORE_PATH)
+const adapter = new FileSync(path.join(STORE_PATH, '/database.json')) // 初始化lowdb读写的json文件名以及存储路径
 
-
-async function initServer() {
-    console.log('sequelize', sequelize)
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
+const db = Datastore(adapter) // lowdb接管该文件
+const initDatabase = {
+    User: {},//放用户相关配置
+    NoteList: [] //标签
 }
+db.defaults(initDatabase).write()
 
-module.exports = {
-    initServer
-}
+// function initServer() {
+
+// }
+
+
+export default db

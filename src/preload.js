@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    setTitle: (title) => ipcRenderer.send('set-title', title),
-    newWindow: () => ipcRenderer.send('newWindow'),
+    setTitle: (obj) => ipcRenderer.send('setTitle', obj),
+    newWindow: (winId) => ipcRenderer.send('newWindow', winId),
     closeWindow: (winId) => ipcRenderer.send('closeWindow', winId)
 })

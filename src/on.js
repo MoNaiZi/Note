@@ -1,16 +1,29 @@
 import { ipcMain, BrowserWindow, Menu, Tray } from 'electron'
 const path = require('path')
 const mainProcess = require('./mainProcess')
+import db from './server'
+import { createNumberString } from '@/utils'
 
-ipcMain.on('set-title', async (event, data) => {
-    console.log('data', data, 'this', this)
+ipcMain.on('setTitle', async (event, data) => {
+    let { winId, title } = data
+    let newData = {
+        _id: winId,
+        title,
+    }
+    const getValue = db.get('NoteList').find({ _id: winId }).value()
+    console.log('getValue', getValue)
+    if (title != '' && !getValue) {
+        db.get('NoteList').push(newData).write()
+    } else if (getValue) {
+        db.get('NoteList').find({ _id: winId }).assign({ title }).write()
+    }
+    // db.get('NoteList').find({ _id: winId }).update('title', title)
     // const webContents = event.sender
     // const win = BrowserWindow.fromWebContents(webContents)
     // win.setTitle(title)
 })
 
-ipcMain.on('newWindow', async (event, data) => {
-    console.log('data', data, 'this', this)
+ipcMain.on('newWindow', async (event, winId) => {
     const mainWindows = mainProcess.mainWindows()
     const { config, winURL } = mainWindows
     let newOjb = {
