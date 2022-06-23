@@ -1,8 +1,16 @@
-import { ipcMain, BrowserWindow, Menu, Tray } from 'electron'
+import { ipcMain, BrowserWindow, Menu, Tray, app } from 'electron'
 const path = require('path')
 const mainProcess = require('./mainProcess')
 import db from './server'
 import { createNumberString } from '@/utils'
+
+app.whenReady().then(() => {
+    ipcMain.handle('getList', () => {
+        return db.get('NoteList').value()
+    })
+
+})
+
 
 ipcMain.on('setTitle', async (event, data) => {
     let { winId, title } = data

@@ -6,6 +6,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
 const mainProcess = require('./mainProcess')
+import db from './server'
 
 import('@/on')
 // Scheme must be registered before the app is ready
@@ -37,6 +38,8 @@ async function createWindow() {
   const win = new BrowserWindow(config)
 
   await mainProcess.initDevTool(session)
+
+
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

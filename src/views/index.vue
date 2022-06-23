@@ -6,7 +6,9 @@
     :suffix-icon="'Search'"
   />
   <div class="list">
-    <div v-for="item in 20" :key="item" class="item"></div>
+    <div v-for="item in list" :key="item" class="item">
+      <h3>{{ item.title }}</h3>
+    </div>
   </div>
 </template>
 
@@ -14,9 +16,18 @@
 import { store } from "@/store";
 export default {
   components: {},
+  data() {
+    return {
+      list: [],
+    };
+  },
   created() {
-    // window.electronAPI.setTitle("1111");
+    const that = this;
+    console.log("created");
     store.dispatch("header/setPageTypeText", "home");
+    window.electronAPI.getList().then((list) => {
+      that.list = list;
+    });
   },
 };
 </script>
