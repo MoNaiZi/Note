@@ -1,21 +1,24 @@
-module.exports = {
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+const { defineConfig } = require('@vue/cli-service')
+module.exports = defineConfig({
+  transpileDependencies: true,
+  configureWebpack: {
+    resolve: {
+      fallback: {
+        "fs": false,
+      }
+    },
+    plugins: [
+      new NodePolyfillPlugin()
+    ]
+  },
+  chainWebpack: webpackConfig => {
+
+  },
   transpileDependencies: ['vuetify'],
-  // configureWebpack: config => {
-  //   config.externals = {
-  //     sqlite3: 'commonjs sqlite3'
-  //   };
-  //   if (process.env.NODE_ENV !== 'development') {
-  //     config.optimization.minimizer[0].options.terserOptions.warnings = false;
-  //     config.optimization.minimizer[0].options.terserOptions.compress = {
-  //       warnings: false,
-  //       drop_console: true,
-  //       drop_debugger: true,
-  //       pure_funcs: ['console.log']
-  //     };
-  //   }
-  // },
   pluginOptions: {
     electronBuilder: {
+      nodeIntegration: true,
       preload: 'src/preload.js',
       builderOptions: {
         extraResources: ['src', 'src/res/'],
@@ -26,4 +29,4 @@ module.exports = {
   devServer: {
     port: 55226
   }
-};
+})

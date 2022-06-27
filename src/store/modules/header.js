@@ -3,7 +3,8 @@ export default {
     state() {
         return {
             pageTypeText: 'home',
-            winId: ''
+            winId: '',
+            title: ''
         }
     },
     getters: {
@@ -17,6 +18,9 @@ export default {
         },
         setWinId(context, id) {
             context.commit('setWinId', id)
+        },
+        setTitle(context, title) {
+            context.commit('setTitle', title)
         }
     },
     mutations: {
@@ -25,6 +29,9 @@ export default {
         },
         setWinId(state, id) {
             state.winId = id
+        },
+        setTitle(state, title) {
+            state.title = title
         }
     }
 }

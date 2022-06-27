@@ -2,10 +2,11 @@ const path = require('path')
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 const webPreferences = {
-    preload: path.join(__dirname, 'preload.js'),
+    // preload: path.join(__dirname, 'preload.js'),
     enableRemoteModule: true,
-    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-    contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+    nodeIntegration: true,
+    contextIsolation: false,
+
 }
 
 function mainWindows() {

@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain, session } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, session, MessageChannelMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -39,17 +39,32 @@ async function createWindow() {
 
   await mainProcess.initDevTool(session)
 
-
-
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(winURL)
-    // if (!process.env.IS_TEST) win.webContents.openDevTools()
+    if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL(winURL)
   }
+  global.mainWin = win
+
+
+  const { port1, port2 } = new MessageChannelMain()
+  //允许在另一端还没有注册监听器的情况下就通过通道向其发送消息 消息将排队等待，直到有一个监听器注册为止。
+  port2.postMessage({ test: 21 })
+
+  // 我们也可以接收来自渲染器主进程的消息。
+  port2.on('message', (event) => {
+    console.log('from renderer main world:', event)
+  })
+
+  port2.start()
+  // 预加载脚本将接收此 IPC 消息并将端口
+  // 传输到主进程。
+  console.log('111111111')
+  win.webContents.postMessage('main-world-port', null, [port1])
 
 }
 
