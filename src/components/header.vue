@@ -22,7 +22,10 @@
     </div>
     <div class="title" v-show="pageTypeText != 'edited'">便利贴</div>
     <div class="input_title" v-show="pageTypeText === 'edited'">
-      <input v-model="title" placeholder="请输入标题" />
+      <div v-if="!isEditedTitle" @dblclick="this.isEditedTitle = true" class="">
+        {{ note.title }}
+      </div>
+      <input v-else v-model="note.title" placeholder="请输入标题" />
     </div>
     <div class="right">
       <i v-show="pageTypeText === 'edited'" class="iconfont icon-thepin"></i>
@@ -44,34 +47,61 @@ export default {
   computed: {
     ...mapState("header", {
       pageTypeText: (state) => state.pageTypeText,
-      winId: (state) => state.winId,
+      note: (state) => state.note,
     }),
+  },
+  watch: {
+    // note: {
+    //   deep: true,
+    //   handler: function (note) {
+    //     if (note.title) {
+    //       this.isEditedTitle = false;
+    //     }
+    //   },
+    // },
   },
   data() {
     return {
-      title: "",
+      isEditedTitle: true,
     };
   },
   created() {
     // this.$router.psuh('/set')
     console.log("home", this.$router);
+    let watchNote = null;
+    watchNote = this.$watch(
+      "note",
+      (note) => {
+        console.log("note", note, watchNote);
+        if (note.title) {
+          this.isEditedTitle = false;
+        }
+        if (watchNote) {
+          watchNote();
+        }
+      },
+      {
+        deep: true,
+      }
+    );
+    window.addEventListener("keydown", (e) => {
+      let keyCode = e.keyCode;
+      console.log("keyCode", keyCode);
+      if (keyCode === 13) {
+        this.isEditedTitle = false;
+      }
+    });
   },
   methods: {
     close() {
-      console.log("winId", this.winId);
-      // window.electronAPI.closeWindow(this.winId);
       const pageTypeText = this.pageTypeText;
-      let { title } = this;
+      let { note } = this;
       if (pageTypeText === "edited") {
-        store.dispatch("header/setTitle", title);
+        store.dispatch("header/setNote", note);
       }
-      ipcRenderer.send("closeWindow", this.winId);
+      ipcRenderer.send("closeWindow", note._id);
     },
-    addNote() {
-      // window.electronAPI.newWindow(this.winId);
-
-      ipcRenderer.send("newWindow", this.winId);
-    },
+    addNote() {},
     toSet() {
       this.$router.push("/set");
     },
@@ -91,6 +121,9 @@ export default {
   }
   .input_title {
     width: 65%;
+    div {
+      width: 100%;
+    }
     input {
       box-shadow: 0 0 4px #cbcbcb;
       border: 0px;

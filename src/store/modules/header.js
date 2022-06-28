@@ -3,8 +3,7 @@ export default {
     state() {
         return {
             pageTypeText: 'home',
-            winId: '',
-            title: ''
+            note: {}
         }
     },
     getters: {
@@ -16,22 +15,16 @@ export default {
         setPageTypeText(context, txt) {
             context.commit('setPageTypeText', txt)
         },
-        setWinId(context, id) {
-            context.commit('setWinId', id)
-        },
-        setTitle(context, title) {
-            context.commit('setTitle', title)
+        setNote(context, note) {
+            context.commit('setNote', note)
         }
     },
     mutations: {
         setPageTypeText(state, txt) {
             state.pageTypeText = txt
         },
-        setWinId(state, id) {
-            state.winId = id
-        },
-        setTitle(state, title) {
-            state.title = title
+        setNote(state, note) {
+            state.note = note
         }
     }
 }

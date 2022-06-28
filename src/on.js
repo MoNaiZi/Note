@@ -4,26 +4,37 @@ const mainProcess = require('./mainProcess')
 import db from './server'
 import { createNumberString } from '@/utils'
 
-app.whenReady().then(async () => {
+const getNoteList = function () {
+    return db.get('NoteList').value()
+}
 
+const getNote = function (_id) {
+    return db.get('NoteList').find({ _id }).value()
+}
 
+ipcMain.handle('getNote', (_event, winId) => {
+    return getNote(winId)
 })
 
 ipcMain.handle('getList', () => {
-    return db.get('NoteList').value()
+    return getNoteList()
 })
 
-ipcMain.on('getEdited', (_event, tempOjb) => {
-    let { winId } = tempOjb
+ipcMain.handle('removeNote', (_event, winId) => {
+    db.get('NoteList').remove({ _id: winId }).write()
+    return getNoteList()
+})
 
+ipcMain.on('closeEdited', (_event, winId, tempOjb = {}) => {
+    if (JSON.stringify(tempOjb) === '{}') return
     const getValue = db.get('NoteList').find({ _id: winId }).value()
-    delete tempOjb.winId
+    tempOjb._id = winId
     if (!getValue) {
         db.get('NoteList').unshift(tempOjb).write()
     } else if (getValue) {
         db.get('NoteList').find({ _id: winId }).assign(tempOjb).write()
     }
-    let list = db.get('NoteList').value()
+    let list = getNoteList()
     global.mainWin.webContents.send('getEdited', list)
 })
 
@@ -98,8 +109,8 @@ ipcMain.on('newWindow', async (event, winId) => {
     newOjb = Object.assign(config, newOjb)
 
     let win = new BrowserWindow(newOjb)
-
-    win.loadURL(`${winURL}/#/edited`)
+    let url = `${winURL}/#/edited?winId=${winId}`
+    win.loadURL(url)
 })
 
 
@@ -132,7 +143,6 @@ ipcMain.on('closeWindow', async (event, id) => {
         win.minimize()
         return
     }
-    webContents.send('closeEdited')
     win.close()
 
 })

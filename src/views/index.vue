@@ -5,29 +5,58 @@
     placeholder="请输入标题"
     :suffix-icon="'Search'"
   />
+  <contextMenu
+    :X="X"
+    :Y="Y"
+    :menuShow="showMenu"
+    @change="changeMenu"
+  ></contextMenu>
+
   <div class="list">
-    <div v-for="item in list" :key="item" class="item" @click="onmessage">
-      <h3>{{ item.title }}</h3>
-      <div class="content"></div>
-    </div>
+    <transition-group name="flip-list" tag="ul">
+      <li
+        v-for="item in list"
+        :key="item"
+        class="item"
+        @click="edited(item)"
+        @contextmenu="handleContextMenu($event, item)"
+      >
+        <div>
+          <h3>{{ item.title }}</h3>
+          <div class="content"></div>
+        </div>
+      </li>
+    </transition-group>
   </div>
 </template>
 
 <script>
 import { store } from "@/store";
 import { mapGetters } from "vuex";
+import contextMenu from "@/components/context_menu.vue";
 const { ipcRenderer } = require("electron");
 export default {
-  components: {},
+  components: {
+    contextMenu,
+  },
   data() {
-    return {};
+    return {
+      showMenu: false,
+      currentItem: {},
+      X: 0,
+      Y: 0,
+    };
   },
   computed: {
     ...mapGetters("note", {
       list: "getNoteList",
     }),
   },
+  beforeCreate() {
+    console.log("实例化初始之后");
+  },
   created() {
+    console.log("在实例创建完成");
     // const that = this;
     // const channel = new MessageChannel();
     // console.log("ipcRenderer", ipcRenderer);
@@ -55,14 +84,55 @@ export default {
       store.dispatch("note/setNoteList", list);
     });
     ipcRenderer.on("getEdited", (_event, list) => {
-      console.log("关闭触发的事件", list);
       store.dispatch("note/setNoteList", list);
     });
     // window.electronAPI.getList().then((list) => {
     //   that.list = list;
     // });
+    window.addEventListener("click", () => {
+      this.showMenu = false;
+    });
+  },
+  beforeMount() {
+    console.log("挂载之前");
+  },
+  mounted() {
+    console.log("实例挂载完成后");
+  },
+  beforeUpdate() {
+    console.log("数据发生改变后DOM被更新之前调用");
+  },
+  updated() {
+    console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    edited(item) {
+      ipcRenderer.send("newWindow", item._id);
+    },
+    changeMenu(type) {
+      console.log("type", type);
+      const currentItem = this.currentItem;
+      switch (type) {
+        case 0:
+          break;
+        case 1:
+          ipcRenderer.invoke("removeNote", currentItem._id).then((list) => {
+            console.log("list", list);
+            store.dispatch("note/setNoteList", list);
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    handleContextMenu(e, item) {
+      e.stopPropagation();
+      e.preventDefault();
+      this.X = e.clientX;
+      this.Y = e.clientY;
+      this.currentItem = item;
+      this.showMenu = true;
+    },
     onmessage() {
       const { port1 } = new MessageChannel();
       ipcRenderer.postMessage("port", { message: "hello" }, [port1]);
@@ -98,8 +168,8 @@ export default {
   }
 }
 .w-50 {
-  width: 91%;
-  margin-left: -12px;
+  width: 97%;
+  margin-left: -3px;
 }
 ::-webkit-scrollbar {
   width: 10px;
