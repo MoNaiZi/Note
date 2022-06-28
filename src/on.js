@@ -25,6 +25,14 @@ ipcMain.handle('removeNote', (_event, winId) => {
     return getNoteList()
 })
 
+ipcMain.handle('search', (_event, key) => {
+    let result = db.get('NoteList').filter(o => {
+        // 模糊查询
+        return o.title.match(key)
+    }).value()
+    return result || []
+})
+
 ipcMain.on('closeEdited', (_event, winId, tempOjb = {}) => {
     if (JSON.stringify(tempOjb) === '{}') return
     const getValue = db.get('NoteList').find({ _id: winId }).value()

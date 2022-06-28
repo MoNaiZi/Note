@@ -47,7 +47,7 @@ export default {
   computed: {
     ...mapState("header", {
       pageTypeText: (state) => state.pageTypeText,
-      note: (state) => state.note,
+      note: (state) => state.note || {},
     }),
   },
   watch: {
@@ -72,8 +72,7 @@ export default {
     watchNote = this.$watch(
       "note",
       (note) => {
-        console.log("note", note, watchNote);
-        if (note.title) {
+        if (note && note.title) {
           this.isEditedTitle = false;
         }
         if (watchNote) {
@@ -86,7 +85,6 @@ export default {
     );
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
-      console.log("keyCode", keyCode);
       if (keyCode === 13) {
         this.isEditedTitle = false;
       }
@@ -101,7 +99,9 @@ export default {
       }
       ipcRenderer.send("closeWindow", note._id);
     },
-    addNote() {},
+    addNote() {
+      ipcRenderer.send("newWindow");
+    },
     toSet() {
       this.$router.push("/set");
     },

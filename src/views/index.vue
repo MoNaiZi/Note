@@ -1,9 +1,10 @@
 <template>
   <el-input
-    v-model="input3"
+    v-model="searchKey"
     class="w-50 m-2"
     placeholder="请输入标题"
     :suffix-icon="'Search'"
+    @input="search"
   />
   <contextMenu
     :X="X"
@@ -13,10 +14,10 @@
   ></contextMenu>
 
   <div class="list">
-    <transition-group name="flip-list" tag="ul">
+    <transition-group name="scale" tag="ul">
       <li
         v-for="item in list"
-        :key="item"
+        :key="item._id"
         class="item"
         @click="edited(item)"
         @contextmenu="handleContextMenu($event, item)"
@@ -41,6 +42,7 @@ export default {
   },
   data() {
     return {
+      searchKey: "",
       showMenu: false,
       currentItem: {},
       X: 0,
@@ -106,6 +108,12 @@ export default {
     console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    search() {
+      let searchKey = this.searchKey;
+      ipcRenderer.invoke("search", searchKey).then((res) => {
+        store.dispatch("note/setNoteList", res);
+      });
+    },
     edited(item) {
       ipcRenderer.send("newWindow", item._id);
     },
@@ -142,6 +150,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.scale-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.scale-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
 * {
   margin: 0px;
   padding: 0px;
@@ -149,7 +171,7 @@ export default {
 .list {
   height: 83vh;
   overflow: auto;
-
+  overflow-x: hidden;
   .item {
     width: 93%;
     height: 67px;

@@ -24,12 +24,13 @@ export default {
   async created() {
     let winId = getQueryByName("winId");
     let note = {};
-    if (!winId) {
+    if (winId === "undefined") {
       note._id = this.$createdId();
     } else {
       note = await ipcRenderer.invoke("getNote", winId);
     }
     this.note = note;
+    console.log("note", note);
     store.dispatch("header/setNote", note);
     store.dispatch("header/setPageTypeText", "edited");
 
