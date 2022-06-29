@@ -1,5 +1,5 @@
 <template>
-  <div>edited</div>
+  <div class="edited_main">edited</div>
 </template>
 <script>
 import { store } from "@/store";
@@ -20,6 +20,12 @@ export default {
     return {
       note: {},
     };
+  },
+  mounted() {
+    let edited_main = document.querySelector(".edited_main");
+    edited_main.addEventListener("click", () => {
+      store.dispatch("header/setIsEditedTitle", false);
+    });
   },
   async created() {
     let winId = getQueryByName("winId");

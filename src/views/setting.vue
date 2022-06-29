@@ -1,15 +1,6 @@
 <template>
-  <div class="main">
+  <div class="main" id="main">
     <h4>通用设置</h4>
-
-    <div class="item">
-      <span>黑夜模式</span>
-      <el-switch
-        v-model="dark"
-        class="ml-2"
-        style="--el-switch-on-color: #13ce66"
-      />
-    </div>
 
     <div class="item">
       <span>黑夜模式</span>

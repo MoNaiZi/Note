@@ -12,16 +12,26 @@
 
 <script>
 import Header from "@/components/header";
+const { ipcRenderer } = require("electron");
 export default {
   name: "App",
   components: { Header },
   created() {
     console.log("created", this.$store);
+    const app = document.getElementById("app");
+    ipcRenderer.invoke("theme").then((res) => {
+      console.log("res", res);
+      console.log("app", app);
+    });
   },
 };
 </script>
 
 <style>
+body {
+  /* background: #333;
+  color: white; */
+}
 ul,
 li {
   padding: 0;

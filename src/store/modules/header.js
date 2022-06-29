@@ -3,7 +3,8 @@ export default {
     state() {
         return {
             pageTypeText: 'home',
-            note: {}
+            note: {},
+            isEditedTitle: true
         }
     },
     getters: {
@@ -17,6 +18,9 @@ export default {
         },
         setNote(context, note) {
             context.commit('setNote', note)
+        },
+        setIsEditedTitle(context, bool) {
+            context.commit('setIsEditedTitle', bool)
         }
     },
     mutations: {
@@ -25,6 +29,9 @@ export default {
         },
         setNote(state, note) {
             state.note = note
+        },
+        setIsEditedTitle(state, bool) {
+            state.isEditedTitle = bool
         }
     }
 }

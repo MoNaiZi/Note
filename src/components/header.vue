@@ -22,13 +22,16 @@
     </div>
     <div class="title" v-show="pageTypeText != 'edited'">便利贴</div>
     <div class="input_title" v-show="pageTypeText === 'edited'">
-      <div v-if="!isEditedTitle" @dblclick="this.isEditedTitle = true" class="">
+      <div v-if="!isEditedTitle" @dblclick="editedTitle">
         {{ note.title }}
       </div>
       <input v-else v-model="note.title" placeholder="请输入标题" />
     </div>
     <div class="right">
-      <i v-show="pageTypeText === 'edited'" class="iconfont icon-thepin"></i>
+      <i
+        :class="['iconfont', isTopping ? 'icon-thepin-active' : 'icon-thepin']"
+        @click="topping"
+      ></i>
       <i
         v-show="pageTypeText === 'home'"
         class="iconfont icon-setting"
@@ -48,21 +51,13 @@ export default {
     ...mapState("header", {
       pageTypeText: (state) => state.pageTypeText,
       note: (state) => state.note || {},
+      isEditedTitle: (state) => state.isEditedTitle,
     }),
   },
-  watch: {
-    // note: {
-    //   deep: true,
-    //   handler: function (note) {
-    //     if (note.title) {
-    //       this.isEditedTitle = false;
-    //     }
-    //   },
-    // },
-  },
+  watch: {},
   data() {
     return {
-      isEditedTitle: true,
+      isTopping: false,
     };
   },
   created() {
@@ -73,7 +68,7 @@ export default {
       "note",
       (note) => {
         if (note && note.title) {
-          this.isEditedTitle = false;
+          store.dispatch("header/setIsEditedTitle", false);
         }
         if (watchNote) {
           watchNote();
@@ -86,11 +81,19 @@ export default {
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
       if (keyCode === 13) {
-        this.isEditedTitle = false;
+        store.dispatch("header/setIsEditedTitle", false);
       }
     });
   },
+  mounted() {},
   methods: {
+    editedTitle() {
+      store.dispatch("header/setIsEditedTitle", true);
+    },
+    topping() {
+      this.isTopping = !this.isTopping;
+      ipcRenderer.send("topping", this.isTopping);
+    },
     close() {
       const pageTypeText = this.pageTypeText;
       let { note } = this;
@@ -99,6 +102,7 @@ export default {
       }
       ipcRenderer.send("closeWindow", note._id);
     },
+
     addNote() {
       ipcRenderer.send("newWindow");
     },
@@ -110,6 +114,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.drag {
+  -webkit-app-region: drag;
+}
 @mixin iconfont($size) {
   font-size: $size;
   cursor: pointer;
@@ -122,7 +129,7 @@ export default {
   .input_title {
     width: 65%;
     div {
-      width: 100%;
+      width: 120%;
     }
     input {
       box-shadow: 0 0 4px #cbcbcb;
@@ -135,7 +142,7 @@ export default {
   }
   .left {
     line-height: 10px;
-    -webkit-app-region: drag;
+    @extend .drag;
   }
 }
 .home {
@@ -157,12 +164,14 @@ export default {
     text-align: left;
   }
   .title {
-    -webkit-app-region: drag;
-    width: 60%;
+    @extend .drag;
+    width: 30%;
+    text-align: right;
   }
 
   .right {
     text-align: right;
+    width: 35%;
     i {
       margin-left: 10px;
     }
