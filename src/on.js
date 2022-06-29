@@ -2,6 +2,12 @@ import { ipcMain, BrowserWindow, Menu, Tray, screen } from 'electron'
 const mainProcess = require('./mainProcess')
 import db from './server'
 
+ipcMain.on('windowMoving', (event, { mouseX, mouseY }) => {
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    const { x, y } = screen.getCursorScreenPoint()
+    win.setPosition(x - mouseX, y - mouseY)
+});
 
 ipcMain.on('newMenu', (event, WHObj) => {
     const mainWindows = mainProcess.mainWindows()
@@ -14,7 +20,7 @@ ipcMain.on('newMenu', (event, WHObj) => {
         height: 100,
         x: width - 100,
         y: height - 100,
-        resizable: false,
+        // resizable: false,
         alwaysOnTop: true,
         autoHideMenuBar: true,
         skipTaskbar: true,
