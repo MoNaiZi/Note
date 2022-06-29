@@ -1,7 +1,39 @@
-import { ipcMain, BrowserWindow, Menu, Tray, nativeTheme } from 'electron'
+import { ipcMain, BrowserWindow, Menu, Tray, screen } from 'electron'
 const mainProcess = require('./mainProcess')
 import db from './server'
 
+
+ipcMain.on('newMenu', (event, WHObj) => {
+    const mainWindows = mainProcess.mainWindows()
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    const { winURL } = mainWindows
+    let win = new BrowserWindow({
+        frame: false,
+        transparent: true,
+        width: 100,
+        height: 100,
+        x: width - 100,
+        y: height - 100,
+        resizable: false,
+        alwaysOnTop: true,
+        autoHideMenuBar: true,
+        skipTaskbar: true,
+        webPreferences: {
+            enableRemoteModule: true,
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
+    })
+
+    screen.on('display-metrics-changed', (event, display, changedMetrics) => {
+        console.log('display', display)
+        const { x, y, width, height } = display.workArea;
+        win.setBounds({ x: width - 100, y: height - 100, width: 500, height: 500 })
+    });
+
+    let url = `${winURL}/#/menu`
+    win.loadURL(url)
+})
 
 
 ipcMain.handle('theme', (event, temp) => {
@@ -78,9 +110,8 @@ ipcMain.on('topping', (event, isTopping) => {
 ipcMain.on('closeWindow', async (event, id) => {
     const webContents = event.sender
     const win = BrowserWindow.fromWebContents(webContents)
-
+    win.setSkipTaskbar(true)
     if (!id) {
-        console.log('global.isMenu', global.isMenu)
         if (!global.isMenu) {
             const tray = new Tray('D:/A_Project/electron/Note/public/favicon.ico');
             const contextMenu = Menu.buildFromTemplate([{
@@ -93,10 +124,9 @@ ipcMain.on('closeWindow', async (event, id) => {
             }
             ]);
             tray.setContextMenu(contextMenu);
-            tray.on('double-click', () => {
-                // 双击通知区图标实现应用的显示或隐藏
-                win.isVisible() ? win.hide() : win.show()
-                win.isVisible() ? win.setSkipTaskbar(false) : win.setSkipTaskbar(true);
+            tray.on('click', () => {
+                console.log('win.isVisible()', win.isVisible())
+                win.isVisible() ? win.show() : win.hide()
             });
             global.isMenu = true
         }

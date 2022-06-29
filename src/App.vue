@@ -1,5 +1,5 @@
 <template>
-  <Header></Header>
+  <Header v-if="pageTypeText != 'menu'"></Header>
   <transition name="main-fade">
     <router-view></router-view>
   </transition>
@@ -13,11 +13,17 @@
 <script>
 import Header from "@/components/header";
 const { ipcRenderer } = require("electron");
+import { mapState } from "vuex";
 export default {
   name: "App",
   components: { Header },
+  computed: {
+    ...mapState("header", {
+      pageTypeText: (state) => state.pageTypeText,
+    }),
+  },
   created() {
-    console.log("created", this.$store);
+    console.log("created", this.$router);
     const app = document.getElementById("app");
     ipcRenderer.invoke("theme").then((res) => {
       console.log("res", res);

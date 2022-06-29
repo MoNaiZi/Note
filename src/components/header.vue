@@ -104,7 +104,10 @@ export default {
     },
 
     addNote() {
-      ipcRenderer.send("newWindow");
+      // ipcRenderer.send("newWindow");
+      let height = window.screen.height * window.devicePixelRatio;
+      let width = window.screen.width * window.devicePixelRatio;
+      ipcRenderer.send("newMenu", { width, height });
     },
     toSet() {
       this.$router.push("/set");

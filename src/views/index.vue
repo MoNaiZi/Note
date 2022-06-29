@@ -31,7 +31,7 @@
   </div>
 </template>
 
-<script>
+<script >
 import { store } from "@/store";
 import { mapGetters } from "vuex";
 import contextMenu from "@/components/context_menu.vue";
