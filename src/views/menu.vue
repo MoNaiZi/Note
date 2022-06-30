@@ -4,11 +4,9 @@
       {{ tip }}
     </div>
     <div :class="['item_main', { item_main_open: open }]">
-      <transition-group name="scale" tag="div">
-        <template v-for="(item, index) in 4" :key="index">
-          <div class="item" :style="itemStyle(item, index)"></div>
-        </template>
-      </transition-group>
+      <template v-for="(item, index) in 4" :key="index">
+        <div class="item" :style="itemStyle(item, index)"></div>
+      </template>
     </div>
   </div>
 </template>
@@ -128,20 +126,6 @@ export default {
 
 <style scoped lang="scss">
 $bgColor: #fff;
-
-.scale-enter-active {
-  // transition: all 0.3s ease-out;
-}
-
-.scale-leave-active {
-  // transition: all 0.3s ease-out;
-}
-
-.scale-enter-from,
-.scale-leave-to {
-  // transform: scale(0) translateX(20px) translateY(40px);
-  // opacity: 0;
-}
 .item_main_open {
   // opacity: 0 !important;
   // transition: 0.1s;
