@@ -1,15 +1,23 @@
 <template>
   <div class="main" id="main">
     <h4>通用设置</h4>
-
     <div class="item">
+      <span>悬浮窗</span>
+      <el-switch
+        @change="floatingFn"
+        v-model="setting.floating"
+        class="ml-2"
+        style="--el-switch-on-color: #13ce66"
+      />
+    </div>
+    <!-- <div class="item">
       <span>黑夜模式</span>
       <el-switch
         v-model="dark"
         class="ml-2"
         style="--el-switch-on-color: #13ce66"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -23,8 +31,18 @@ export default {
   },
   data() {
     return {
-      dark: false,
+      setting: {
+        floating: true,
+      },
     };
+  },
+  methods: {
+    floatingFn(status) {
+      console.log("status", status);
+    },
+  },
+  unmounted() {
+    console.log("unmounted");
   },
   created() {
     store.dispatch("header/setPageTypeText", "set");

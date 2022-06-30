@@ -154,6 +154,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+ul,
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
 .scale-enter-active {
   transition: all 0.3s ease-out;
 }

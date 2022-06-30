@@ -33,12 +33,12 @@ body {
   /* background: #333;
   color: white; */
 }
-ul,
+/* ul,
 li {
   padding: 0;
   margin: 0;
   list-style: none;
-}
+} */
 
 .main-fade-enter,
 .main-fade-leave-to {

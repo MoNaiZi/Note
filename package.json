@@ -13,7 +13,10 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@wangeditor/editor": "^5.1.1",
+    "@wangeditor/editor-for-vue": "^5.1.12",
     "core-js": "^3.6.5",
+    "dayjs": "^1.11.3",
     "electron-rebuild": "^3.2.7",
     "element-plus": "^2.2.6",
     "lowdb": "1.0.0",

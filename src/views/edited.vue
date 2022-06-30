@@ -1,16 +1,48 @@
 <template>
-  <div class="edited_main">edited</div>
+  <div class="edited_main">
+    <!-- <Tree
+      :data="data"
+      label="title"
+      children="childrens"
+      :load="loadNode"
+      :lazy="true"
+    /> -->
+    <div style="border: 1px solid #ccc">
+      <Toolbar
+        style="border-bottom: 1px solid #ccc"
+        :editor="editor"
+        :defaultConfig="toolbarConfig"
+        :mode="mode"
+      />
+      <Editor
+        style="height: 500px; overflow-y: hidden; text-align: left"
+        v-model="html"
+        :defaultConfig="editorConfig"
+        :mode="mode"
+        @onCreated="onCreated"
+      />
+    </div>
+  </div>
 </template>
 <script>
 import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
+// import Tree from "@/components/Tree/index.vue";
+import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+
 const getQueryByName = (name) => {
   const queryNameRegex = new RegExp(`[?&]${name}=([^&]*)(&|$)`);
   const queryNameMatch = window.location.hash.match(queryNameRegex);
   return queryNameMatch ? decodeURIComponent(queryNameMatch[1]) : "";
 };
 export default {
+  components: {
+    // Tree,
+    Editor,
+    Toolbar,
+  },
+
   computed: {
     ...mapState("header", {
       header: (state) => state.note,
@@ -18,8 +50,66 @@ export default {
   },
   data() {
     return {
-      note: {},
+      data: [
+        {
+          title: "一级",
+          childrens: [
+            {
+              title: "二级1",
+              childrens: [
+                {
+                  title: "三级1",
+                },
+              ],
+            },
+            {
+              title: "二级2",
+              childrens: [
+                {
+                  title: "三级2",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          title: "一级2",
+          childrens: [
+            {
+              title: "二级2",
+            },
+          ],
+        },
+      ],
+      defaultProps: {
+        children: "children",
+        label: "label",
+      },
+      editor: null,
+      html: "<p>hello</p>",
+      toolbarConfig: {},
+      editorConfig: { placeholder: "请输入内容..." },
+      mode: "default", // or 'simple'
     };
+  },
+  methods: {
+    onCreated(editor) {
+      this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
+    },
+    loadNode(node, resolve) {
+      const { layer, childrens } = node;
+      if (childrens && childrens.length > 0) {
+        resolve(childrens);
+      } else {
+        setTimeout(() => {
+          resolve([
+            {
+              title: `第${layer}层`,
+            },
+          ]);
+        }, 1500);
+      }
+    },
   },
   mounted() {
     let edited_main = document.querySelector(".edited_main");
@@ -27,6 +117,7 @@ export default {
       store.dispatch("header/setIsEditedTitle", false);
     });
   },
+
   async created() {
     let winId = getQueryByName("winId");
     let note = {};
@@ -65,5 +156,11 @@ export default {
   beforeUnmount() {},
 };
 </script>
+
+<style src="@wangeditor/editor/dist/css/style.css"></style>
 <style lang="scss" scoped>
+.edited_main {
+  // overflow-y: auto;
+  // height: 79vh;
+}
 </style>
