@@ -122,6 +122,10 @@ export default {
       const currentItem = this.currentItem;
       switch (type) {
         case 0:
+          ipcRenderer.invoke("noteTopping", currentItem._id).then((list) => {
+            console.log("list", list);
+            store.dispatch("note/setNoteList", list);
+          });
           break;
         case 1:
           ipcRenderer.invoke("removeNote", currentItem._id).then((list) => {

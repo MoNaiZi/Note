@@ -88,6 +88,13 @@ ipcMain.handle('getList', () => {
     return getNoteList()
 })
 
+ipcMain.handle('noteTopping', (_event, winId) => {
+    const value = db.get('NoteList').find({ _id: winId }).value()
+    db.get('NoteList').remove({ _id: winId }).write()
+    db.get('NoteList').unshift(value).write()
+    return getNoteList()
+})
+
 ipcMain.handle('removeNote', (_event, winId) => {
     db.get('NoteList').remove({ _id: winId }).write()
     return getNoteList()
@@ -158,9 +165,10 @@ ipcMain.on('closeWindow', async (event, id) => {
                 console.log('win.isVisible()', win.isVisible())
                 win.isVisible() ? win.show() : win.hide()
             });
+            suspensionWin()
             global.isMenu = true
         }
-        suspensionWin()
+
         win.minimize()
         return
     }

@@ -1,6 +1,6 @@
 <template>
   <div class="wrap" @mousedown="onMouseDown" @mouseup="end">
-    <div :class="['main', { open: open }]">
+    <div :class="['main', { open: open }]" @click.stop="openMenu">
       {{ tip }}
     </div>
     <div :class="['item_main', { item_main_open: open }]">
@@ -18,6 +18,7 @@ const { ipcRenderer } = require("electron");
 let mouseX;
 let mouseY;
 let beforeX, beforeY, afterX, afterY;
+
 export default {
   data() {
     return {
@@ -67,17 +68,32 @@ export default {
 
       return result;
     },
+    debounce(func, wait, immediate) {
+      let timeout;
+      console.log("1");
+      return function () {
+        let context = this;
+        let args = arguments;
+
+        if (timeout) clearTimeout(timeout);
+        if (immediate) {
+          let callNow = !timeout;
+          timeout = setTimeout(function () {
+            timeout = null;
+          }, wait);
+          if (callNow) func.apply(context, args);
+        } else {
+          timeout = setTimeout(function () {
+            func.apply(context, args);
+          }, wait);
+        }
+      };
+    },
     openMenu() {
+      console.log("openMenu");
       if (beforeX === afterX && beforeY === afterY) {
         this.open = !this.open;
-        if (!this.open) {
-          setTimeout(() => {
-            ipcRenderer.send("addWH", { w: 50, h: 50 }, this.open);
-          }, 1000);
-        } else {
-          ipcRenderer.send("addWH", { w: 50, h: 50 }, this.open);
-        }
-
+        ipcRenderer.send("addWH", { w: 50, h: 50 }, this.open);
         setTimeout(() => {
           this.open_item = !this.open_item;
         }, 1000);
@@ -88,7 +104,7 @@ export default {
       console.log(" mouseX", mouseX);
       [afterX, afterY] = [e.offsetX, e.offsetY];
       this.isDrag = false;
-      this.openMenu();
+      // this.debounce(this.openMenu, 500, true);
     },
 
     onMouseDown(e) {
@@ -140,8 +156,8 @@ $bgColor: #fff;
   display: flex;
 
   flex-direction: column;
-  transition: 1s;
-  transform: scale(0) translateX(40px) translateY(40px);
+  transition: 0.1s;
+  transform: scale(0) translateX(-70px) translateY(-70px);
   .item {
     // transition: 1s;
     width: 30px;

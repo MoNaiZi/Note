@@ -5,7 +5,7 @@
     :style="{ top: Y + 'px', left: X + 'px' }"
   >
     <ul @mouseup="handleMouseUp">
-      <li @click="change(0)">打开</li>
+      <li @click="change(0)">置顶</li>
       <li @click="change(1)">删除</li>
     </ul>
   </div>

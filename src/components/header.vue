@@ -131,6 +131,7 @@ export default {
   }
   .input_title {
     width: 65%;
+    margin-left: 30px;
     div {
       width: 120%;
     }
