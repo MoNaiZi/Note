@@ -2,14 +2,34 @@ import { ipcMain, BrowserWindow, Menu, Tray, screen } from 'electron'
 const mainProcess = require('./mainProcess')
 import db from './server'
 
+ipcMain.on('addWH', (event, { w, h }, open) => {
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    let bounds = win.getBounds()
+    if (open) {
+        bounds.x = bounds.x - w
+        bounds.y = bounds.y - h
+        bounds.width = bounds.width + w
+        bounds.height = bounds.height + h
+    } else {
+        bounds.x = bounds.x + w
+        bounds.y = bounds.y + h
+        bounds.width = bounds.width - w
+        bounds.height = bounds.height - h
+    }
+    console.log('bounds', bounds)
+    win.setBounds(bounds)
+})
+
 ipcMain.on('windowMoving', (event, { mouseX, mouseY }) => {
     const webContents = event.sender
     const win = BrowserWindow.fromWebContents(webContents)
     const { x, y } = screen.getCursorScreenPoint()
-    win.setPosition(x - mouseX, y - mouseY)
+    // win.setPosition(x - mouseX, y - mouseY)
+    win.setBounds({ x: x - mouseX, y: y - mouseY, width: 100, height: 100 })
 });
 
-ipcMain.on('newMenu', (event, WHObj) => {
+const suspensionWin = function () {
     const mainWindows = mainProcess.mainWindows()
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const { winURL } = mainWindows
@@ -20,7 +40,7 @@ ipcMain.on('newMenu', (event, WHObj) => {
         height: 100,
         x: width - 100,
         y: height - 100,
-        // resizable: false,
+        resizable: false,
         alwaysOnTop: true,
         autoHideMenuBar: true,
         skipTaskbar: true,
@@ -39,7 +59,11 @@ ipcMain.on('newMenu', (event, WHObj) => {
 
     let url = `${winURL}/#/menu`
     win.loadURL(url)
-})
+}
+
+// ipcMain.on('newMenu', (event, WHObj) => {
+
+// })
 
 
 ipcMain.handle('theme', (event, temp) => {
@@ -136,7 +160,7 @@ ipcMain.on('closeWindow', async (event, id) => {
             });
             global.isMenu = true
         }
-
+        suspensionWin()
         win.minimize()
         return
     }
