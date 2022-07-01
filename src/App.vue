@@ -28,6 +28,7 @@ export default {
 };
 </script>
 
+<style src="@wangeditor/editor/dist/css/style.css"></style>
 <style>
 body {
   /* background: #333;

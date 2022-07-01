@@ -5,7 +5,10 @@
     :style="{ top: Y + 'px', left: X + 'px' }"
   >
     <ul @mouseup="handleMouseUp">
+      <li @click="change(2)">编辑</li>
+      <li @click="change(3)">预览</li>
       <li @click="change(0)">置顶</li>
+      <li @click="change(4)">设置</li>
       <li @click="change(1)">删除</li>
     </ul>
   </div>
@@ -39,7 +42,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+ul,
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
 .context_menu {
+  z-index: 10;
   width: 60px;
   border-radius: 5px;
   box-shadow: 0 0 4px #cbcbcb;

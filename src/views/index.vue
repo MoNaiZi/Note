@@ -16,15 +16,48 @@
   <div class="list">
     <transition-group name="scale" tag="ul">
       <li
-        v-for="item in list"
+        v-for="(item, index) in list"
         :key="item._id"
         class="item"
-        @click="edited(item)"
         @contextmenu="handleContextMenu($event, item)"
       >
         <div>
-          <h3>{{ item.title }}</h3>
-          <div class="content"></div>
+          <h4 @click="edited(item)">
+            {{ item.title }}
+            <el-icon
+              class="ArrowDownBold"
+              @click.stop="openDetaile(item, index)"
+            >
+              <ArrowDownBold v-show="item.isOpenDetaile" />
+              <ArrowLeftBold v-show="!item.isOpenDetaile" />
+            </el-icon>
+          </h4>
+          <div class="content">
+            <!-- <el-icon class="ArrowDownBold" @click="openDetaile(item)">
+              <ArrowDownBold v-show="item.isOpenDetaile" />
+              <ArrowLeftBold v-show="!item.isOpenDetaile" />
+            </el-icon> -->
+
+            <Editor
+              class="editor"
+              style="overflow-y: hidden; text-align: left"
+              :style="{ height: !item.isOpenDetaile ? '50px' : '200px' }"
+              v-model="item.html"
+              :defaultConfig="{ placeholder: '请输入内容...' }"
+              :mode="'default'"
+            />
+
+            <div class="time">
+              <el-tooltip
+                class="item"
+                effect="light"
+                :content="item.time"
+                placement="right-end"
+              >
+                {{ fromNowFn(item.timeStamp) }}
+              </el-tooltip>
+            </div>
+          </div>
         </div>
       </li>
     </transition-group>
@@ -35,13 +68,17 @@
 import { store } from "@/store";
 import { mapGetters } from "vuex";
 import contextMenu from "@/components/context_menu.vue";
+import { Editor } from "@wangeditor/editor-for-vue";
+import { fromNow } from "@/utils";
 const { ipcRenderer } = require("electron");
 export default {
   components: {
     contextMenu,
+    Editor,
   },
   data() {
     return {
+      list: [],
       searchKey: "",
       showMenu: false,
       currentItem: {},
@@ -51,7 +88,7 @@ export default {
   },
   computed: {
     ...mapGetters("note", {
-      list: "getNoteList",
+      // list: "getNoteList",
     }),
   },
   beforeCreate() {
@@ -59,7 +96,7 @@ export default {
   },
   created() {
     console.log("在实例创建完成");
-    // const that = this;
+    const that = this;
     // const channel = new MessageChannel();
     // console.log("ipcRenderer", ipcRenderer);
     store.dispatch("header/setPageTypeText", "home");
@@ -83,10 +120,12 @@ export default {
     };
 
     ipcRenderer.invoke("getList").then((list) => {
-      store.dispatch("note/setNoteList", list);
+      that.list = list;
+      // store.dispatch("note/setNoteList", list);
     });
     ipcRenderer.on("getEdited", (_event, list) => {
-      store.dispatch("note/setNoteList", list);
+      that.list = list;
+      // store.dispatch("note/setNoteList", list);
     });
     // window.electronAPI.getList().then((list) => {
     //   that.list = list;
@@ -108,6 +147,17 @@ export default {
     console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    fromNowFn(time) {
+      return fromNow(time);
+    },
+    openDetaile(item) {
+      let isOpenDetaile =
+        typeof item.isOpenDetaile === "undefined" ? false : item.isOpenDetaile;
+      item.isOpenDetaile = isOpenDetaile ? false : true;
+      // const that = this;
+      ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
+      //isOpenDetaile
+    },
     search() {
       let searchKey = this.searchKey;
       ipcRenderer.invoke("search", searchKey).then((res) => {
@@ -119,19 +169,23 @@ export default {
     },
     changeMenu(type) {
       console.log("type", type);
+      const that = this;
       const currentItem = this.currentItem;
       switch (type) {
         case 0:
           ipcRenderer.invoke("noteTopping", currentItem._id).then((list) => {
-            console.log("list", list);
-            store.dispatch("note/setNoteList", list);
+            // store.dispatch("note/setNoteList", list);
+            that.list = list;
           });
           break;
         case 1:
           ipcRenderer.invoke("removeNote", currentItem._id).then((list) => {
-            console.log("list", list);
-            store.dispatch("note/setNoteList", list);
+            // store.dispatch("note/setNoteList", list);
+            that.list = list;
           });
+          break;
+        case 2:
+          this.edited(currentItem);
           break;
         default:
           break;
@@ -183,8 +237,8 @@ li {
   overflow: auto;
   overflow-x: hidden;
   .item {
+    position: relative;
     width: 93%;
-    height: 67px;
     padding: -4px;
     box-shadow: 0 0 4px #cbcbcb;
     cursor: pointer;
@@ -192,7 +246,28 @@ li {
     border-radius: 5px;
     text-align: left;
     padding: 6px;
+    background: #fff;
+    .ArrowDownBold {
+      position: absolute;
+      font-size: 14px;
+      background: #f2f2f2;
+      border-radius: 5px;
+      padding: 3px;
+      z-index: 1;
+      right: 6px;
+    }
     .content {
+      position: relative;
+      .time {
+        font-size: 13px;
+        color: #9c9c9c;
+        margin-top: 10px;
+        position: relative;
+        top: 3px;
+      }
+      .editor {
+        transition: all 0.5s;
+      }
     }
   }
   .item:hover {

@@ -1,6 +1,12 @@
 import { ipcMain, BrowserWindow, Menu, Tray, screen } from 'electron'
 const mainProcess = require('./mainProcess')
+const dayjs = require('dayjs')
 import db from './server'
+
+ipcMain.on('updateNote', (event, item) => {
+    let _id = item._id
+    db.get('NoteList').find({ _id }).assign(item).write()
+})
 
 ipcMain.on('addWH', (event, { w, h }, open) => {
     const webContents = event.sender
@@ -112,6 +118,8 @@ ipcMain.on('closeEdited', (_event, winId, tempOjb = {}) => {
     if (JSON.stringify(tempOjb) === '{}') return
     const getValue = db.get('NoteList').find({ _id: winId }).value()
     tempOjb._id = winId
+    tempOjb.timeStamp = dayjs().valueOf()
+    tempOjb.time = dayjs().format('YYYY-MM-DD HH:mm')
     if (!getValue) {
         db.get('NoteList').unshift(tempOjb).write()
     } else if (getValue) {
@@ -119,6 +127,12 @@ ipcMain.on('closeEdited', (_event, winId, tempOjb = {}) => {
     }
     let list = getNoteList()
     global.mainWin.webContents.send('getEdited', list)
+})
+
+ipcMain.on('minimize', (event) => {
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    win.minimize()
 })
 
 ipcMain.on('newWindow', async (event, winId) => {

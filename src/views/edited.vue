@@ -62,32 +62,46 @@ export default {
       toolbarConfig: {
         excludeKeys: ["group-video", "undo", "redo", "group-image"],
       },
-      editorConfig: { placeholder: "请输入内容..." },
+      editorConfig: { placeholder: "请输入内容...", readOnly: false },
       mode: "default", // or 'simple'
+      upKeyCode: -1,
     };
   },
   methods: {
+    watchKey() {
+      window.addEventListener("keydown", (e) => {
+        let keyCode = e.keyCode;
+        console.log("key", e);
+        if (e.key === "s" && keyCode === 83) {
+          console.log("保存");
+        }
+      });
+    },
     getValue() {
       const html = this.editor.getHtml();
       const text = this.editor.getText();
+      const children = this.editor.children;
       console.log("html", html);
       console.log("text", text);
+      console.log("children", children);
     },
     onCreated(editor) {
       this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
       const MENU_CONF = this.editor.getConfig().MENU_CONF;
-      MENU_CONF["uploadImage"] = {
-        server: "/api/upload",
-        fieldName: "custom-field-name",
-        onBeforeUpload(file) {
-          console.log("file", file);
-          // file 选中的文件，格式如 { key: file }
-          return file;
 
-          // 可以 return
-          // 1. return file 或者 new 一个 file ，接下来将上传
-          // 2. return false ，不上传这个 file
-        },
+      console.log(
+        "代码语言",
+        this.editor.getMenuConfig("codeSelectLang").codeLangs
+      );
+      MENU_CONF["codeSelectLang"] = {
+        // 代码语言
+        codeLangs: [
+          { text: "Javascript", value: "javascript" },
+          { text: "CSS", value: "css" },
+          { text: "HTML", value: "html" },
+          { text: "Typescript", value: "typescript" },
+          // 其他
+        ],
       };
       const that = this;
       this.$nextTick(() => {
@@ -123,6 +137,7 @@ export default {
   },
 
   async created() {
+    this.watchKey();
     let winId = getQueryByName("winId");
     let note = {};
     if (winId === "undefined") {
@@ -139,6 +154,7 @@ export default {
       let { note } = this;
       let { title } = this.header;
       const html = this.editor.getHtml();
+      // const text = this.editor.getText();
       let tempOjb = { html };
       if (title) {
         tempOjb.title = title;
@@ -162,12 +178,18 @@ export default {
 };
 </script>
 
-<style src="@wangeditor/editor/dist/css/style.css"></style>
+
 <style lang="scss" scoped>
 .editor {
   // ::v-deep .w-e-text-container [data-slate-editor] p {
   //   margin: 4px 0;
   // }
+  ::v-deep .w-e-bar-bottom .w-e-select-list {
+    margin-bottom: -140px;
+    .w-e-select-list ul li {
+      top: 0%;
+    }
+  }
   ::v-deep .w-e-text-container * {
     margin: 4px 0;
   }

@@ -7,7 +7,11 @@
     ]"
   >
     <div class="left">
-      <i v-show="pageTypeText === 'edited'"> 拖动 </i>
+      <i v-show="pageTypeText === 'edited'" @click="minimize">
+        <el-icon>
+          <Minus />
+        </el-icon>
+      </i>
 
       <i
         v-show="pageTypeText === 'home'"
@@ -23,13 +27,21 @@
     <div class="title" v-show="pageTypeText != 'edited'">便利贴</div>
     <div class="input_title" v-show="pageTypeText === 'edited'">
       <div
-        v-if="!isEditedTitle"
         @dblclick="editedTitle"
         @mousedown="onMouseDown"
         @mouseup="end"
+        v-if="!isEditedTitle"
       >
-        {{ note.title }}
+        <el-tooltip
+          class="item"
+          effect="light"
+          content="双击编辑，或者长按拖动"
+          placement="right-end"
+        >
+          {{ note.title }}
+        </el-tooltip>
       </div>
+
       <input v-else v-model="note.title" placeholder="请输入标题" />
     </div>
     <div class="right">
@@ -95,6 +107,9 @@ export default {
   },
   mounted() {},
   methods: {
+    minimize() {
+      ipcRenderer.send("minimize");
+    },
     end(e) {
       console.log("触摸结束", e.clientX);
       this.isDrag = false;
@@ -175,7 +190,7 @@ export default {
   }
   .left {
     line-height: 10px;
-    @extend .drag;
+    cursor: pointer;
   }
 }
 .home {

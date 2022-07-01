@@ -1,7 +1,7 @@
 <template>
   <div class="wrap" @mousedown="onMouseDown" @mouseup="end">
     <div :class="['main', { open: open }]" @click.stop="openMenu">
-      {{ tip }}
+      <menuStyle></menuStyle>
     </div>
     <div :class="['item_main', { item_main_open: open }]">
       <template v-for="(item, index) in 4" :key="index">
@@ -12,12 +12,16 @@
 </template>
 <script>
 import { store } from "@/store";
+import menuStyle from "@/components/menu_style.vue";
 const { ipcRenderer } = require("electron");
 let mouseX;
 let mouseY;
 let beforeX, beforeY, afterX, afterY;
 
 export default {
+  components: {
+    menuStyle,
+  },
   data() {
     return {
       tip: "",
@@ -171,16 +175,17 @@ $bgColor: #fff;
   // transition: 0.2s;
 }
 .main:hover {
-  box-shadow: 0 0 18px #cbcbcb;
+  box-shadow: 0 0 12px #cbcbcb;
+  cursor: pointer;
   //   -webkit-app-region: drag;
 }
 .main {
   z-index: 10;
   transition: 0.2s;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: $bgColor;
+  // background: $bgColor;
   position: absolute;
   bottom: 15px;
   right: 5px;
