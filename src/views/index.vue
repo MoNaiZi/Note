@@ -96,6 +96,7 @@ export default {
   },
   created() {
     console.log("在实例创建完成");
+
     const that = this;
     // const channel = new MessageChannel();
     // console.log("ipcRenderer", ipcRenderer);
@@ -133,6 +134,16 @@ export default {
     window.addEventListener("click", () => {
       this.showMenu = false;
     });
+    window.onbeforeunload = (e) => {
+      console.log("I do not want to be closed");
+
+      // 与通常的浏览器不同,会提示给用户一个消息框,
+      //返回非空值将默认取消关闭
+      //建议使用对话框 API 让用户确认关闭应用程序.
+      // this.close();
+      ipcRenderer.send("closeWindow");
+      e.returnValue = false;
+    };
   },
   beforeMount() {
     console.log("挂载之前");
@@ -255,6 +266,7 @@ li {
       padding: 3px;
       z-index: 1;
       right: 6px;
+      opacity: 0.6;
     }
     .content {
       position: relative;

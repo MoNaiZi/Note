@@ -1,7 +1,11 @@
-import { ipcMain, BrowserWindow, Menu, Tray, screen } from 'electron'
+import { ipcMain, BrowserWindow, Menu, Tray, screen, app } from 'electron'
 const mainProcess = require('./mainProcess')
 const dayjs = require('dayjs')
 import db from './server'
+
+app.on('quit', () => {
+    console.log('窗口关闭')
+})
 
 ipcMain.on('updateNote', (event, item) => {
     let _id = item._id

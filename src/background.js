@@ -48,6 +48,10 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL(winURL)
   }
+  win.on('closed', () => {
+    console.log('主窗口关闭')
+    app.exit()
+  })
   global.mainWin = win
 
 
@@ -83,6 +87,9 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
+app.on('before-quit', event => {
+  // event.preventDefault();
+})
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
