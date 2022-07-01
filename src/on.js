@@ -21,12 +21,12 @@ ipcMain.on('addWH', (event, { w, h }, open) => {
     win.setBounds(bounds)
 })
 
-ipcMain.on('windowMoving', (event, { mouseX, mouseY }) => {
+ipcMain.on('windowMoving', (event, { mouseX, mouseY, width, height }) => {
     const webContents = event.sender
     const win = BrowserWindow.fromWebContents(webContents)
     const { x, y } = screen.getCursorScreenPoint()
     // win.setPosition(x - mouseX, y - mouseY)
-    win.setBounds({ x: x - mouseX, y: y - mouseY, width: 100, height: 100 })
+    win.setBounds({ x: x - mouseX, y: y - mouseY, width, height })
 });
 
 const suspensionWin = function () {
@@ -125,10 +125,10 @@ ipcMain.on('newWindow', async (event, winId) => {
     const mainWindows = mainProcess.mainWindows()
     const { config, winURL } = mainWindows
     let newOjb = {
-        width: 280,
-        height: 300,
-        minWidth: 100,
-        minHeight: 48,
+        width: 700,
+        height: 500,
+        minWidth: 200,
+        minHeight: 100,
         frame: false
     }
     newOjb = Object.assign(config, newOjb)

@@ -1,4 +1,5 @@
 <template>
+  <!-- <button @click="getValue">getValue</button> -->
   <div class="edited_main">
     <!-- <Tree
       :data="data"
@@ -7,16 +8,18 @@
       :load="loadNode"
       :lazy="true"
     /> -->
-    <div style="border: 1px solid #ccc">
+    <div style="border: 1px solid #ccc; height: 100%">
       <Toolbar
+        ref="Toolbar"
         style="border-bottom: 1px solid #ccc"
         :editor="editor"
         :defaultConfig="toolbarConfig"
         :mode="mode"
       />
       <Editor
-        style="height: 500px; overflow-y: hidden; text-align: left"
-        v-model="html"
+        class="editor"
+        style="height: 80%; overflow-y: hidden; text-align: left"
+        v-model="note.html"
         :defaultConfig="editorConfig"
         :mode="mode"
         @onCreated="onCreated"
@@ -30,7 +33,7 @@ import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 // import Tree from "@/components/Tree/index.vue";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
-
+import { DomEditor } from "@wangeditor/editor";
 const getQueryByName = (name) => {
   const queryNameRegex = new RegExp(`[?&]${name}=([^&]*)(&|$)`);
   const queryNameMatch = window.location.hash.match(queryNameRegex);
@@ -50,51 +53,48 @@ export default {
   },
   data() {
     return {
-      data: [
-        {
-          title: "一级",
-          childrens: [
-            {
-              title: "二级1",
-              childrens: [
-                {
-                  title: "三级1",
-                },
-              ],
-            },
-            {
-              title: "二级2",
-              childrens: [
-                {
-                  title: "三级2",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          title: "一级2",
-          childrens: [
-            {
-              title: "二级2",
-            },
-          ],
-        },
-      ],
+      note: {},
       defaultProps: {
         children: "children",
         label: "label",
       },
       editor: null,
-      html: "<p>hello</p>",
-      toolbarConfig: {},
+      toolbarConfig: {
+        excludeKeys: ["group-video", "undo", "redo", "group-image"],
+      },
       editorConfig: { placeholder: "请输入内容..." },
       mode: "default", // or 'simple'
     };
   },
   methods: {
+    getValue() {
+      const html = this.editor.getHtml();
+      const text = this.editor.getText();
+      console.log("html", html);
+      console.log("text", text);
+    },
     onCreated(editor) {
       this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
+      const MENU_CONF = this.editor.getConfig().MENU_CONF;
+      MENU_CONF["uploadImage"] = {
+        server: "/api/upload",
+        fieldName: "custom-field-name",
+        onBeforeUpload(file) {
+          console.log("file", file);
+          // file 选中的文件，格式如 { key: file }
+          return file;
+
+          // 可以 return
+          // 1. return file 或者 new 一个 file ，接下来将上传
+          // 2. return false ，不上传这个 file
+        },
+      };
+      const that = this;
+      this.$nextTick(() => {
+        const toolbar = DomEditor.getToolbar(that.editor);
+        let toolbarKeys = toolbar.getConfig().toolbarKeys;
+        console.log("toolbarKeys", toolbarKeys);
+      });
     },
     loadNode(node, resolve) {
       const { layer, childrens } = node;
@@ -113,6 +113,10 @@ export default {
   },
   mounted() {
     let edited_main = document.querySelector(".edited_main");
+    // setTimeout(() => {
+    //   console.log("DomEditor", DomEditor.getToolbar(this.editor).getConfig());
+    // }, 2000);
+
     edited_main.addEventListener("click", () => {
       store.dispatch("header/setIsEditedTitle", false);
     });
@@ -134,7 +138,8 @@ export default {
     addEventListener("unload", () => {
       let { note } = this;
       let { title } = this.header;
-      let tempOjb = {};
+      const html = this.editor.getHtml();
+      let tempOjb = { html };
       if (title) {
         tempOjb.title = title;
       }
@@ -159,8 +164,16 @@ export default {
 
 <style src="@wangeditor/editor/dist/css/style.css"></style>
 <style lang="scss" scoped>
+.editor {
+  // ::v-deep .w-e-text-container [data-slate-editor] p {
+  //   margin: 4px 0;
+  // }
+  ::v-deep .w-e-text-container * {
+    margin: 4px 0;
+  }
+}
 .edited_main {
   // overflow-y: auto;
-  // height: 79vh;
+  height: 90vh;
 }
 </style>

@@ -114,7 +114,12 @@ export default {
     },
     move() {
       if (this.isDrag && !this.open) {
-        ipcRenderer.send("windowMoving", { mouseX, mouseY });
+        ipcRenderer.send("windowMoving", {
+          mouseX,
+          mouseY,
+          width: 100,
+          height: 100,
+        });
       }
     },
   },

@@ -22,7 +22,12 @@
     </div>
     <div class="title" v-show="pageTypeText != 'edited'">便利贴</div>
     <div class="input_title" v-show="pageTypeText === 'edited'">
-      <div v-if="!isEditedTitle" @dblclick="editedTitle">
+      <div
+        v-if="!isEditedTitle"
+        @dblclick="editedTitle"
+        @mousedown="onMouseDown"
+        @mouseup="end"
+      >
         {{ note.title }}
       </div>
       <input v-else v-model="note.title" placeholder="请输入标题" />
@@ -46,6 +51,7 @@
 import { mapState } from "vuex";
 import { store } from "@/store";
 const { ipcRenderer } = require("electron");
+let mouseX, mouseY;
 export default {
   computed: {
     ...mapState("header", {
@@ -58,6 +64,7 @@ export default {
   data() {
     return {
       isTopping: false,
+      isDrag: false,
     };
   },
   created() {
@@ -84,9 +91,31 @@ export default {
         store.dispatch("header/setIsEditedTitle", false);
       }
     });
+    window.addEventListener("mousemove", this.move);
   },
   mounted() {},
   methods: {
+    end(e) {
+      console.log("触摸结束", e.clientX);
+      this.isDrag = false;
+      // this.debounce(this.openMenu, 500, true);
+    },
+
+    onMouseDown(e) {
+      this.isDrag = true;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    },
+    move() {
+      if (this.isDrag) {
+        ipcRenderer.send("windowMoving", {
+          mouseX,
+          mouseY,
+          width: 700,
+          height: 500,
+        });
+      }
+    },
     editedTitle() {
       store.dispatch("header/setIsEditedTitle", true);
     },
