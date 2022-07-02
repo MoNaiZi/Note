@@ -74,4 +74,24 @@ html {
   text-align: center;
   color: #2c3e50;
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+  /**/
+}
+.father::-webkit-scrollbar-track {
+  background: rgb(239, 239, 239);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+::-webkit-scrollbar-corner {
+  background: #179a16;
+}
 </style>
