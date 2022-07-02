@@ -47,8 +47,11 @@ const getQueryByName = (name) => {
     return queryNameMatch ? decodeURIComponent(queryNameMatch[1]) : "";
 };
 
+const logo = 'D:/A_Project/electron/Note/public/img/logo.png'
+
 module.exports = {
     createNumberString,
     fromNow,
-    getQueryByName
+    getQueryByName,
+    logo
 }

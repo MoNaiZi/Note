@@ -7,6 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
 const mainProcess = require('./mainProcess')
 import db from './server'
+import { logo } from '@/utils'
 
 import('@/on')
 // Scheme must be registered before the app is ready
@@ -37,7 +38,7 @@ async function createWindow() {
   const mainWindows = mainProcess.mainWindows()
   const { config, winURL } = mainWindows
   const win = new BrowserWindow(config)
-
+  win.setIcon(logo)
   await mainProcess.initDevTool(session)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

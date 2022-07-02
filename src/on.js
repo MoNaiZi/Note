@@ -2,6 +2,7 @@ import { ipcMain, BrowserWindow, Menu, Tray, screen, app } from 'electron'
 const mainProcess = require('./mainProcess')
 const dayjs = require('dayjs')
 import db from './server'
+import { logo } from '@/utils'
 
 app.whenReady().then(() => {
     setInterval(() => {
@@ -197,6 +198,7 @@ ipcMain.on('newWindow', async (event, winId, pageType) => {
 
     let win = new BrowserWindow(newOjb)
     let url = `${winURL}/#/edited?winId=${winId}&skipPageType=${pageType}`
+    win.setIcon(logo)
     win.loadURL(url)
 })
 
@@ -237,7 +239,7 @@ ipcMain.on('closeWindow', async (event, id) => {
     win.setSkipTaskbar(true)
     if (!id) {
         if (!global.isMenu) {
-            const tray = new Tray('D:/A_Project/electron/Note/public/favicon.ico');
+            const tray = new Tray(logo);
             const contextMenu = Menu.buildFromTemplate([{
                 label: '显示',
                 click: () => { win.show() }
