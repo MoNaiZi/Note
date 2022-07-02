@@ -7,9 +7,12 @@
     ]"
   >
     <div class="left">
-      <i v-show="pageTypeText === 'edited'" @click="minimize">
-        <el-icon>
+      <i v-show="pageTypeText === 'edited'">
+        <el-icon @click="minimize">
           <Minus />
+        </el-icon>
+        <el-icon @click="showTiming">
+          <Bell />
         </el-icon>
       </i>
 
@@ -58,10 +61,34 @@
       <i class="iconfont icon-close" @click="close"></i>
     </div>
   </div>
+
+  <el-dialog
+    v-model="isShowTiming"
+    title="定时提醒"
+    width="60%"
+    :before-close="showTiming"
+    draggable
+  >
+    <div>
+      <el-date-picker
+        v-model="note.timing"
+        type="datetime"
+        placeholder="请选择提醒时间"
+        popper-class="timing_date_picker"
+      />
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <!-- <el-button @click="showTiming(0)">取消</el-button> -->
+        <el-button type="primary" @click="showTiming(1)">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script>
 import { mapState } from "vuex";
 import { store } from "@/store";
+
 const { ipcRenderer } = require("electron");
 let mouseX, mouseY;
 export default {
@@ -77,6 +104,7 @@ export default {
     return {
       isTopping: false,
       isDrag: false,
+      isShowTiming: false,
     };
   },
   created() {
@@ -107,6 +135,12 @@ export default {
   },
   mounted() {},
   methods: {
+    showTiming(type) {
+      this.isShowTiming = !this.isShowTiming;
+      if (type === 1) {
+        store.dispatch("header/setNote", this.note);
+      }
+    },
     minimize() {
       ipcRenderer.send("minimize");
     },
@@ -191,6 +225,9 @@ export default {
   .left {
     line-height: 10px;
     cursor: pointer;
+    .el-icon {
+      margin-right: 10px;
+    }
   }
 }
 .home {

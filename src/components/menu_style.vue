@@ -1,4 +1,7 @@
 2<template>
+  <el-icon color="#fff" class="icon">
+    <BellFilled />
+  </el-icon>
   <div class="box">
     <div class="object">
       <div class="outline"></div>
@@ -10,6 +13,13 @@
 </template>
 
 <style scoped>
+.icon {
+  position: absolute;
+  font-size: 26px;
+  z-index: 10;
+  left: 13px;
+  top: 10px;
+}
 .box {
   transform: scale(0.3);
   position: absolute;

@@ -29,6 +29,7 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+
   createWindow()
 })
 
@@ -67,7 +68,7 @@ async function createWindow() {
   port2.start()
   // 预加载脚本将接收此 IPC 消息并将端口
   // 传输到主进程。
-  console.log('111111111')
+  // console.log('111111111')
   win.webContents.postMessage('main-world-port', null, [port1])
 
 }

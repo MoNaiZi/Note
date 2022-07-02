@@ -19,6 +19,7 @@ function mainWindows() {
         webPreferences
     }
     const winURL = isDevelopment ? 'http://localhost:55226' : `file://${__dirname}/index.html`;
+    console.log('isDevelopment', isDevelopment)
     return { config, winURL }
 }
 

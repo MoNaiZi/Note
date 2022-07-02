@@ -10,6 +10,7 @@
     :X="X"
     :Y="Y"
     :menuShow="showMenu"
+    :currentItem="currentItem"
     @change="changeMenu"
   ></contextMenu>
 
@@ -32,7 +33,7 @@
               <ArrowLeftBold v-show="!item.isOpenDetaile" />
             </el-icon>
           </h4>
-          <div class="content">
+          <div class="content" @mousedown="this.cuttentIndex = index">
             <!-- <el-icon class="ArrowDownBold" @click="openDetaile(item)">
               <ArrowDownBold v-show="item.isOpenDetaile" />
               <ArrowLeftBold v-show="!item.isOpenDetaile" />
@@ -41,7 +42,7 @@
             <Editor
               class="editor"
               style="overflow-y: hidden; text-align: left"
-              :style="{ height: !item.isOpenDetaile ? '50px' : '200px' }"
+              :style="{ height: !item.isOpenDetaile ? '60px' : '250px' }"
               v-model="item.html"
               :defaultConfig="{ placeholder: '请输入内容...' }"
               :mode="'default'"
@@ -61,6 +62,10 @@
         </div>
       </li>
     </transition-group>
+    <el-empty
+      v-if="!list.length"
+      description="什么都没，点击左上角+号按钮添加吧"
+    />
   </div>
 </template>
 
@@ -82,9 +87,24 @@ export default {
       searchKey: "",
       showMenu: false,
       currentItem: {},
+      cuttentIndex: -1,
       X: 0,
       Y: 0,
     };
+  },
+  watch: {
+    list: {
+      deep: true,
+      handler(val) {
+        const cuttentIndex = this.cuttentIndex;
+        let list = val;
+        if (cuttentIndex != -1) {
+          let item = list[cuttentIndex];
+          ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
+        }
+        console.log("监听list", val, "cuttentIndex", this.cuttentIndex);
+      },
+    },
   },
   computed: {
     ...mapGetters("note", {
@@ -122,7 +142,8 @@ export default {
 
     ipcRenderer.invoke("getList").then((list) => {
       that.list = list;
-      // store.dispatch("note/setNoteList", list);
+      console.log("list", list);
+      store.dispatch("note/setNoteList", list);
     });
     ipcRenderer.on("getEdited", (_event, list) => {
       that.list = list;
@@ -150,6 +171,22 @@ export default {
   },
   mounted() {
     console.log("实例挂载完成后");
+    // let popupWindow = window.open(
+    //   `http://localhost:55226/#/edited`,
+    //   "_blank",
+    //   `width=400,
+    // height=300,
+    // contextIsolation=no,
+    // nodeIntegration=yes,
+    // frame=no`
+    // );
+    // popupWindow.onload = () => {
+    //   //now we have access to popup window dom
+    //   let myDomElement = document.createElement("div");
+    //   myDomElement.innerText = "1111111111111111111111";
+    //   popupWindow.document.body.appendChild(myDomElement);
+    //   ipcRenderer.send("windowOpen");
+    // };
   },
   beforeUpdate() {
     console.log("数据发生改变后DOM被更新之前调用");
@@ -279,6 +316,13 @@ li {
       }
       .editor {
         transition: all 0.5s;
+
+        ::v-deep .w-e-text-container * {
+          margin: 4px 0;
+        }
+        ::v-deep .w-e-textarea-divider {
+          padding: 3px;
+        }
       }
     }
   }

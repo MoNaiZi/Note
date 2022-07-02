@@ -64,5 +64,8 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "peerDependencies": {
+    "snabbdom": "^3.5.1"
+  }
 }

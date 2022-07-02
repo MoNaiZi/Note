@@ -40,7 +40,15 @@ function fromNow(time) {
     }
 }
 
+
+const getQueryByName = (name) => {
+    const queryNameRegex = new RegExp(`[?&]${name}=([^&]*)(&|$)`);
+    const queryNameMatch = window.location.hash.match(queryNameRegex);
+    return queryNameMatch ? decodeURIComponent(queryNameMatch[1]) : "";
+};
+
 module.exports = {
     createNumberString,
-    fromNow
+    fromNow,
+    getQueryByName
 }

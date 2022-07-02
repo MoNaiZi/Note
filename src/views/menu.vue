@@ -3,16 +3,17 @@
     <div :class="['main', { open: open }]" @click.stop="openMenu">
       <menuStyle></menuStyle>
     </div>
-    <div :class="['item_main', { item_main_open: open }]">
+    <!-- <div :class="['item_main', { item_main_open: open }]">
       <template v-for="(item, index) in 4" :key="index">
         <div class="item" :style="itemStyle(item, index)"></div>
       </template>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
 import { store } from "@/store";
 import menuStyle from "@/components/menu_style.vue";
+import { getQueryByName } from "@/utils";
 const { ipcRenderer } = require("electron");
 let mouseX;
 let mouseY;
@@ -28,9 +29,16 @@ export default {
       isDrag: false,
       open: false,
       open_item: false,
+      winIdList: [],
     };
   },
   created() {
+    let winIdList = getQueryByName("winIdList");
+    if (winIdList) {
+      this.winIdList = JSON.parse(winIdList);
+      console.log("winIdList", winIdList);
+    }
+
     store.dispatch("header/setPageTypeText", "menu");
     window.addEventListener("mousemove", this.move);
   },
@@ -95,7 +103,13 @@ export default {
       console.log("openMenu");
       if (beforeX === afterX && beforeY === afterY) {
         this.open = !this.open;
-        ipcRenderer.send("addWH", { w: 50, h: 50 }, this.open);
+        // ipcRenderer.send("addWH", { w: 50, h: 50 }, this.open);
+        const winIdList = this.winIdList;
+        for (let id of winIdList) {
+          ipcRenderer.send("newWindow", id, 1);
+          ipcRenderer.send("closeSuspensionWin", id);
+        }
+
         setTimeout(() => {
           this.open_item = !this.open_item;
         }, 1000);

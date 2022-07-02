@@ -10,6 +10,7 @@
     /> -->
     <div style="border: 1px solid #ccc; height: 100%">
       <Toolbar
+        id="toolbar-container"
         ref="Toolbar"
         style="border-bottom: 1px solid #ccc"
         :editor="editor"
@@ -31,14 +32,11 @@
 import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
+const dayjs = require("dayjs");
 // import Tree from "@/components/Tree/index.vue";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
-import { DomEditor } from "@wangeditor/editor";
-const getQueryByName = (name) => {
-  const queryNameRegex = new RegExp(`[?&]${name}=([^&]*)(&|$)`);
-  const queryNameMatch = window.location.hash.match(queryNameRegex);
-  return queryNameMatch ? decodeURIComponent(queryNameMatch[1]) : "";
-};
+import { DomEditor, Boot } from "@wangeditor/editor";
+import { getQueryByName } from "@/utils";
 export default {
   components: {
     // Tree,
@@ -50,9 +48,13 @@ export default {
     ...mapState("header", {
       header: (state) => state.note,
     }),
+    ...mapState("note", {
+      list: (state) => state.list,
+    }),
   },
   data() {
     return {
+      skipPageType: 0, //跳进来的页面类型，0 主页，1.悬浮窗
       note: {},
       defaultProps: {
         children: "children",
@@ -71,7 +73,7 @@ export default {
     watchKey() {
       window.addEventListener("keydown", (e) => {
         let keyCode = e.keyCode;
-        console.log("key", e);
+        // console.log("key", e);
         if (e.key === "s" && keyCode === 83) {
           console.log("保存");
         }
@@ -89,10 +91,10 @@ export default {
       this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
       const MENU_CONF = this.editor.getConfig().MENU_CONF;
 
-      console.log(
-        "代码语言",
-        this.editor.getMenuConfig("codeSelectLang").codeLangs
-      );
+      // console.log(
+      //   "代码语言",
+      //   this.editor.getMenuConfig("codeSelectLang").codeLangs
+      // );
       MENU_CONF["codeSelectLang"] = {
         // 代码语言
         codeLangs: [
@@ -103,12 +105,8 @@ export default {
           // 其他
         ],
       };
-      const that = this;
-      this.$nextTick(() => {
-        const toolbar = DomEditor.getToolbar(that.editor);
-        let toolbarKeys = toolbar.getConfig().toolbarKeys;
-        console.log("toolbarKeys", toolbarKeys);
-      });
+
+      this.$nextTick(() => {});
     },
     loadNode(node, resolve) {
       const { layer, childrens } = node;
@@ -126,18 +124,38 @@ export default {
     },
   },
   mounted() {
-    let edited_main = document.querySelector(".edited_main");
-    // setTimeout(() => {
-    //   console.log("DomEditor", DomEditor.getToolbar(this.editor).getConfig());
-    // }, 2000);
+    setTimeout(() => {
+      const toolbar = DomEditor.getToolbar(this.editor);
 
+      let toolbarKeys = toolbar.getConfig().toolbarKeys;
+      toolbarKeys.push("|");
+      let obj = { toolbarKeys };
+      this.toolbarConfig = obj;
+
+      console.log("toolbar", toolbar);
+    }, 1000);
+
+    let edited_main = document.querySelector(".edited_main");
     edited_main.addEventListener("click", () => {
-      store.dispatch("header/setIsEditedTitle", false);
+      const header = this.header;
+      if (header && header.title) {
+        store.dispatch("header/setIsEditedTitle", false);
+      }
     });
   },
 
   async created() {
+    // const MyDropPanelMenu = class IDropPanelMenu {
+    //   // 菜单配置，代码可参考“颜色”菜单源码
+    // };
+    const menu3Conf = {
+      key: "timing", // menu key ，唯一。注册之后，可配置到工具栏
+      title: "定时",
+      factory() {},
+    };
+    Boot.registerMenu(menu3Conf);
     this.watchKey();
+
     let winId = getQueryByName("winId");
     let note = {};
     if (winId === "undefined") {
@@ -145,19 +163,34 @@ export default {
     } else {
       note = await ipcRenderer.invoke("getNote", winId);
     }
-    this.note = note;
-    console.log("note", note);
-    store.dispatch("header/setNote", note);
+
+    let skipPageType = getQueryByName("skipPageType");
+    if (typeof skipPageType != "undefined" && !isNaN(parseInt(skipPageType))) {
+      skipPageType = parseInt(skipPageType);
+      if (skipPageType === 1) {
+        note.timing = "";
+      }
+      this.skipPageType = skipPageType;
+    }
+    this.note = note || {};
+
+    // console.log("note", note);
+    store.dispatch("header/setNote", note || {});
     store.dispatch("header/setPageTypeText", "edited");
 
     addEventListener("unload", () => {
       let { note } = this;
-      let { title } = this.header;
+      let { title, timing } = this.header;
       const html = this.editor.getHtml();
       // const text = this.editor.getText();
       let tempOjb = { html };
       if (title) {
         tempOjb.title = title;
+      }
+      if (timing) {
+        tempOjb.timing = timing;
+        tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
+        tempOjb.timingStatus = 0;
       }
       ipcRenderer.send("closeEdited", note._id, tempOjb);
     });
@@ -174,7 +207,11 @@ export default {
       port.postMessage(21);
     });
   },
-  beforeUnmount() {},
+  beforeUnmount() {
+    const editor = this.editor;
+    if (editor == null) return;
+    editor.destroy(); // 组件销毁时，及时销毁 editor ，重要！！！
+  },
 };
 </script>
 
@@ -192,6 +229,9 @@ export default {
   }
   ::v-deep .w-e-text-container * {
     margin: 4px 0;
+  }
+  ::v-deep .w-e-textarea-divider {
+    padding: 3px;
   }
 }
 .edited_main {

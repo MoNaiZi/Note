@@ -40,7 +40,9 @@ li {
   margin: 0;
   list-style: none;
 } */
-
+.timing_date_picker {
+  top: 20px !important;
+}
 .main-fade-enter,
 .main-fade-leave-to {
   display: none;

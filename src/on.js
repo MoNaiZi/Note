@@ -3,8 +3,40 @@ const mainProcess = require('./mainProcess')
 const dayjs = require('dayjs')
 import db from './server'
 
-app.on('quit', () => {
-    console.log('窗口关闭')
+app.whenReady().then(() => {
+    setInterval(() => {
+        let currentTimeStamp = dayjs().valueOf()
+
+        let list = db.get('NoteList').filter(item => {
+            if (item.timinGtimeStamp < currentTimeStamp && item.timingStatus === 0) {
+
+                return { _id: item._id }
+            }
+        }).value() || []
+        let idList = []
+        for (let item of list) {
+            idList.push(item._id)
+            db.get('NoteList').find({ _id: item._id }).assign({ timingStatus: 1 }).write()
+        }
+        console.log('轮询', list)
+        if (idList.length) {
+            suspensionWin(idList)
+        }
+
+
+    }, 2000);
+})
+
+ipcMain.on('closeSuspensionWin', (event, id) => {
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    db.get('NoteList').find({ _id: id }).assign({ timing: '' }).write()
+    win.close()
+})
+
+ipcMain.on('openEditeWindow', (event, id) => {
+
+
 })
 
 ipcMain.on('updateNote', (event, item) => {
@@ -39,7 +71,9 @@ ipcMain.on('windowMoving', (event, { mouseX, mouseY, width, height }) => {
     win.setBounds({ x: x - mouseX, y: y - mouseY, width, height })
 });
 
-const suspensionWin = function () {
+
+
+const suspensionWin = function (idList) {
     const mainWindows = mainProcess.mainWindows()
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const { winURL } = mainWindows
@@ -66,9 +100,9 @@ const suspensionWin = function () {
         const { x, y, width, height } = display.workArea;
         win.setBounds({ x: width - 100, y: height - 100, width: 500, height: 500 })
     });
-
-    let url = `${winURL}/#/menu`
+    let url = `${winURL}/#/menu?winIdList=${JSON.stringify(idList)}`
     win.loadURL(url)
+    return win
 }
 
 // ipcMain.on('newMenu', (event, WHObj) => {
@@ -82,8 +116,17 @@ ipcMain.handle('theme', (event, temp) => {
 })
 
 
-const getNoteList = function () {
-    return db.get('NoteList').value()
+const getNoteList = function (page = 1, pageSiz = 20) {
+    let list = db.get('NoteList').orderBy('timeStamp', 'desc').value()
+    let result = []
+    for (let item of list) {
+        if (item.isTopping) {
+            result.unshift(item)
+        } else {
+            result.push(item)
+        }
+    }
+    return result
 }
 
 const getNote = function (_id) {
@@ -100,6 +143,7 @@ ipcMain.handle('getList', () => {
 
 ipcMain.handle('noteTopping', (_event, winId) => {
     const value = db.get('NoteList').find({ _id: winId }).value()
+    value.isTopping = !value.isTopping ? true : false
     db.get('NoteList').remove({ _id: winId }).write()
     db.get('NoteList').unshift(value).write()
     return getNoteList()
@@ -139,7 +183,7 @@ ipcMain.on('minimize', (event) => {
     win.minimize()
 })
 
-ipcMain.on('newWindow', async (event, winId) => {
+ipcMain.on('newWindow', async (event, winId, pageType) => {
     const mainWindows = mainProcess.mainWindows()
     const { config, winURL } = mainWindows
     let newOjb = {
@@ -152,9 +196,34 @@ ipcMain.on('newWindow', async (event, winId) => {
     newOjb = Object.assign(config, newOjb)
 
     let win = new BrowserWindow(newOjb)
-    let url = `${winURL}/#/edited?winId=${winId}`
+    let url = `${winURL}/#/edited?winId=${winId}&skipPageType=${pageType}`
     win.loadURL(url)
 })
+
+
+
+// ipcMain.on('windowOpen', (event) => {
+//     const webContents = event.sender
+
+//     console.log('url', 2222222222)
+//     webContents.setWindowOpenHandler(({ url }) => {
+//         console.log('url', url)
+//         if (url === 'about:blank') {
+//             return {
+//                 action: 'allow',
+//                 overrideBrowserWindowOptions: {
+//                     frame: false,
+//                     fullscreenable: false,
+//                     backgroundColor: 'black',
+//                     webPreferences: {
+//                         preload: 'my-child-window-preload-script.js'
+//                     }
+//                 }
+//             }
+//         }
+//         return { action: 'deny' }
+//     })
+// })
 
 ipcMain.on('topping', (event, isTopping) => {
     const webContents = event.sender
@@ -183,7 +252,7 @@ ipcMain.on('closeWindow', async (event, id) => {
                 console.log('win.isVisible()', win.isVisible())
                 win.isVisible() ? win.show() : win.hide()
             });
-            suspensionWin()
+            // suspensionWin()
             global.isMenu = true
         }
 
