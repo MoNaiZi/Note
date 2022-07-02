@@ -50,8 +50,8 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #50cddd;
-  box-shadow: 0px 0px 80px #0084f9;
+  background: #f0a227;
+  box-shadow: 0px 0px 80px #fff3e1;
   position: absolute;
 }
 
@@ -59,22 +59,22 @@
   0% {
     transform: scale(0);
     opacity: 0;
-    border: 65px solid #0b3082;
+    border: 65px solid #fff3e1;
   }
   50% {
-    border: solid #a3ffc2;
+    border: solid #f9e1be;
     opacity: 0.8;
   }
 
   90% {
     transform: scale(3.2);
     opacity: 0.2;
-    border: 3px solid #2e3cff;
+    border: 3px solid #fff3e1;
   }
   100% {
     transform: scale(3.3);
     opacity: 0;
-    border: 1px solid #7a89ff;
+    border: 1px solid #f9e1be;
   }
 }
 
@@ -86,8 +86,8 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: #6bd6e1;
-  box-shadow: 0px -2px 15px #e0ff94;
+  background: #f0a227;
+  box-shadow: 0px -2px 15px #f9e1be;
   position: absolute;
 }
 
