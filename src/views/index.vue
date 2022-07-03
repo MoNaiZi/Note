@@ -16,7 +16,8 @@
   <div v-show="isScrollTop" class="top">
     <el-icon @click="toTop"><CaretTop /></el-icon>
   </div>
-  <div class="list">
+  <!-- {{ list.length }} -->
+  <div class="list" v-loading="loading">
     <transition-group name="scale" tag="ul">
       <li
         v-for="(item, index) in list"
@@ -64,6 +65,14 @@
         </div>
       </li>
     </transition-group>
+    <div style="font-size: 13px; cursor: pointer">
+      <span @click.stop="getList" v-if="!loadMoreLoading">{{
+        loadMore ? `没有更多了(共${list.length}条)` : "加载更多...."
+      }}</span>
+      <el-icon v-else class="is-loading" :size="18">
+        <Loading />
+      </el-icon>
+    </div>
     <el-empty
       v-if="!list.length"
       description="什么都没，点击左上角+号按钮添加吧"
@@ -77,6 +86,7 @@ import { mapGetters } from "vuex";
 import contextMenu from "@/components/context_menu.vue";
 import { Editor } from "@wangeditor/editor-for-vue";
 import { fromNow } from "@/utils";
+
 const { ipcRenderer } = require("electron");
 export default {
   components: {
@@ -93,6 +103,11 @@ export default {
       X: 0,
       Y: 0,
       isScrollTop: false,
+      loading: true,
+      loadMoreLoading: false,
+      loadMore: 0, //0.有更多，1.没有更多了
+      pageSize: 10,
+      page: 0,
     };
   },
   watch: {
@@ -142,12 +157,7 @@ export default {
         };
       }
     };
-
-    ipcRenderer.invoke("getList").then((list) => {
-      that.list = list;
-      console.log("list", list);
-      store.dispatch("note/setNoteList", list);
-    });
+    this.getList();
     ipcRenderer.on("getEdited", (_event, list) => {
       that.list = list;
       // store.dispatch("note/setNoteList", list);
@@ -173,7 +183,9 @@ export default {
     console.log("挂载之前");
   },
   mounted() {
+    console.log("mounted");
     const that = this;
+    that.loading = false;
     that.listDiv = document.querySelector(".list");
     if (that.listDiv) {
       that.listDiv.addEventListener(
@@ -215,6 +227,20 @@ export default {
     console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    getList() {
+      const that = this;
+      let list = that.list;
+      let page = that.page;
+      let pageSize = that.pageSize;
+      ipcRenderer.invoke("getList", page, pageSize).then((resList) => {
+        if (resList.length) {
+          that.list = list.concat(resList);
+          that.page += pageSize;
+        } else {
+          that.loadMore = 1;
+        }
+      });
+    },
     toTop() {
       // this.list.scrollTop = 0;
       this.listDiv.scroll({ top: 0 });
@@ -227,7 +253,7 @@ export default {
         typeof item.isOpenDetaile === "undefined" ? false : item.isOpenDetaile;
       item.isOpenDetaile = isOpenDetaile ? false : true;
       // const that = this;
-      ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
+      ipcRenderer.send("updateNote", JSON.palrse(JSON.stringify(item)));
       //isOpenDetaile
     },
     search() {

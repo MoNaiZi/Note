@@ -9,6 +9,7 @@
 import Header from "@/components/header";
 const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
+
 export default {
   name: "App",
   components: { Header },
@@ -24,6 +25,9 @@ export default {
       console.log("res", res);
       console.log("app", app);
     });
+  },
+  mounted() {
+    console.log("AppMounted");
   },
 };
 </script>

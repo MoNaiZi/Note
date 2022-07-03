@@ -19,7 +19,7 @@ app.whenReady().then(() => {
             idList.push(item._id)
             db.get('NoteList').find({ _id: item._id }).assign({ timingStatus: 1 }).write()
         }
-        console.log('轮询', list)
+        // console.log('轮询', list)
         if (idList.length) {
             suspensionWin(idList)
         }
@@ -119,16 +119,19 @@ ipcMain.handle('theme', (event, temp) => {
 })
 
 
-const getNoteList = function (page = 1, pageSiz = 20) {
-    let list = db.get('NoteList').orderBy('timeStamp', 'desc').value()
+const getNoteList = async function (page = 0, pageSize = 2) {
+    console.log('pageSize', pageSize, 'page', page)
+    let NoteList = db.get('NoteList')
+    console.log('NoteList', NoteList.size().value())
+    let noToppingList = await NoteList.filter(item => !item.isTopping).orderBy('timeStamp', 'desc').value() || []
+    let toppingList = await NoteList.filter(item => item.isTopping).value() || []
+    let list = toppingList.concat(noToppingList)
     let result = []
-    for (let item of list) {
-        if (item.isTopping) {
-            result.unshift(item)
-        } else {
-            result.push(item)
-        }
+
+    if (Array.isArray(list) && list.length) {
+        result = list.splice(page, pageSize)
     }
+
     return result
 }
 
@@ -140,8 +143,8 @@ ipcMain.handle('getNote', (_event, winId) => {
     return getNote(winId)
 })
 
-ipcMain.handle('getList', () => {
-    return getNoteList()
+ipcMain.handle('getList', (event, page, pageSize) => {
+    return getNoteList(page, pageSize)
 })
 
 ipcMain.handle('noteTopping', (_event, winId) => {
