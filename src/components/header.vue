@@ -208,10 +208,10 @@ export default {
     @include iconfont(20px);
   }
   .input_title {
-    width: 65%;
-    margin-left: 30px;
+    width: 79%;
+    margin-left: 57px;
     div {
-      width: 120%;
+      width: 100%;
     }
     input {
       box-shadow: 0 0 4px #cbcbcb;
