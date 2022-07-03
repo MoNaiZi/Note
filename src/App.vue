@@ -29,17 +29,37 @@ export default {
 </script>
 
 <style src="@wangeditor/editor/dist/css/style.css"></style>
-<style>
-body {
-  /* background: #333;
-  color: white; */
+<style lang="scss">
+.w-e-bar-bottom .w-e-select-list {
+  margin-bottom: -140px;
+  .w-e-select-list ul li {
+    top: 0%;
+  }
+  .editor-content-view input[type="checkbox"] {
+    margin-right: 5px;
+  }
 }
-/* ul,
-li {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-} */
+.w-e-text-container * {
+  margin: 4px 1px !important;
+  position: relative;
+  top: -1.5px;
+}
+.w-e-scroll,
+.w-e-scroll > div {
+  margin: 0px !important;
+}
+.w-e-text-placeholder {
+  position: absolute;
+  margin: 0px !important;
+  top: 0px;
+}
+.w-e-textarea-divider {
+  padding: 3px;
+}
+.w-e-text-container [data-slate-editor] {
+  padding: 0px;
+}
+
 .timing_date_picker {
   top: 20px !important;
 }

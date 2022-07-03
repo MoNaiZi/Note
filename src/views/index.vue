@@ -13,7 +13,9 @@
     :currentItem="currentItem"
     @change="changeMenu"
   ></contextMenu>
-
+  <div v-show="isScrollTop" class="top">
+    <el-icon @click="toTop"><CaretTop /></el-icon>
+  </div>
   <div class="list">
     <transition-group name="scale" tag="ul">
       <li
@@ -90,6 +92,7 @@ export default {
       cuttentIndex: -1,
       X: 0,
       Y: 0,
+      isScrollTop: false,
     };
   },
   watch: {
@@ -170,6 +173,23 @@ export default {
     console.log("挂载之前");
   },
   mounted() {
+    const that = this;
+    that.listDiv = document.querySelector(".list");
+    if (that.listDiv) {
+      that.listDiv.addEventListener(
+        "scroll",
+        function (e) {
+          let scrollTop = e.target.scrollTop;
+          if (scrollTop > 300) {
+            that.isScrollTop = true;
+          } else {
+            that.isScrollTop = false;
+          }
+        },
+        false
+      );
+    }
+
     console.log("实例挂载完成后");
     // let popupWindow = window.open(
     //   `http://localhost:55226/#/edited`,
@@ -195,6 +215,10 @@ export default {
     console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    toTop() {
+      // this.list.scrollTop = 0;
+      this.listDiv.scroll({ top: 0 });
+    },
     fromNowFn(time) {
       return fromNow(time);
     },
@@ -208,8 +232,10 @@ export default {
     },
     search() {
       let searchKey = this.searchKey;
+      this.cuttentIndex = -1;
       ipcRenderer.invoke("search", searchKey).then((res) => {
-        store.dispatch("note/setNoteList", res);
+        this.list = res;
+        // store.dispatch("note/setNoteList", res);
       });
     },
     edited(item) {
@@ -256,6 +282,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.top {
+  position: absolute;
+  background: #000;
+  color: #fff;
+  border-radius: 50%;
+  right: 11px;
+  bottom: 20px;
+  z-index: 10;
+  cursor: pointer;
+  .el-icon {
+    font-size: 19px;
+    width: 23px;
+  }
+}
+
 ul,
 li {
   padding: 0;
@@ -310,19 +351,11 @@ li {
       .time {
         font-size: 13px;
         color: #9c9c9c;
-        margin-top: 10px;
         position: relative;
         top: 3px;
       }
       .editor {
         transition: all 0.5s;
-
-        ::v-deep .w-e-text-container * {
-          margin: 4px 0;
-        }
-        ::v-deep .w-e-textarea-divider {
-          padding: 3px;
-        }
       }
     }
   }

@@ -42,6 +42,8 @@ ipcMain.on('openEditeWindow', (event, id) => {
 
 ipcMain.on('updateNote', (event, item) => {
     let _id = item._id
+    item.timeStamp = dayjs().valueOf()
+    item.time = dayjs().format('YYYY-MM-DD HH:mm')
     db.get('NoteList').find({ _id }).assign(item).write()
 })
 
@@ -156,9 +158,14 @@ ipcMain.handle('removeNote', (_event, winId) => {
 })
 
 ipcMain.handle('search', (_event, key) => {
+    if (key === '') {
+        return getNoteList()
+    }
     let result = db.get('NoteList').filter(o => {
         // 模糊查询
-        return o.title.match(key)
+        if (o.title) {
+            return o.title.match(key)
+        }
     }).value()
     return result || []
 })

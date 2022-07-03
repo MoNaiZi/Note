@@ -218,21 +218,6 @@ export default {
 
 <style lang="scss" scoped>
 .editor {
-  // ::v-deep .w-e-text-container [data-slate-editor] p {
-  //   margin: 4px 0;
-  // }
-  ::v-deep .w-e-bar-bottom .w-e-select-list {
-    margin-bottom: -140px;
-    .w-e-select-list ul li {
-      top: 0%;
-    }
-  }
-  ::v-deep .w-e-text-container * {
-    margin: 4px 0;
-  }
-  ::v-deep .w-e-textarea-divider {
-    padding: 3px;
-  }
 }
 .edited_main {
   // overflow-y: auto;
