@@ -1,5 +1,5 @@
 const path = require('path')
-const isDevelopment = process.env.NODE_ENV !== 'production'
+global.isDevelopment = process.env.NODE_ENV !== 'production'
 
 const webPreferences = {
     // preload: path.join(__dirname, 'preload.js'),
@@ -18,8 +18,8 @@ function mainWindows() {
         frame: false,
         webPreferences
     }
-    const winURL = isDevelopment ? 'http://localhost:55226' : `file://${__dirname}/index.html`;
-    console.log('isDevelopment', isDevelopment)
+    const winURL = global.isDevelopment ? 'http://localhost:55226' : `file://${__dirname}/index.html`;
+
     return { config, winURL }
 }
 
@@ -35,8 +35,18 @@ async function initDevTool(session) {
     // }
 }
 
+console.log('global.isDevelopment', global.isDevelopment)
+
+function logo() {
+    let imgPath = path.join(__dirname)
+    // console.log('imgPath', imgPath)
+    // console.log('22222222', path.join(__static, 'img/logo.png'))
+    return path.join(__static, 'img/logo.png')
+}
+
 
 module.exports = {
     mainWindows,
-    initDevTool
+    initDevTool,
+    logo
 }

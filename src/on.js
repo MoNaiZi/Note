@@ -2,7 +2,22 @@ import { ipcMain, BrowserWindow, Menu, Tray, screen, app } from 'electron'
 const mainProcess = require('./mainProcess')
 const dayjs = require('dayjs')
 import db from './server'
-import { logo } from '@/utils'
+
+const logo = mainProcess.logo()
+
+
+//配置相关
+ipcMain.on('setUser', (event, config) => {
+    db.get('User').assign(config).write()
+})
+
+ipcMain.handle('getUser', (event) => {
+    return db.get('User').valueOf()
+})
+
+
+
+
 
 app.whenReady().then(() => {
     setInterval(() => {
@@ -119,10 +134,10 @@ ipcMain.handle('theme', (event, temp) => {
 })
 
 
-const getNoteList = async function (page = 0, pageSize = 2) {
-    console.log('pageSize', pageSize, 'page', page)
+const getNoteList = async function (page = 0, pageSize = 10) {
+    // console.log('pageSize', pageSize, 'page', page)
+    // console.log('NoteList', NoteList.size().value())
     let NoteList = db.get('NoteList')
-    console.log('NoteList', NoteList.size().value())
     let noToppingList = await NoteList.filter(item => !item.isTopping).orderBy('timeStamp', 'desc').value() || []
     let toppingList = await NoteList.filter(item => item.isTopping).value() || []
     let list = toppingList.concat(noToppingList)

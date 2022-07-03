@@ -1,0 +1,16 @@
+body {
+    margin: 0px;
+}
+
+.dark {
+    background: #393939;
+    height: 100vh;
+    width: 100vw;
+
+    .header_main,
+    .set_main,
+    .home,
+    .loadMore {
+        color: #fff;
+    }
+}

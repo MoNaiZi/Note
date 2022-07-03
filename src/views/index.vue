@@ -1,4 +1,5 @@
 <template>
+  <!-- <img src="@/assets/logo.png" /> -->
   <el-input
     v-model="searchKey"
     class="w-50 m-2"
@@ -22,7 +23,8 @@
       <li
         v-for="(item, index) in list"
         :key="item._id"
-        class="item"
+        :class="['item', { item_active: cuttentIndex == index }]"
+        @mousedown.stop="this.cuttentIndex = index"
         @contextmenu="handleContextMenu($event, item)"
       >
         <div>
@@ -36,7 +38,7 @@
               <ArrowLeftBold v-show="!item.isOpenDetaile" />
             </el-icon>
           </h4>
-          <div class="content" @mousedown="this.cuttentIndex = index">
+          <div class="content">
             <!-- <el-icon class="ArrowDownBold" @click="openDetaile(item)">
               <ArrowDownBold v-show="item.isOpenDetaile" />
               <ArrowLeftBold v-show="!item.isOpenDetaile" />
@@ -65,7 +67,7 @@
         </div>
       </li>
     </transition-group>
-    <div style="font-size: 13px; cursor: pointer">
+    <div v-if="list.length" class="loadMore">
       <span @click.stop="getList" v-if="!loadMoreLoading">{{
         loadMore ? `没有更多了(共${list.length}条)` : "加载更多...."
       }}</span>
@@ -348,9 +350,13 @@ li {
   padding: 0px;
 }
 .list {
-  height: 83vh;
+  height: 86vh;
   overflow: auto;
   overflow-x: hidden;
+  .loadMore {
+    font-size: 13px;
+    cursor: pointer;
+  }
   .item {
     position: relative;
     width: 93%;
@@ -385,12 +391,15 @@ li {
       }
     }
   }
+  .item_active {
+    box-shadow: 0 0 10px #9c9c9c;
+  }
   .item:hover {
-    box-shadow: 0 0 4px #9c9c9c;
+    @extend .item_active;
   }
 }
 .w-50 {
-  width: 97%;
-  margin-left: -3px;
+  width: 96%;
+  margin-left: -5px;
 }
 </style>

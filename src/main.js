@@ -7,9 +7,8 @@ import zhCn from "element-plus/lib/locale/lang/zh-cn";
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { createNumberString } from '@/utils'
-import Datastore from 'lowdb'
-import FileSync from 'lowdb/adapters/FileSync'
-// import path from 'path'
+// import Datastore from 'lowdb'
+// import FileSync from 'lowdb/adapters/FileSync'
 
 const app = createApp(App)
 
@@ -19,14 +18,14 @@ const app = createApp(App)
 // });
 
 
-const adapter = new FileSync('./db.json')
+// const adapter = new FileSync('./db.json')
 
-const db = Datastore(adapter) // lowdb接管该文件
-const initDatabase = {
-    User: {},//放用户相关配置
-    NoteList: [] //标签
-}
-db.defaults(initDatabase).write()
+// const db = Datastore(adapter) // lowdb接管该文件
+// const initDatabase = {
+//     User: {},//放用户相关配置
+//     NoteList: [] //标签
+// }
+// db.defaults(initDatabase).write()
 
 app.config.globalProperties.$createdId = createNumberString
 

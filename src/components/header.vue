@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'main',
+      'header_main',
       { edited: pageTypeText === 'edited' },
       { home: pageTypeText != 'edited' },
     ]"
@@ -236,10 +236,10 @@ export default {
   }
 }
 
-.main {
+.header_main {
   display: flex;
   justify-content: space-between;
-  margin: 10px 5px;
+  padding: 8px 5px;
   text-align: center;
   align-items: center;
   div {

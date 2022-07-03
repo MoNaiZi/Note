@@ -7,7 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
 const mainProcess = require('./mainProcess')
 import db from './server'
-import { logo } from '@/utils'
+const logo = mainProcess.logo()
 
 import('@/on')
 // Scheme must be registered before the app is ready

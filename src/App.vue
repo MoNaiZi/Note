@@ -1,15 +1,17 @@
 <template>
-  <Header v-if="pageTypeText != 'menu'"></Header>
-  <transition name="main-fade">
-    <router-view></router-view>
-  </transition>
+  <div :class="{ dark: user.dark }">
+    <Header v-if="pageTypeText != 'menu'"></Header>
+    <transition name="main-fade">
+      <router-view></router-view>
+    </transition>
+  </div>
 </template>
 
 <script>
 import Header from "@/components/header";
 const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
-
+import { store } from "@/store";
 export default {
   name: "App",
   components: { Header },
@@ -17,13 +19,16 @@ export default {
     ...mapState("header", {
       pageTypeText: (state) => state.pageTypeText,
     }),
+    ...mapState("user", {
+      user: (state) => state.user,
+    }),
   },
   created() {
     console.log("created", this.$router);
-    const app = document.getElementById("app");
-    ipcRenderer.invoke("theme").then((res) => {
-      console.log("res", res);
-      console.log("app", app);
+    ipcRenderer.invoke("getUser").then((config) => {
+      if (config) {
+        store.dispatch("user/setUser", config);
+      }
     });
   },
   mounted() {
@@ -33,6 +38,7 @@ export default {
 </script>
 
 <style src="@wangeditor/editor/dist/css/style.css"></style>
+<style lang="scss" src="@/assets/main.scss"></style>
 <style lang="scss">
 .w-e-bar-bottom .w-e-select-list {
   margin-bottom: -140px;

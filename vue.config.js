@@ -17,6 +17,8 @@ module.exports = defineConfig({
   },
   transpileDependencies: ['vuetify'],
   pluginOptions: {
+    // Use this to change the entry point of your app's render process. default src/[main|index].[js|ts]
+    rendererProcessFile: 'src/[background|on|mainProcess].js',
     electronBuilder: {
       nodeIntegration: true,
       preload: 'src/preload.js',
