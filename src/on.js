@@ -5,16 +5,22 @@ import db from './server'
 
 const logo = mainProcess.logo()
 
+const getUser = function () {
+    return db.get('User').valueOf()
+}
 
 //配置相关
 ipcMain.on('setUser', (event, config) => {
     db.get('User').assign(config).write()
+    let winList = BrowserWindow.getAllWindows()
+    for (let item of winList) {
+        item.webContents.send('sendUser', { config })
+    }
 })
 
 ipcMain.handle('getUser', (event) => {
-    return db.get('User').valueOf()
+    return getUser()
 })
-
 
 
 
@@ -199,8 +205,8 @@ ipcMain.on('closeEdited', (_event, winId, tempOjb = {}) => {
     } else if (getValue) {
         db.get('NoteList').find({ _id: winId }).assign(tempOjb).write()
     }
-    let list = getNoteList()
-    global.mainWin.webContents.send('getEdited', list)
+
+    global.mainWin.webContents.send('getEdited', tempOjb)
 })
 
 ipcMain.on('minimize', (event) => {

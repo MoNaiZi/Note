@@ -137,7 +137,6 @@ export default {
   created() {
     console.log("在实例创建完成");
 
-    const that = this;
     // const channel = new MessageChannel();
     // console.log("ipcRenderer", ipcRenderer);
     store.dispatch("header/setPageTypeText", "home");
@@ -160,8 +159,14 @@ export default {
       }
     };
     this.getList();
-    ipcRenderer.on("getEdited", (_event, list) => {
-      that.list = list;
+    ipcRenderer.on("getEdited", (_event, tempOjb) => {
+      let index = this.list.findIndex((item) => item._id === tempOjb._id);
+      if (index === -1) {
+        this.list.unshift(tempOjb);
+      } else {
+        this.list[index] = tempOjb;
+      }
+
       // store.dispatch("note/setNoteList", list);
     });
     // window.electronAPI.getList().then((list) => {

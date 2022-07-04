@@ -2,7 +2,7 @@ export default {
     namespaced: true,
     state() {
         return {
-            pageTypeText: 'home',
+            pageTypeText: 'menu',
             note: {},
             isEditedTitle: true
         }

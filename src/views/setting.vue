@@ -12,31 +12,30 @@
   </div>
 </template>
 <script>
-// import { mapState } from "vuex";/
+import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 import { store } from "@/store";
 export default {
   computed: {
-    // ...mapState({
-    //   pageTypeText: (state) => console.log("state", state),
-    // }),
+    ...mapState("user", {
+      setting: (state) => state.user,
+    }),
   },
   watch: {
     setting: {
       deep: true,
       handler(val) {
         console.log("val", val);
-        if (val && JSON.stringify(val) != "{}") {
+        if (val && JSON.stringify(val) != "{}" && this.count === 0) {
           ipcRenderer.send("setUser", JSON.parse(JSON.stringify(val)));
+          this.count = -1;
         }
       },
     },
   },
   data() {
     return {
-      setting: {
-        dark: false,
-      },
+      count: -1,
     };
   },
   methods: {
@@ -44,18 +43,21 @@ export default {
       console.log("status", status);
     },
   },
+  mounted() {
+    this.count = 0;
+  },
   unmounted() {
     console.log("unmounted");
+    // ipcRenderer.send("setUser", JSON.parse(JSON.stringify(this.setting)));
   },
   created() {
     store.dispatch("header/setPageTypeText", "set");
-    ipcRenderer.invoke("getUser").then((config) => {
-      if (config) {
-        this.setting = config;
-        store.dispatch("user/setUser", config);
-      }
-    });
-    console.log("store", store);
+    // ipcRenderer.invoke("getUser").then((config) => {
+    //   if (config) {
+    //     this.setting = config;
+    //     store.dispatch("user/setUser", config);
+    //   }
+    // });
   },
 };
 </script>

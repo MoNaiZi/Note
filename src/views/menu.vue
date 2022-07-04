@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap" @mousedown="onMouseDown" @mouseup="end">
+  <div class="menu_main" @mousedown="onMouseDown" @mouseup="end">
     <div :class="['main', { open: open }]" @click.stop="openMenu">
       <menuStyle></menuStyle>
     </div>
@@ -179,8 +179,8 @@ $bgColor: #fff;
   }
 }
 
-.wrap {
-  // background: #000;
+.menu_main {
+  background: #fff0;
   position: relative;
   height: 100vh;
 }

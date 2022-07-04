@@ -2,7 +2,9 @@ export default {
     namespaced: true,
     state() {
         return {
-            user: {}
+            user: {
+                dark: false
+            }
         }
     },
     actions: {

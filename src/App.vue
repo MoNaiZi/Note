@@ -1,6 +1,10 @@
 <template>
-  <div :class="{ dark: user.dark }">
-    <Header v-if="pageTypeText != 'menu'"></Header>
+  <div :class="classFn">
+    <transition>
+      <template v-if="['home', 'edited', 'set'].includes(pageTypeText)">
+        <component :is="'Header'"></component>
+      </template>
+    </transition>
     <transition name="main-fade">
       <router-view></router-view>
     </transition>
@@ -22,14 +26,28 @@ export default {
     ...mapState("user", {
       user: (state) => state.user,
     }),
+    classFn() {
+      const user = this.user;
+      const pageTypeText = this.pageTypeText;
+      if (pageTypeText === "menu") return;
+      return { dark: user.dark };
+    },
   },
   created() {
     console.log("created", this.$router);
-    ipcRenderer.invoke("getUser").then((config) => {
+    ipcRenderer.on("sendUser", (event, res) => {
+      this.setConfig(res.config);
+    });
+    ipcRenderer.invoke("getUser").then((res) => {
+      this.setConfig(res);
+    });
+  },
+  methods: {
+    setConfig(config) {
       if (config) {
         store.dispatch("user/setUser", config);
       }
-    });
+    },
   },
   mounted() {
     console.log("AppMounted");
