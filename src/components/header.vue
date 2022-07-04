@@ -109,22 +109,26 @@ export default {
   },
   created() {
     // this.$router.psuh('/set')
-    console.log("home", this.$router);
-    let watchNote = null;
-    watchNote = this.$watch(
-      "note",
-      (note) => {
-        if (note && note.title) {
-          store.dispatch("header/setIsEditedTitle", false);
-        }
-        if (watchNote) {
-          watchNote();
-        }
-      },
-      {
-        deep: true,
-      }
-    );
+    console.log("home_note", this.note);
+    if (this.note && this.note.title) {
+      store.dispatch("header/setIsEditedTitle", false);
+    }
+    // let watchNote = null;
+    // watchNote = this.$watch(
+    //   "note",
+    //   (note) => {
+    //     console.log("header监听note", note);
+    //     if (note && note.title) {
+    //       store.dispatch("header/setIsEditedTitle", false);
+    //     }
+    //     if (watchNote) {
+    //       watchNote();
+    //     }
+    //   },
+    //   {
+    //     deep: true,
+    //   }
+    // );
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
       if (keyCode === 13) {

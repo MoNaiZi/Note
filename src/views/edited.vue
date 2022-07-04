@@ -174,7 +174,7 @@ export default {
     }
     this.note = note || {};
 
-    // console.log("note", note);
+    console.log("note", note);
     store.dispatch("header/setNote", note || {});
     store.dispatch("header/setPageTypeText", "edited");
 
@@ -183,7 +183,8 @@ export default {
       let { title, timing } = this.header;
       const html = this.editor.getHtml();
       // const text = this.editor.getText();
-      let tempOjb = { html };
+      let tempOjb = { html, ...note };
+
       if (title) {
         tempOjb.title = title;
       }
@@ -192,6 +193,7 @@ export default {
         tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
         tempOjb.timingStatus = 0;
       }
+
       ipcRenderer.send("closeEdited", note._id, tempOjb);
     });
 

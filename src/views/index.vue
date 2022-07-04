@@ -67,7 +67,7 @@
         </div>
       </li>
     </transition-group>
-    <div v-if="list.length" class="loadMore">
+    <div v-if="list.length && searchKey === ''" class="loadMore">
       <span @click.stop="getList" v-if="!loadMoreLoading">{{
         loadMore ? `没有更多了(共${list.length}条)` : "加载更多...."
       }}</span>
@@ -120,9 +120,9 @@ export default {
         let list = val;
         if (cuttentIndex != -1) {
           let item = list[cuttentIndex];
+          // console.log("监听list的item", JSON.parse(JSON.stringify(item)));
           ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
         }
-        console.log("监听list", val, "cuttentIndex", this.cuttentIndex);
       },
     },
   },
@@ -161,8 +161,10 @@ export default {
     this.getList();
     ipcRenderer.on("getEdited", (_event, tempOjb) => {
       let index = this.list.findIndex((item) => item._id === tempOjb._id);
+      this.cuttentIndex = index;
       if (index === -1) {
         this.list.unshift(tempOjb);
+        this.cuttentIndex = 0;
       } else {
         this.list[index] = tempOjb;
       }
@@ -185,6 +187,14 @@ export default {
       ipcRenderer.send("closeWindow");
       e.returnValue = false;
     };
+
+    window.addEventListener("keydown", (e) => {
+      let keyCode = e.keyCode;
+      console.log("keyCode", keyCode);
+      // if (keyCode === 27) {
+      //   this.cuttentIndex = -1;
+      // }
+    });
   },
   beforeMount() {
     console.log("挂载之前");

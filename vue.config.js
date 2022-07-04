@@ -24,8 +24,25 @@ module.exports = defineConfig({
       preload: 'src/preload.js',
       builderOptions: {
         extraResources: ['src', 'src/res/'],
+        productName: '便利贴',
+        appId: '202274',
+        copyright: 'zmy',
+        compression: 'store',
+        win: {
+          icon: 'public/img/logo',
+          target: ['nsis', 'zip']
+        },
+        nsis: {
+          oneClick: false,
+          perMachine: true,
+          allowElevation: true,
+          allowToChangeInstallationDirectory: true, // 允许修改安装目录
+          createDesktopShortcut: true, // 创建桌面图标
+          createStartMenuShortcut: true, // 创建开始菜单图标
+          shortcutName: '便利贴' // 图标名称
+        }
       },
-      externals: ['knex', 'sqlite3'],
+      // externals: ['knex', 'sqlite3'],
     },
   },
   devServer: {
