@@ -1,17 +1,26 @@
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 const { defineConfig } = require('@vue/cli-service')
+const webpackObfuscator = require('webpack-obfuscator');
+const path = require('path');
+const isProduction = process.env.NODE_ENV === 'production'
+
 module.exports = defineConfig({
   transpileDependencies: true,
-  configureWebpack: {
+  publicPath: isProduction ? './' : '/',
+  productionSourceMap: false,
+  configureWebpack: isProduction ? {
     resolve: {
       fallback: {
         "fs": false,
       }
     },
     plugins: [
-      new NodePolyfillPlugin()
+      new NodePolyfillPlugin(),
+      new webpackObfuscator({
+        rotateStringArray: true,
+      }, [])
     ]
-  },
+  } : {},
   chainWebpack: webpackConfig => {
 
   },

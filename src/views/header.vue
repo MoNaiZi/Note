@@ -61,7 +61,9 @@
       <i class="iconfont icon-close" @click="close"></i>
     </div>
   </div>
-
+  <transition name="main-fade">
+    <router-view> </router-view>
+  </transition>
   <el-dialog
     v-model="isShowTiming"
     title="定时提醒"

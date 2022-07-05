@@ -19,6 +19,7 @@
     "dayjs": "^1.11.3",
     "electron-rebuild": "^3.2.7",
     "element-plus": "^2.2.6",
+    "javascript-obfuscator": "^4.0.0",
     "lowdb": "1.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "pg-hstore": "2.3.4",
@@ -29,7 +30,8 @@
     "sqlite3": "5.0.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.13",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "webpack-obfuscator": "^3.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

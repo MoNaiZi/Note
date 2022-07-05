@@ -1,24 +1,24 @@
 <template>
   <div :class="classFn">
-    <transition>
+    <!-- <transition>
       <template v-if="['home', 'edited', 'set'].includes(pageTypeText)">
         <component :is="'Header'"></component>
       </template>
-    </transition>
-    <transition name="main-fade">
-      <router-view></router-view>
-    </transition>
+    </transition> -->
+    <!-- <transition name="main-fade"> -->
+    <router-view> </router-view>
+    <!-- </transition> -->
   </div>
 </template>
 
 <script>
-import Header from "@/components/header";
+// import Header from "@/components/header";
 const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
 import { store } from "@/store";
 export default {
   name: "App",
-  components: { Header },
+  // components: { Header },
   computed: {
     ...mapState("header", {
       pageTypeText: (state) => state.pageTypeText,
@@ -61,30 +61,7 @@ export default {
 .timing_date_picker {
   top: 20px !important;
 }
-.main-fade-enter,
-.main-fade-leave-to {
-  display: none;
-  opacity: 0;
-  animation: main-fade 0.4s reverse;
-}
-.main-fade-enter-active,
-.main-fade-leave-active {
-  opacity: 0;
-  animation: main-fade 0.4s;
-}
-@keyframes main-fade {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-html {
-  overflow: hidden;
-}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
