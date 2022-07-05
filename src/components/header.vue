@@ -105,6 +105,8 @@ export default {
       isTopping: false,
       isDrag: false,
       isShowTiming: false,
+      winWidth: 700,
+      winHeight: 500,
     };
   },
   created() {
@@ -136,6 +138,14 @@ export default {
       }
     });
     window.addEventListener("mousemove", this.move);
+    const that = this;
+    window.addEventListener("resize", function (e) {
+      if (!that.isDrag) {
+        let currentTarget = e.currentTarget;
+        that.winWidth = currentTarget.outerWidth;
+        that.winHeight = currentTarget.outerHeight;
+      }
+    });
   },
   mounted() {},
   methods: {
@@ -164,8 +174,8 @@ export default {
         ipcRenderer.send("windowMoving", {
           mouseX,
           mouseY,
-          width: 700,
-          height: 500,
+          width: this.winWidth,
+          height: this.winHeight,
         });
       }
     },
