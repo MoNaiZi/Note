@@ -18,7 +18,7 @@
     <el-icon @click="toTop"><CaretTop /></el-icon>
   </div>
   <!-- {{ list.length }} -->
-  <div class="list" v-loading="loading">
+  <div class="list">
     <transition-group name="scale" tag="ul">
       <li
         v-for="(item, index) in list"
