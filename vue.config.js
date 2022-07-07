@@ -5,7 +5,6 @@ const path = require('path');
 const isProduction = process.env.NODE_ENV === 'production'
 
 module.exports = defineConfig({
-  transpileDependencies: true,
   publicPath: isProduction ? './' : '/',
   productionSourceMap: false,
   configureWebpack: isProduction ? {
@@ -24,7 +23,7 @@ module.exports = defineConfig({
   chainWebpack: webpackConfig => {
 
   },
-  transpileDependencies: ['vuetify'],
+  transpileDependencies: [/\bvue-awesome\b/],
   pluginOptions: {
     // Use this to change the entry point of your app's render process. default src/[main|index].[js|ts]
     rendererProcessFile: 'src/[background|on|mainProcess].js',
@@ -37,6 +36,7 @@ module.exports = defineConfig({
         appId: '202274',
         copyright: 'zmy',
         compression: 'store',
+        asar: true,
         win: {
           icon: 'public/img/logo',
           target: ['nsis', 'zip']

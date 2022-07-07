@@ -26,9 +26,9 @@ export default {
       deep: true,
       handler(val) {
         console.log("val", val);
+        this.count = this.count === 0 ? -1 : 0;
         if (val && JSON.stringify(val) != "{}" && this.count === 0) {
           ipcRenderer.send("setUser", JSON.parse(JSON.stringify(val)));
-          this.count = -1;
         }
       },
     },
@@ -44,7 +44,7 @@ export default {
     },
   },
   mounted() {
-    this.count = 0;
+    // this.count = 0;
   },
   unmounted() {
     console.log("unmounted");

@@ -45,9 +45,25 @@
         </el-tooltip>
       </div>
 
-      <input v-else v-model="note.title" placeholder="请输入标题" />
+      <input
+        v-else
+        @mousedown="onMouseDown"
+        @mouseup="end"
+        v-model="note.title"
+        placeholder="请输入标题"
+      />
     </div>
     <div class="right">
+      <v-icon name="beer" />
+      <img
+        @click="zoomInAndOut"
+        v-show="pageTypeText === 'edited'"
+        :src="
+          note.isZoomInAndOut
+            ? require('@/assets/reduction_window.png')
+            : require('@/assets/maximize.png')
+        "
+      />
       <i
         :class="['iconfont', isTopping ? 'icon-thepin-active' : 'icon-thepin']"
         @click="topping"
@@ -151,6 +167,12 @@ export default {
   },
   mounted() {},
   methods: {
+    zoomInAndOut() {
+      const note = this.note;
+      note.isZoomInAndOut = !note.isZoomInAndOut;
+      store.dispatch("header/setNote", note);
+      ipcRenderer.send("zoomInAndOut");
+    },
     showTiming(type) {
       this.isShowTiming = !this.isShowTiming;
       if (type === 1) {
@@ -182,19 +204,22 @@ export default {
       }
     },
     editedTitle() {
+      this.isDrag = false;
       store.dispatch("header/setIsEditedTitle", true);
     },
     topping() {
       this.isTopping = !this.isTopping;
       ipcRenderer.send("topping", this.isTopping);
     },
-    close() {
+    async close() {
       const pageTypeText = this.pageTypeText;
       let { note } = this;
       if (pageTypeText === "edited") {
+        store.dispatch("header/setHeaderClose", false);
         store.dispatch("header/setNote", note);
+      } else {
+        await ipcRenderer.send("closeWindow", note._id);
       }
-      ipcRenderer.send("closeWindow", note._id);
     },
 
     addNote() {
@@ -273,6 +298,14 @@ export default {
   .right {
     text-align: right;
     width: 35%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    img {
+      width: 17px;
+      cursor: pointer;
+      opacity: 0.8;
+    }
     i {
       margin-left: 10px;
     }

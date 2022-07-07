@@ -29,6 +29,7 @@
     "sequelize": "6.6.5",
     "sqlite3": "5.0.0",
     "vue": "^3.2.13",
+    "vue-awesome": "^4.5.0",
     "vue-router": "^4.0.13",
     "vuex": "^4.0.2",
     "webpack-obfuscator": "^3.5.1"

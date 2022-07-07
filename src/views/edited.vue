@@ -47,10 +47,37 @@ export default {
   computed: {
     ...mapState("header", {
       header: (state) => state.note,
+      headerClose: (state) => state.close,
     }),
     ...mapState("note", {
       list: (state) => state.list,
     }),
+  },
+  watch: {
+    headerClose: {
+      deep: true,
+      handler(val) {
+        if (val) return;
+        let { timing } = this.header;
+        const note = this.header;
+        const html = this.editor.getHtml();
+        // // const text = this.editor.getText();
+        let tempOjb = { html, ...note };
+
+        if (timing) {
+          tempOjb.timing = timing;
+          tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
+          tempOjb.timingStatus = 0;
+        }
+
+        ipcRenderer.send(
+          "closeEdited",
+          note._id,
+          JSON.parse(JSON.stringify(tempOjb))
+        );
+        store.dispatch("header/setHeaderClose", false);
+      },
+    },
   },
   data() {
     return {
@@ -173,29 +200,17 @@ export default {
       this.skipPageType = skipPageType;
     }
     this.note = note || {};
-
+    if (note.title) {
+      store.dispatch("header/setIsEditedTitle", false);
+    }
     console.log("note", note);
     store.dispatch("header/setNote", note || {});
     store.dispatch("header/setPageTypeText", "edited");
 
-    addEventListener("unload", () => {
-      let { note } = this;
-      let { title, timing } = this.header;
-      const html = this.editor.getHtml();
-      // const text = this.editor.getText();
-      let tempOjb = { html, ...note };
-
-      if (title) {
-        tempOjb.title = title;
-      }
-      if (timing) {
-        tempOjb.timing = timing;
-        tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
-        tempOjb.timingStatus = 0;
-      }
-
-      ipcRenderer.send("closeEdited", note._id, tempOjb);
-    });
+    // window.onbeforeunload = (e) => {
+    //   console.log("I do not want to be closed", this);
+    //   e.returnValue = false;
+    // };
 
     ipcRenderer.once("provide-worker-channel", (event) => {
       console.log("收到回复");

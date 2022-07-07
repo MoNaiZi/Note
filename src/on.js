@@ -23,7 +23,15 @@ ipcMain.handle('getUser', (event) => {
 })
 
 
-
+ipcMain.on('zoomInAndOut', (event) => {
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    if (win.isMaximized()) {
+        win.unmaximize()
+    } else {
+        win.maximize()
+    }
+})
 
 app.whenReady().then(() => {
     setInterval(() => {
@@ -194,10 +202,15 @@ ipcMain.handle('search', (_event, key) => {
     return result || []
 })
 
-ipcMain.on('closeEdited', (_event, winId, tempOjb = {}) => {
-    if (JSON.stringify(tempOjb) === '{}') return
+ipcMain.on('closeEdited', (event, winId, tempOjb = {}) => {
+    if (!winId) return
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    const bounds = win.getBounds()
     const getValue = db.get('NoteList').find({ _id: winId }).value()
     tempOjb._id = winId
+    tempOjb.winAttribute = bounds
+    console.log('bounds', bounds)
     tempOjb.timeStamp = dayjs().valueOf()
     tempOjb.time = dayjs().format('YYYY-MM-DD HH:mm')
     if (!getValue) {
@@ -207,6 +220,7 @@ ipcMain.on('closeEdited', (_event, winId, tempOjb = {}) => {
     }
 
     global.mainWin.webContents.send('getEdited', tempOjb)
+    win.close()
 })
 
 ipcMain.on('minimize', (event) => {
@@ -226,37 +240,27 @@ ipcMain.on('newWindow', async (event, winId, pageType) => {
         frame: false
     }
     newOjb = Object.assign(config, newOjb)
+    const note = db.get('NoteList').find({ _id: winId }).value() || {}
+    if (winId) {
+        const winAttribute = note.winAttribute
+        if (winAttribute && !note.isZoomInAndOut) {
+            newOjb.width = winAttribute.width
+            newOjb.height = winAttribute.height
+            newOjb.x = winAttribute.x
+            newOjb.y = winAttribute.y
+        }
 
+    }
     let win = new BrowserWindow(newOjb)
+    if (note.isZoomInAndOut) {
+        win.maximize()
+    }
     let url = `${winURL}/#/edited?winId=${winId}&skipPageType=${pageType}`
     win.setIcon(logo)
     win.loadURL(url)
 })
 
 
-
-// ipcMain.on('windowOpen', (event) => {
-//     const webContents = event.sender
-
-//     console.log('url', 2222222222)
-//     webContents.setWindowOpenHandler(({ url }) => {
-//         console.log('url', url)
-//         if (url === 'about:blank') {
-//             return {
-//                 action: 'allow',
-//                 overrideBrowserWindowOptions: {
-//                     frame: false,
-//                     fullscreenable: false,
-//                     backgroundColor: 'black',
-//                     webPreferences: {
-//                         preload: 'my-child-window-preload-script.js'
-//                     }
-//                 }
-//             }
-//         }
-//         return { action: 'deny' }
-//     })
-// })
 
 ipcMain.on('topping', (event, isTopping) => {
     const webContents = event.sender

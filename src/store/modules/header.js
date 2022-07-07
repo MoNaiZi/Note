@@ -4,7 +4,8 @@ export default {
         return {
             pageTypeText: 'menu',
             note: {},
-            isEditedTitle: true
+            isEditedTitle: true,
+            close: true,
         }
     },
     getters: {
@@ -21,6 +22,9 @@ export default {
         },
         setIsEditedTitle(context, bool) {
             context.commit('setIsEditedTitle', bool)
+        },
+        setHeaderClose(context, bool) {
+            context.commit('setHeaderClose', bool)
         }
     },
     mutations: {
@@ -32,6 +36,9 @@ export default {
         },
         setIsEditedTitle(state, bool) {
             state.isEditedTitle = bool
+        },
+        setHeaderClose(state, bool) {
+            state.close = bool
         }
     }
 }
