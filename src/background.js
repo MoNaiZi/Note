@@ -6,7 +6,11 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
 const mainProcess = require('./mainProcess')
-import db from './server'
+
+const appFolder = path.dirname(process.execPath);
+const updateExe = path.resolve(appFolder, "..", "Update.exe");
+const exeName = path.basename(process.execPath);
+
 const logo = mainProcess.logo()
 
 import('@/on')
@@ -18,7 +22,6 @@ protocol.registerSchemesAsPrivileged([
 
 //关闭当前要打开的应用
 const gotTheLock = app.requestSingleInstanceLock()
-
 if (!gotTheLock) {
   app.quit()
 }
@@ -47,10 +50,31 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-
+  // if (!isDevelopment) launchAtStartup()
   createWindow()
 
 })
+
+function launchAtStartup() {
+  if (process.platform === "darwin") {
+    app.setLoginItemSettings({
+      openAtLogin: true,
+      openAsHidden: true
+    });
+  } else {
+    app.setLoginItemSettings({
+      openAtLogin: true,
+      openAsHidden: true,
+      path: updateExe,
+      args: [
+        "--processStart",
+        `"${exeName}"`,
+        "--process-start-args",
+        `"--hidden"`
+      ]
+    });
+  }
+}
 
 async function createWindow() {
   const mainWindows = mainProcess.mainWindows()

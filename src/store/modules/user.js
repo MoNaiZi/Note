@@ -3,7 +3,8 @@ export default {
     state() {
         return {
             user: {
-                dark: false
+                dark: false,
+                startUp: true
             }
         }
     },

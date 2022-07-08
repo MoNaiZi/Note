@@ -54,7 +54,6 @@
       />
     </div>
     <div class="right">
-      <v-icon name="beer" />
       <img
         @click="zoomInAndOut"
         v-show="pageTypeText === 'edited'"

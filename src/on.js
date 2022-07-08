@@ -2,13 +2,27 @@ import { ipcMain, BrowserWindow, Menu, Tray, screen, app } from 'electron'
 const mainProcess = require('./mainProcess')
 const dayjs = require('dayjs')
 import db from './server'
+const path = require('path');
 
 const logo = mainProcess.logo()
+
+let isAutoApp = app.getLoginItemSettings()
+console.log('isAutoApp', isAutoApp)
+const appFolder = path.dirname(process.execPath)
+const updateExe = path.resolve(appFolder, '..', '便利贴.exe')
+console.log('updateExe', updateExe)
+//开机自启(登陆时打开)
+app.setLoginItemSettings({
+    openAtLogin: true,
+    args: ["--openAsHidden"],
+    openAsHidde: true,
+    path: 'D:/Note/便利贴.exe'
+})
+
 
 const getUser = function () {
     return db.get('User').valueOf()
 }
-
 //配置相关
 ipcMain.on('setUser', (event, config) => {
     db.get('User').assign(config).write()

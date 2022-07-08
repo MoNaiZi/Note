@@ -9,6 +9,14 @@
         style="--el-switch-on-color: #13ce66"
       />
     </div>
+    <div class="item">
+      <span>开机自启</span>
+      <el-switch
+        v-model="setting.startUp"
+        class="ml-2"
+        style="--el-switch-on-color: #13ce66"
+      />
+    </div>
   </div>
 </template>
 <script>
