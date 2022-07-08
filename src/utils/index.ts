@@ -1,6 +1,6 @@
 
 //生成id
-function createRandomString(length, possibleString) {
+export const createRandomString = function (length: number, possibleString?: string): string {
     let text = ''
     const possible = possibleString || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
@@ -11,37 +11,39 @@ function createRandomString(length, possibleString) {
     return text
 }
 
-function createNumberString(length = '8') {
+export const createNumberString = function (length: number = 8): string {
     return createRandomString(length)
 }
 
-function fromNow(time) {
+export const fromNow = function (time: number): string {
     if (!time) {
         return ''
     }
     // time必须是毫秒
-    var curTime = (new Date()).getTime()
-    var diff = curTime - time //time.getTime()
-
+    const curTime = (new Date()).getTime()
+    const diff: any = curTime - time //time.getTime()
+    const division = function (number: number): number {
+        return parseInt((number).toString(), 10);
+    }
     if (0 > diff) {
         return "几秒前";
     } else if (1000 * 60 > diff) {
         return "刚刚";
     } else if (1000 * 60 <= diff && 1000 * 60 * 60 > diff) {
-        return parseInt(diff / (1000 * 60)) + "分钟前";
+        return division(diff / (1000 * 60)) + "分钟前";
     } else if (1000 * 60 * 60 <= diff && 1000 * 60 * 60 * 24 > diff) {
-        return parseInt(diff / (1000 * 60 * 60)) + "小时前";
+        return division(diff / (1000 * 60 * 60)) + "小时前";
     } else if (1000 * 60 * 60 * 24 <= diff && 1000 * 60 * 60 * 24 * 30 > diff) {
-        return parseInt(diff / (1000 * 60 * 60 * 24)) + "天前";
+        return division(diff / (1000 * 60 * 60 * 24)) + "天前";
     } else if (1000 * 60 * 60 * 24 * 30 <= diff && 1000 * 60 * 60 * 24 * 30 * 12 > diff) {
-        return parseInt(diff / (1000 * 60 * 60 * 24 * 30)) + "月前";
+        return division(diff / (1000 * 60 * 60 * 24 * 30)) + "月前";
     } else {
-        return parseInt(diff / (1000 * 60 * 60 * 24 * 30 * 12)) + "年前";
+        return division(diff / (1000 * 60 * 60 * 24 * 30 * 12)) + "年前";
     }
 }
 
 
-const getQueryByName = (name) => {
+export const getQueryByName = (name: string): string => {
     const queryNameRegex = new RegExp(`[?&]${name}=([^&]*)(&|$)`);
     const queryNameMatch = window.location.hash.match(queryNameRegex);
     return queryNameMatch ? decodeURIComponent(queryNameMatch[1]) : "";
@@ -49,8 +51,8 @@ const getQueryByName = (name) => {
 
 
 
-module.exports = {
-    createNumberString,
-    fromNow,
-    getQueryByName
-}
+// module.exports = {
+//     createNumberString,
+//     fromNow,
+//     getQueryByName
+// }

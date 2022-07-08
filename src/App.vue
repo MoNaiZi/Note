@@ -12,7 +12,6 @@
 </template>
 
 <script>
-// import Header from "@/components/header";
 const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
 import { store } from "@/store";

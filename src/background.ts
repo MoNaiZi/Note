@@ -28,7 +28,7 @@ if (!gotTheLock) {
 app.on('second-instance', (event, commandLine, workingDirectory) => {
   // 输出从第二个实例中接收到的数据
   // 有人试图运行第二个实例，我们应该关注我们的窗口
-  let myWindow = global.mainWin
+  const myWindow = global.mainWin
   console.log('myWindow', myWindow)
   if (myWindow) {
     if (myWindow.isMinimized()) myWindow.restore()
@@ -46,7 +46,7 @@ app.on('ready', async () => {
     // Install Vue Devtools
     try {
       await installExtension(VUEJS3_DEVTOOLS)
-    } catch (e) {
+    } catch (e: any) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
@@ -96,6 +96,9 @@ async function createWindow() {
     console.log('主窗口关闭')
     app.exit()
   })
+  type MainWin = {
+    mainWin: any
+  }
   global.mainWin = win
 
 

@@ -7,26 +7,26 @@ export default {
         }
     },
     getters: {
-        getNoteList(state) {
+        getNoteList(state: any) {
             return state.list
         },
-        getNoteItem(state) {
+        getNoteItem(state: any) {
             return state.item
         }
     },
     actions: {
-        setNoteList(context, list) {
+        setNoteList(context: any, list: []) {
             context.commit('setNoteList', list)
         },
-        setNoteItem(context, item) {
+        setNoteItem(context: any, item: Object) {
             context.commit('setNoteItem', item)
         }
     },
     mutations: {
-        setNoteList(state, list) {
+        setNoteList(state: any, list: []) {
             state.list = list
         },
-        setNoteItem(state, item) {
+        setNoteItem(state: any, item: object) {
             state.item = item
         },
     }

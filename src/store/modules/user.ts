@@ -9,12 +9,12 @@ export default {
         }
     },
     actions: {
-        setUser(context, user) {
+        setUser(context: any, user: string) {
             context.commit('setUser', user)
         }
     },
     mutations: {
-        setUser(state, user) {
+        setUser(state: any, user: string) {
             state.user = user
         }
     }

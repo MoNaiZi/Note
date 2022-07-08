@@ -1,7 +1,7 @@
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 const { defineConfig } = require('@vue/cli-service')
 const webpackObfuscator = require('webpack-obfuscator');
-const path = require('path');
+
 const isProduction = process.env.NODE_ENV === 'production'
 
 module.exports = defineConfig({
@@ -20,16 +20,16 @@ module.exports = defineConfig({
       }, [])
     ]
   } : {},
-  chainWebpack: webpackConfig => {
+  // chainWebpack: webpackConfig => {
 
-  },
+  // },
   transpileDependencies: [/\bvue-awesome\b/],
   pluginOptions: {
     // Use this to change the entry point of your app's render process. default src/[main|index].[js|ts]
-    rendererProcessFile: 'src/[background|on|mainProcess].js',
+    rendererProcessFile: 'src/[background|on|mainProcess].ts',
     electronBuilder: {
       nodeIntegration: true,
-      preload: 'src/preload.js',
+      preload: 'src/preload.ts',
       builderOptions: {
         extraResources: ['src', 'src/res/'],
         productName: '便利贴',

@@ -1,9 +1,10 @@
 import {
     createRouter,
-    createWebHashHistory
+    createWebHashHistory,
+    RouteRecordRaw
 } from 'vue-router'
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
     // {
     //     path: '/',
     //     name: 'index',
@@ -23,29 +24,29 @@ const routes = [
     {
         path: '/',
         name: 'header',
-        component: () => import('@/views/header'),
+        component: () => import('@/views/header.vue'),
         children: [
             {
                 path: '',
                 name: 'index',
-                component: () => import('@/views/index')
+                component: () => import('@/views/index.vue')
             },
             {
                 path: '/set',
                 name: 'set',
-                component: () => import('@/views/setting')
+                component: () => import('@/views/setting.vue')
             },
             {
                 path: '/edited',
                 name: 'edited',
-                component: () => import('@/views/edited')
+                component: () => import('@/views/edited.vue')
             },
         ]
     },
     {
         path: '/menu',
         name: 'menu',
-        component: () => import('@/views/menu')
+        component: () => import('@/views/menu.vue')
     }
 ]
 

@@ -6,13 +6,14 @@
     "serve": "vue-cli-service electron:serve",
     "build": "node script/deleteBuild && vue-cli-service electron:build",
     "lint": "vue-cli-service lint",
-    "html:build": "vue-cli-service build",
     "html": "vue-cli-service serve",
+    "html:build": "vue-cli-service build",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
-  "main": "background.js",
+  "main": "background.ts",
   "dependencies": {
+    "@types/lowdb": "1.0.9",
     "@wangeditor/editor": "^5.1.1",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "core-js": "^3.6.5",
@@ -28,7 +29,9 @@
     "sass-loader": "7.3.1",
     "sequelize": "6.6.5",
     "sqlite3": "5.0.0",
+    "ts-loader": "~8.2.0",
     "vue": "^3.2.13",
+    "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.13",
     "vuex": "^4.0.2",
     "webpack-obfuscator": "^3.5.1"
@@ -36,14 +39,22 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-typescript": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "@vue/eslint-config-typescript": "^9.1.0",
     "electron": "^19.0.0",
     "electron-devtools-installer": "^3.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "typescript": "~4.5.5",
     "vue-cli-plugin-electron-builder": "~2.1.1"
+  },
+  "peerDependencies": {
+    "snabbdom": "^3.5.1"
   },
   "eslintConfig": {
     "root": true,
@@ -52,10 +63,11 @@
     },
     "extends": [
       "plugin:vue/vue3-essential",
-      "eslint:recommended"
+      "eslint:recommended",
+      "@vue/typescript"
     ],
     "parserOptions": {
-      "parser": "@babel/eslint-parser"
+      "parser": "@typescript-eslint/parser"
     },
     "rules": {
       "vue/multi-word-component-names": 0
@@ -66,8 +78,5 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ],
-  "peerDependencies": {
-    "snabbdom": "^3.5.1"
-  }
+  ]
 }

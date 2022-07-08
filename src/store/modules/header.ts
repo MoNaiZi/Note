@@ -9,35 +9,35 @@ export default {
         }
     },
     getters: {
-        getPageTypeText(state) {
+        getPageTypeText(state: any) {
             return state.pageTypeText
         }
     },
     actions: {
-        setPageTypeText(context, txt) {
+        setPageTypeText(context: any, txt: string) {
             context.commit('setPageTypeText', txt)
         },
-        setNote(context, note) {
+        setNote(context: any, note: object) {
             context.commit('setNote', note)
         },
-        setIsEditedTitle(context, bool) {
+        setIsEditedTitle(context: any, bool: object) {
             context.commit('setIsEditedTitle', bool)
         },
-        setHeaderClose(context, bool) {
+        setHeaderClose(context: any, bool: boolean) {
             context.commit('setHeaderClose', bool)
         }
     },
     mutations: {
-        setPageTypeText(state, txt) {
+        setPageTypeText(state: any, txt: string) {
             state.pageTypeText = txt
         },
-        setNote(state, note) {
+        setNote(state: any, note: object) {
             state.note = note
         },
-        setIsEditedTitle(state, bool) {
+        setIsEditedTitle(state: any, bool: boolean) {
             state.isEditedTitle = bool
         },
-        setHeaderClose(state, bool) {
+        setHeaderClose(state: any, bool: boolean) {
             state.close = bool
         }
     }
