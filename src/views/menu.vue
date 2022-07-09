@@ -1,46 +1,44 @@
 <template>
-  <div class="menu_main" @mousedown="onMouseDown" @mouseup="end">
-    <div :class="['main', { open: open }]" @click.stop="openMenu">
-      <menuStyle></menuStyle>
-    </div>
-    <!-- <div :class="['item_main', { item_main_open: open }]">
+  <div class="menu_main">
+    <drag>
+      <div :class="['main', { open: open }]" @click.stop="openMenu">
+        <menuStyle></menuStyle>
+      </div>
+      <!-- <div :class="['item_main', { item_main_open: open }]">
       <template v-for="(item, index) in 4" :key="index">
         <div class="item" :style="itemStyle(item, index)"></div>
       </template>
     </div> -->
+    </drag>
   </div>
 </template>
 <script>
 import { store } from "@/store";
 import menuStyle from "@/components/menu_style.vue";
 import { getQueryByName } from "@/utils";
+import drag from "@/components/drag";
 const { ipcRenderer } = require("electron");
-let mouseX;
-let mouseY;
-let beforeX, beforeY, afterX, afterY;
-
+let timeout;
 export default {
   components: {
     menuStyle,
+    drag,
   },
   data() {
     return {
       tip: "",
-      isDrag: false,
       open: false,
       open_item: false,
       winIdList: [],
     };
   },
   created() {
-    let winIdList = getQueryByName("winIdList");
-    if (winIdList) {
-      this.winIdList = JSON.parse(winIdList);
-      console.log("winIdList", winIdList);
-    }
-
     store.dispatch("header/setPageTypeText", "menu");
-    window.addEventListener("mousemove", this.move);
+    let winIdList = getQueryByName("winIdList");
+    console.log("winIdList", winIdList);
+    if (winIdList && winIdList != "undefined") {
+      this.winIdList = JSON.parse(winIdList);
+    }
   },
   methods: {
     itemStyle(item, index) {
@@ -79,9 +77,9 @@ export default {
       return result;
     },
     debounce(func, wait, immediate) {
-      let timeout;
       console.log("1");
       return function () {
+        console.log("2");
         let context = this;
         let args = arguments;
 
@@ -100,45 +98,23 @@ export default {
       };
     },
     openMenu() {
-      console.log("openMenu");
-      if (beforeX === afterX && beforeY === afterY) {
-        this.open = !this.open;
-        // ipcRenderer.send("addWH", { w: 50, h: 50 }, this.open);
-        const winIdList = this.winIdList;
+      const that = this;
+      let fn = function () {
+        console.log("openMenu");
+        that.open = !that.open;
+
+        const winIdList = that.winIdList;
         for (let id of winIdList) {
           ipcRenderer.send("newWindow", id, 1);
           ipcRenderer.send("closeSuspensionWin", id);
         }
 
         setTimeout(() => {
-          this.open_item = !this.open_item;
+          that.open_item = !that.open_item;
         }, 1000);
-      }
-    },
-    end(e) {
-      console.log("触摸结束", e.clientX);
-      console.log(" mouseX", mouseX);
-      [afterX, afterY] = [e.offsetX, e.offsetY];
-      this.isDrag = false;
-      // this.debounce(this.openMenu, 500, true);
-    },
+      };
 
-    onMouseDown(e) {
-      this.isDrag = true;
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      beforeX = e.offsetX;
-      beforeY = e.offsetY;
-    },
-    move() {
-      if (this.isDrag && !this.open) {
-        ipcRenderer.send("windowMoving", {
-          mouseX,
-          mouseY,
-          width: 100,
-          height: 100,
-        });
-      }
+      this.debounce(fn, 1000, true)();
     },
   },
   mounted() {

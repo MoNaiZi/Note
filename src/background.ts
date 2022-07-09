@@ -1,16 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain, session, MessageChannelMain } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, session, MessageChannelMain, screen } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
 const mainProcess = require('./mainProcess')
-
-const appFolder = path.dirname(process.execPath);
-const updateExe = path.resolve(appFolder, "..", "Update.exe");
-const exeName = path.basename(process.execPath);
-
 const logo = mainProcess.logo()
 
 import('@/on')
@@ -55,30 +50,15 @@ app.on('ready', async () => {
 
 })
 
-function launchAtStartup() {
-  if (process.platform === "darwin") {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: true
-    });
-  } else {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: true,
-      path: updateExe,
-      args: [
-        "--processStart",
-        `"${exeName}"`,
-        "--process-start-args",
-        `"--hidden"`
-      ]
-    });
-  }
-}
+
 
 async function createWindow() {
   const mainWindows = mainProcess.mainWindows()
   const { config, winURL } = mainWindows
+  const size = screen.getPrimaryDisplay().workAreaSize
+  console.log('size', size)
+  config.x = size.width - 380
+  config.y = size.height - 700
   const win = new BrowserWindow(config)
   win.setIcon(logo)
   await mainProcess.initDevTool(session)

@@ -3,7 +3,7 @@ const mainProcess = require('./mainProcess')
 const dayjs = require('dayjs')
 import db from './server'
 const path = require('path');
-
+const fs = require("fs")
 const logo = mainProcess.logo()
 
 type note = {
@@ -14,18 +14,7 @@ type note = {
     timinGtimeStamp: any,
 }
 
-const isAutoApp = app.getLoginItemSettings()
-console.log('isAutoApp', isAutoApp)
-const appFolder = path.dirname(process.execPath)
-const updateExe = path.resolve(appFolder, '..', '便利贴.exe')
-console.log('updateExe', updateExe)
-//开机自启(登陆时打开)
-app.setLoginItemSettings({
-    openAtLogin: true,
-    args: ["--openAsHidden"],
-    // openAsHidde: true,
-    path: 'D:/Note/便利贴.exe'
-})
+
 
 
 const getUser = function () {
@@ -38,6 +27,7 @@ ipcMain.on('setUser', (event, config) => {
     for (const item of winList) {
         item.webContents.send('sendUser', { config })
     }
+    selfStarting(config.startUp)
 })
 
 ipcMain.handle('getUser', (event) => {
@@ -56,6 +46,11 @@ ipcMain.on('zoomInAndOut', (event) => {
 })
 
 app.whenReady().then(() => {
+    let config = getUser()
+    if (typeof config.startUp != 'undefined') {
+        selfStarting(config.startUp)
+    }
+
     setInterval(() => {
         const currentTimeStamp = dayjs().valueOf()
 
@@ -78,6 +73,26 @@ app.whenReady().then(() => {
 
     }, 2000);
 })
+
+const selfStarting = function (openAtLogin: boolean = true) {
+    // const isAutoApp = app.getLoginItemSettings()
+    const appFolder = path.dirname(process.execPath)
+    const updateExe = path.resolve(appFolder, '\\', '便利贴.exe')
+    console.log('appFolder', appFolder)
+    console.log('updateExe', updateExe)
+    console.log('app.getAppPath()', app.getAppPath())
+    let exePath = appFolder + "\\便利贴.exe"
+    //开机自启(登陆时打开)
+    app.setLoginItemSettings({
+        openAtLogin,
+        args: ["--openAsHidden"],
+        path: exePath
+    })
+    if (!global.isDevelopment) {
+        fs.writeFile('便利贴写入.txt', JSON.stringify({ appFolder, updateExe, exePath, openAtLogin }), function (err: any) { });
+    }
+
+}
 
 ipcMain.on('closeSuspensionWin', (event, id) => {
     const webContents = event.sender
@@ -122,6 +137,7 @@ ipcMain.on('windowMoving', (event, { mouseX, mouseY, width, height }) => {
     const win: any = BrowserWindow.fromWebContents(webContents)
     const { x, y } = screen.getCursorScreenPoint()
     // win.setPosition(x - mouseX, y - mouseY)
+
     win.setBounds({ x: x - mouseX, y: y - mouseY, width, height })
 });
 
@@ -294,6 +310,7 @@ ipcMain.on('closeWindow', async (event, id) => {
     const webContents = event.sender
     const win: any = BrowserWindow.fromWebContents(webContents)
     win.setSkipTaskbar(true)
+    // suspensionWin()
     if (!id) {
         if (!global.isMenu) {
             const tray = new Tray(logo);
@@ -311,7 +328,7 @@ ipcMain.on('closeWindow', async (event, id) => {
                 console.log('win.isVisible()', win.isVisible())
                 win.isVisible() ? win.show() : win.hide()
             });
-            // suspensionWin()
+
             global.isMenu = true
         }
 

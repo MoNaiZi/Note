@@ -11,7 +11,7 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
-  "main": "background.ts",
+  "main": "background.js",
   "dependencies": {
     "@types/lowdb": "1.0.9",
     "@wangeditor/editor": "^5.1.1",

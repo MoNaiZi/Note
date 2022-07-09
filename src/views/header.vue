@@ -27,32 +27,24 @@
         @click="this.$router.push('/')"
       ></i>
     </div>
-    <div class="title" v-show="pageTypeText != 'edited'">便利贴</div>
-    <div class="input_title" v-show="pageTypeText === 'edited'">
-      <div
-        @dblclick="editedTitle"
-        @mousedown="onMouseDown"
-        @mouseup="end"
-        v-if="!isEditedTitle"
-      >
-        <el-tooltip
-          class="item"
-          effect="light"
-          content="双击编辑，或者长按拖动"
-          placement="right-end"
-        >
-          {{ note.title }}
-        </el-tooltip>
-      </div>
+    <drag class="title">
+      <div v-show="pageTypeText != 'edited'">便利贴</div>
+      <div class="input_title" v-show="pageTypeText === 'edited'">
+        <div @dblclick="editedTitle" v-if="!isEditedTitle">
+          <el-tooltip
+            class="item"
+            effect="light"
+            content="双击编辑，或者长按拖动"
+            placement="right-end"
+          >
+            {{ note.title }}
+          </el-tooltip>
+        </div>
 
-      <input
-        v-else
-        @mousedown="onMouseDown"
-        @mouseup="end"
-        v-model="note.title"
-        placeholder="请输入标题"
-      />
-    </div>
+        <input v-else v-model="note.title" placeholder="请输入标题" />
+      </div>
+    </drag>
+
     <div class="right">
       <img
         @click="zoomInAndOut"
@@ -107,8 +99,11 @@ import { mapState } from "vuex";
 import { store } from "@/store";
 
 const { ipcRenderer } = require("electron");
-let mouseX, mouseY;
+import drag from "@/components/drag";
 export default {
+  components: {
+    drag,
+  },
   computed: {
     ...mapState("header", {
       pageTypeText: (state) => state.pageTypeText,
@@ -120,10 +115,7 @@ export default {
   data() {
     return {
       isTopping: false,
-      isDrag: false,
       isShowTiming: false,
-      winWidth: 700,
-      winHeight: 500,
     };
   },
   created() {
@@ -132,35 +124,10 @@ export default {
     if (this.note && this.note.title) {
       store.dispatch("header/setIsEditedTitle", false);
     }
-    // let watchNote = null;
-    // watchNote = this.$watch(
-    //   "note",
-    //   (note) => {
-    //     console.log("header监听note", note);
-    //     if (note && note.title) {
-    //       store.dispatch("header/setIsEditedTitle", false);
-    //     }
-    //     if (watchNote) {
-    //       watchNote();
-    //     }
-    //   },
-    //   {
-    //     deep: true,
-    //   }
-    // );
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
       if (keyCode === 13) {
         store.dispatch("header/setIsEditedTitle", false);
-      }
-    });
-    window.addEventListener("mousemove", this.move);
-    const that = this;
-    window.addEventListener("resize", function (e) {
-      if (!that.isDrag) {
-        let currentTarget = e.currentTarget;
-        that.winWidth = currentTarget.outerWidth;
-        that.winHeight = currentTarget.outerHeight;
       }
     });
   },
@@ -181,29 +148,7 @@ export default {
     minimize() {
       ipcRenderer.send("minimize");
     },
-    end(e) {
-      console.log("触摸结束", e.clientX);
-      this.isDrag = false;
-      // this.debounce(this.openMenu, 500, true);
-    },
-
-    onMouseDown(e) {
-      this.isDrag = true;
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    },
-    move() {
-      if (this.isDrag) {
-        ipcRenderer.send("windowMoving", {
-          mouseX,
-          mouseY,
-          width: this.winWidth,
-          height: this.winHeight,
-        });
-      }
-    },
     editedTitle() {
-      this.isDrag = false;
       store.dispatch("header/setIsEditedTitle", true);
     },
     topping() {
@@ -223,9 +168,6 @@ export default {
 
     addNote() {
       ipcRenderer.send("newWindow");
-      // let height = window.screen.height * window.devicePixelRatio;
-      // let width = window.screen.width * window.devicePixelRatio;
-      // ipcRenderer.send("newMenu", { width, height });
     },
     toSet() {
       this.$router.push("/set");
@@ -283,13 +225,13 @@ export default {
   text-align: center;
   align-items: center;
   div {
-    width: 20%;
+    // width: 20%;
   }
   .left {
     text-align: left;
   }
   .title {
-    @extend .drag;
+    // @extend .drag;
     width: 30%;
     text-align: right;
   }
