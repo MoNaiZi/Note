@@ -1,108 +1,36 @@
 <template>
-  <div
-    :class="[
-      'header_main',
-      { edited: pageTypeText === 'edited' },
-      { home: pageTypeText != 'edited' },
-    ]"
-  >
-    <div class="left">
-      <i v-show="pageTypeText === 'edited'">
-        <el-icon @click="minimize">
-          <Minus />
-        </el-icon>
-        <el-icon @click="showTiming">
-          <Bell />
-        </el-icon>
-      </i>
-
-      <i
-        v-show="pageTypeText === 'home'"
-        class="iconfont icon-add"
-        @click="addNote"
-      ></i>
-      <i
-        v-show="pageTypeText === 'set'"
-        class="iconfont icon-back"
-        @click="this.$router.push('/')"
-      ></i>
-    </div>
-    <drag class="title">
-      <div v-show="pageTypeText != 'edited'">便利贴</div>
-      <div class="input_title" v-show="pageTypeText === 'edited'">
-        <div @dblclick="editedTitle" v-if="!isEditedTitle">
-          <el-tooltip
-            class="item"
-            effect="light"
-            content="双击编辑，或者长按拖动"
-            placement="right-end"
-          >
-            {{ note.title }}
-          </el-tooltip>
-        </div>
-
-        <input v-else v-model="note.title" placeholder="请输入标题" />
+  <div class="wrap">
+    <transition name="main-fade">
+      <div class="left_main" v-show="isLeft">
+        <noteHeader :typeText="'left'" @close="openLeft"></noteHeader>
+        <Editor
+          class="editor"
+          style="overflow-y: hidden; text-align: left; height: 500px"
+          v-model="currentItem.html"
+          :defaultConfig="{ placeholder: '请输入内容...' }"
+          :mode="'default'"
+        />
       </div>
-    </drag>
+    </transition>
 
-    <div class="right">
-      <img
-        @click="zoomInAndOut"
-        v-show="pageTypeText === 'edited'"
-        :src="
-          note.isZoomInAndOut
-            ? require('@/assets/reduction_window.png')
-            : require('@/assets/maximize.png')
-        "
-      />
-      <i
-        :class="['iconfont', isTopping ? 'icon-thepin-active' : 'icon-thepin']"
-        @click="topping"
-      ></i>
-      <i
-        v-show="pageTypeText === 'home'"
-        class="iconfont icon-setting"
-        @click="toSet"
-      ></i>
-
-      <i class="iconfont icon-close" @click="close"></i>
-    </div>
+    <transition name="main-fade">
+      <div class="right_main">
+        <noteHeader></noteHeader>
+        <router-view @openLeft="openLeft"> </router-view>
+      </div>
+    </transition>
   </div>
-  <transition name="main-fade">
-    <router-view> </router-view>
-  </transition>
-  <el-dialog
-    v-model="isShowTiming"
-    title="定时提醒"
-    width="60%"
-    :before-close="showTiming"
-    draggable
-  >
-    <div>
-      <el-date-picker
-        v-model="note.timing"
-        type="datetime"
-        placeholder="请选择提醒时间"
-        popper-class="timing_date_picker"
-      />
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <!-- <el-button @click="showTiming(0)">取消</el-button> -->
-        <el-button type="primary" @click="showTiming(1)">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
 </template>
 <script>
 import { mapState } from "vuex";
 import { store } from "@/store";
-
+import { Editor } from "@wangeditor/editor-for-vue";
 const { ipcRenderer } = require("electron");
-import drag from "@/components/drag";
+import noteHeader from "@/components/note_header";
 export default {
   components: {
-    drag,
+    noteHeader,
+    Editor,
   },
   computed: {
     ...mapState("header", {
@@ -116,6 +44,9 @@ export default {
     return {
       isTopping: false,
       isShowTiming: false,
+      isLeft: false,
+      isOpenLeft: false,
+      currentItem: {},
     };
   },
   created() {
@@ -133,6 +64,25 @@ export default {
   },
   mounted() {},
   methods: {
+    openLeft(item) {
+      console.log("打开右侧");
+      if (item && item._id != this.currentItem._id) {
+        this.isLeft = true;
+      } else {
+        this.isLeft = false;
+      }
+
+      if (this.isOpenLeft != this.isLeft) {
+        this.isOpenLeft = this.isLeft;
+
+        ipcRenderer.invoke("openLeft", this.isLeft);
+      }
+      if (this.isOpenLeft) {
+        this.currentItem = item;
+      } else {
+        this.currentItem = {};
+      }
+    },
     zoomInAndOut() {
       const note = this.note;
       note.isZoomInAndOut = !note.isZoomInAndOut;
@@ -177,6 +127,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.wrap {
+  display: flex;
+  background: #fff;
+  border-radius: 10px;
+  height: 100%;
+  .right_main {
+    // width: 100%;
+    // height: 100%;
+  }
+  .left_main {
+    height: 100vh;
+    width: 350px;
+    border-right: 2px dashed #d0d0d0;
+    h4 {
+      margin: 10px;
+    }
+    // background: #000;
+  }
+}
 .drag {
   -webkit-app-region: drag;
 }
@@ -192,6 +161,7 @@ export default {
   .input_title {
     width: 79%;
     margin-left: 57px;
+    text-align: center;
     div {
       width: 100%;
     }
@@ -219,6 +189,7 @@ export default {
 }
 
 .header_main {
+  width: 350px;
   display: flex;
   justify-content: space-between;
   padding: 8px 5px;
@@ -232,8 +203,8 @@ export default {
   }
   .title {
     // @extend .drag;
-    width: 30%;
-    text-align: right;
+    width: 42%;
+    // text-align: right;
   }
 
   .right {

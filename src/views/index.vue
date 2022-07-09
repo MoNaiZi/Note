@@ -1,84 +1,88 @@
 <template>
-  <!-- <img src="@/assets/logo.png" /> -->
-  <el-input
-    v-model="searchKey"
-    class="w-50 m-2"
-    placeholder="请输入标题"
-    :suffix-icon="'Search'"
-    @input="search"
-  />
-  <contextMenu
-    :X="X"
-    :Y="Y"
-    :menuShow="showMenu"
-    :currentItem="currentItem"
-    @change="changeMenu"
-  ></contextMenu>
-  <div v-show="isScrollTop" class="top">
-    <el-icon @click="toTop"><CaretTop /></el-icon>
-  </div>
-  <!-- {{ list.length }} -->
-  <div class="list">
-    <transition-group name="scale" tag="ul">
-      <li
-        v-for="(item, index) in list"
-        :key="item._id"
-        :class="['item', { item_active: cuttentIndex == index }]"
-        @mousedown.stop="this.cuttentIndex = index"
-        @contextmenu="handleContextMenu($event, item)"
-      >
-        <div>
-          <h4 @click="edited(item)">
-            {{ item.title }}
-            <el-icon
-              class="ArrowDownBold"
-              @click.stop="openDetaile(item, index)"
-            >
-              <ArrowDownBold v-show="item.isOpenDetaile" />
-              <ArrowLeftBold v-show="!item.isOpenDetaile" />
-            </el-icon>
-          </h4>
-          <div class="content">
-            <!-- <el-icon class="ArrowDownBold" @click="openDetaile(item)">
+  <div class="index_main">
+    <!-- <div class="left_main"></div> -->
+    <div class="">
+      <el-input
+        v-model="searchKey"
+        class="w-50 m-2"
+        placeholder="请输入标题"
+        :suffix-icon="'Search'"
+        @input="search"
+      />
+      <contextMenu
+        :X="X"
+        :Y="Y"
+        :menuShow="showMenu"
+        :currentItem="currentItem"
+        @change="changeMenu"
+      ></contextMenu>
+      <div v-show="isScrollTop" class="top">
+        <el-icon @click="toTop"><CaretTop /></el-icon>
+      </div>
+      <!-- {{ list.length }} -->
+      <div class="list">
+        <transition-group name="scale" tag="ul">
+          <li
+            v-for="(item, index) in list"
+            :key="item._id"
+            :class="['item', { item_active: cuttentIndex == index }]"
+            @mousedown.stop="this.cuttentIndex = index"
+            @contextmenu="handleContextMenu($event, item)"
+          >
+            <div>
+              <h4 @click="edited(item)">
+                {{ item.title }}
+                <el-icon
+                  class="ArrowDownBold"
+                  @click.stop="openDetaile(item, index)"
+                >
+                  <ArrowDownBold v-show="item.isOpenDetaile" />
+                  <ArrowLeftBold v-show="!item.isOpenDetaile" />
+                </el-icon>
+              </h4>
+              <div class="content">
+                <!-- <el-icon class="ArrowDownBold" @click="openDetaile(item)">
               <ArrowDownBold v-show="item.isOpenDetaile" />
               <ArrowLeftBold v-show="!item.isOpenDetaile" />
             </el-icon> -->
 
-            <Editor
-              class="editor"
-              style="overflow-y: hidden; text-align: left"
-              :style="{ height: !item.isOpenDetaile ? '60px' : '250px' }"
-              v-model="item.html"
-              :defaultConfig="{ placeholder: '请输入内容...' }"
-              :mode="'default'"
-            />
+                <Editor
+                  class="editor"
+                  style="overflow-y: hidden; text-align: left"
+                  :style="{ height: !item.isOpenDetaile ? '60px' : '250px' }"
+                  v-model="item.html"
+                  :defaultConfig="{ placeholder: '请输入内容...' }"
+                  :mode="'default'"
+                />
 
-            <div class="time">
-              <el-tooltip
-                class="item"
-                effect="light"
-                :content="item.time"
-                placement="right-end"
-              >
-                {{ fromNowFn(item.timeStamp) }}
-              </el-tooltip>
+                <div class="time">
+                  <el-tooltip
+                    class="item"
+                    effect="light"
+                    :content="item.time"
+                    placement="right-end"
+                  >
+                    {{ fromNowFn(item.timeStamp) }}
+                  </el-tooltip>
+                </div>
+              </div>
             </div>
-          </div>
+          </li>
+        </transition-group>
+        <div v-if="list.length && searchKey === ''" class="loadMore">
+          <span @click.stop="getList" v-if="!loadMoreLoading">{{
+            loadMore ? `没有更多了(共${list.length}条)` : "加载更多...."
+          }}</span>
+          <el-icon v-else class="is-loading" :size="18">
+            <Loading />
+          </el-icon>
         </div>
-      </li>
-    </transition-group>
-    <div v-if="list.length && searchKey === ''" class="loadMore">
-      <span @click.stop="getList" v-if="!loadMoreLoading">{{
-        loadMore ? `没有更多了(共${list.length}条)` : "加载更多...."
-      }}</span>
-      <el-icon v-else class="is-loading" :size="18">
-        <Loading />
-      </el-icon>
+        <el-empty
+          v-if="!list.length"
+          description="什么都没，点击左上角+号按钮添加吧"
+        />
+      </div>
     </div>
-    <el-empty
-      v-if="!list.length"
-      description="什么都没，点击左上角+号按钮添加吧"
-    />
   </div>
 </template>
 
@@ -178,7 +182,7 @@ export default {
       this.showMenu = false;
     });
     window.onbeforeunload = (e) => {
-      console.log("I do not want to be closed");
+      console.log("I do not want to be closed", e);
 
       // 与通常的浏览器不同,会提示给用户一个消息框,
       //返回非空值将默认取消关闭
@@ -266,6 +270,7 @@ export default {
       return fromNow(time);
     },
     openDetaile(item) {
+      this.showMenu = false;
       let isOpenDetaile =
         typeof item.isOpenDetaile === "undefined" ? false : item.isOpenDetaile;
       item.isOpenDetaile = isOpenDetaile ? false : true;
@@ -304,11 +309,17 @@ export default {
         case 2:
           this.edited(currentItem);
           break;
+        case 3:
+          console.log("打开右侧");
+          that.$emit("openLeft", currentItem);
+
+          break;
         default:
           break;
       }
     },
     handleContextMenu(e, item) {
+      console.log("clientX", e.clientX, "clientY", e.clientY);
       e.stopPropagation();
       e.preventDefault();
       this.X = e.clientX;
@@ -325,6 +336,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.left_main {
+  width: 50%;
+  height: 100vh;
+  background: #000;
+  position: absolute;
+  left: 0;
+}
+.index_main {
+  height: 600px;
+  width: 350px;
+}
 .top {
   position: absolute;
   background: #000;

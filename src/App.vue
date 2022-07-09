@@ -1,5 +1,5 @@
 <template>
-  <div :class="classFn">
+  <div :class="['app_wrap', classFn]">
     <!-- <transition>
       <template v-if="['home', 'edited', 'set'].includes(pageTypeText)">
         <component :is="'Header'"></component>
@@ -67,6 +67,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  border-radius: 10px;
+  height: 100vh;
+  .app_wrap {
+    height: 100%;
+  }
 }
 
 ::-webkit-scrollbar {

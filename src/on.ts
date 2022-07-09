@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, Menu, Tray, screen, app } from 'electron'
+import { ipcMain, BrowserWindow, Menu, Tray, screen, app, BrowserView } from 'electron'
 const mainProcess = require('./mainProcess')
 const dayjs = require('dayjs')
 import db from './server'
@@ -14,6 +14,21 @@ type note = {
     timinGtimeStamp: any,
 }
 
+ipcMain.handle('openLeft', (event, bool = true) => {
+    const webContents = event.sender
+    const win: any = BrowserWindow.fromWebContents(webContents)
+    const bounds = win.getBounds()
+    if (bool) {
+        bounds.width = bounds.width + 350
+        bounds.x = bounds.x - 350
+    } else {
+        bounds.width = 350
+        bounds.x = bounds.x + 350
+    }
+    // win.setBackgroundColor('#fff')
+    win.setBounds(bounds)
+
+})
 
 
 
@@ -290,6 +305,7 @@ ipcMain.on('newWindow', async (event, winId, pageType) => {
 
     }
     const win = new BrowserWindow(newOjb)
+
     if (note.isZoomInAndOut) {
         win.maximize()
     }

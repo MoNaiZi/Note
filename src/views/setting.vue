@@ -73,6 +73,7 @@ export default {
 .set_main {
   text-align: left;
   padding: 10px;
+  width: 100vw;
   .item {
     display: flex;
     align-items: center;

@@ -16,6 +16,7 @@ function mainWindows() {
         minWidth: 250,
         minHeight: 48,
         frame: false,
+        transparent: true,
         webPreferences
     }
     const winURL = global.isDevelopment ? 'http://localhost:55226' : `file://${__dirname}/index.html`;

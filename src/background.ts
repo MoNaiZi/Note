@@ -59,8 +59,12 @@ async function createWindow() {
   console.log('size', size)
   config.x = size.width - 380
   config.y = size.height - 700
+  config.show = false
   const win = new BrowserWindow(config)
   win.setIcon(logo)
+  win.on('ready-to-show', () => {
+    win.show();
+  })
   await mainProcess.initDevTool(session)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

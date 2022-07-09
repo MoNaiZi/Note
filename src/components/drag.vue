@@ -35,20 +35,20 @@ export default {
     window.addEventListener("mousemove", that.move);
     window.addEventListener("dblclick", that.end);
     window.addEventListener("mouseup", that.end);
-    const pageTypeText = that.pageTypeText;
-    if (pageTypeText === "edited") {
-      window.addEventListener("resize", function (e) {
-        if (!that.isDrag) {
-          let currentTarget = e.currentTarget;
-          that.width = currentTarget.outerWidth;
-          that.height = currentTarget.outerHeight;
-        }
-      });
-    }
   },
   methods: {
     init() {
+      const that = this;
       const pageTypeText = this.pageTypeText;
+      if (pageTypeText != "menu") {
+        window.addEventListener("resize", function (e) {
+          if (!that.isDrag) {
+            let currentTarget = e.currentTarget;
+            that.width = currentTarget.outerWidth;
+            that.height = currentTarget.outerHeight;
+          }
+        });
+      }
       switch (pageTypeText) {
         case "edited":
           {
@@ -63,6 +63,8 @@ export default {
           }
           break;
         default:
+          this.width = 350;
+          this.height = 600;
           break;
       }
     },

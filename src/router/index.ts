@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'header',
-        component: () => import('@/views/header.vue'),
+        component: () => import('@/views/home.vue'),
         children: [
             {
                 path: '',
