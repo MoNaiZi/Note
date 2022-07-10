@@ -30,9 +30,19 @@
             @contextmenu="handleContextMenu($event, item)"
           >
             <div>
-              <h4 @click="edited(item)">
-                {{ item.title }}
+              <h4 @click="openLeft(item)">
+                {{ item.title || "无标题" }}
+                <div class="h4_item" v-show="isLeft">
+                  <el-tooltip
+                    effect="light"
+                    :content="item.time"
+                    placement="right-end"
+                  >
+                    {{ fromNowFn(item.timeStamp) }}
+                  </el-tooltip>
+                </div>
                 <el-icon
+                  v-show="!isLeft"
                   class="ArrowDownBold"
                   @click.stop="openDetaile(item, index)"
                 >
@@ -40,21 +50,15 @@
                   <ArrowLeftBold v-show="!item.isOpenDetaile" />
                 </el-icon>
               </h4>
-              <div class="content">
-                <!-- <el-icon class="ArrowDownBold" @click="openDetaile(item)">
-              <ArrowDownBold v-show="item.isOpenDetaile" />
-              <ArrowLeftBold v-show="!item.isOpenDetaile" />
-            </el-icon> -->
-
-                <Editor
-                  class="editor"
-                  style="overflow-y: hidden; text-align: left"
-                  :style="{ height: !item.isOpenDetaile ? '60px' : '250px' }"
-                  v-model="item.html"
-                  :defaultConfig="{ placeholder: '请输入内容...' }"
-                  :mode="'default'"
-                />
-
+              <div class="content" v-show="!isLeft">
+                <keep-alive>
+                  <noteEditor
+                    class="editor"
+                    key="editor_index"
+                    :style="{ height: !item.isOpenDetaile ? '60px' : '250px' }"
+                    :currentItem="item"
+                  />
+                </keep-alive>
                 <div class="time">
                   <el-tooltip
                     class="item"
@@ -90,14 +94,18 @@
 import { store } from "@/store";
 import { mapGetters } from "vuex";
 import contextMenu from "@/components/context_menu.vue";
-import { Editor } from "@wangeditor/editor-for-vue";
+import noteEditor from "@/components/note_editor";
 import { fromNow } from "@/utils";
 
 const { ipcRenderer } = require("electron");
 export default {
   components: {
     contextMenu,
-    Editor,
+    noteEditor,
+  },
+  props: {
+    leftItem: {},
+    isLeft: Boolean,
   },
   data() {
     return {
@@ -117,14 +125,20 @@ export default {
     };
   },
   watch: {
+    isLeft: function (val) {
+      console.log("isLeft", val);
+
+      ipcRenderer.invoke("openLeft", this.isLeft);
+    },
     list: {
       deep: true,
       handler(val) {
+        console.log("监听list", val);
         const cuttentIndex = this.cuttentIndex;
         let list = val;
         if (cuttentIndex != -1) {
           let item = list[cuttentIndex];
-          // console.log("监听list的item", JSON.parse(JSON.stringify(item)));
+
           ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
         }
       },
@@ -166,6 +180,9 @@ export default {
     ipcRenderer.on("getEdited", (_event, tempOjb) => {
       let index = this.list.findIndex((item) => item._id === tempOjb._id);
       this.cuttentIndex = index;
+      if (this.isLeft) {
+        this.openLeft(tempOjb, true);
+      }
       if (index === -1) {
         this.list.unshift(tempOjb);
         this.cuttentIndex = 0;
@@ -189,12 +206,36 @@ export default {
       //建议使用对话框 API 让用户确认关闭应用程序.
       // this.close();
       ipcRenderer.send("closeWindow");
-      e.returnValue = false;
+      // e.returnValue = false;
     };
 
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
       console.log("keyCode", keyCode);
+      // if (this.list.length) {
+      //   let cuttentIndex = this.cuttentIndex;
+      //   let index = cuttentIndex;
+      //   if (keyCode == 40 && this.cuttentIndex < this.list.length) {
+      //     //下
+      //     index += 1;
+      //   } else if (keyCode == 38 && this.cuttentIndex >= -1) {
+      //     //上
+      //     index -= 1;
+      //   }
+
+      //   this.currentItem = this.list[index];
+      //   console.log("index", index);
+      //   if (this.isLeft && index != this.cuttentIndex) {
+      //     let item = this.currentItem;
+      //     console.log("item", item);
+      //     if (item) {
+      //       this.openLeft(item);
+      //     }
+
+      //     this.cuttentIndex = index;
+      //   }
+      // }
+
       // if (keyCode === 27) {
       //   this.cuttentIndex = -1;
       // }
@@ -293,6 +334,7 @@ export default {
       console.log("type", type);
       const that = this;
       const currentItem = this.currentItem;
+      const cuttentIndex = this.cuttentIndex;
       switch (type) {
         case 0:
           ipcRenderer.invoke("noteTopping", currentItem._id).then((list) => {
@@ -304,6 +346,17 @@ export default {
           ipcRenderer.invoke("removeNote", currentItem._id).then((list) => {
             // store.dispatch("note/setNoteList", list);
             that.list = list;
+            let isLeft = that.isLeft;
+            // let index = cuttentIndex > 0 ? cuttentIndex - 1 : cuttentIndex;
+            if (isLeft && Array.isArray(list)) {
+              if (!list.length) {
+                that.$emit("close");
+              } else {
+                if (cuttentIndex >= 0) {
+                  that.openLeft(list[cuttentIndex]);
+                }
+              }
+            }
           });
           break;
         case 2:
@@ -311,12 +364,15 @@ export default {
           break;
         case 3:
           console.log("打开右侧");
-          that.$emit("openLeft", currentItem);
 
+          that.openLeft(currentItem);
           break;
         default:
           break;
       }
+    },
+    openLeft(item, bool = null) {
+      this.$emit("openLeft", item, bool);
     },
     handleContextMenu(e, item) {
       console.log("clientX", e.clientX, "clientY", e.clientY);
@@ -336,6 +392,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+h4 {
+  display: flex;
+  justify-content: space-between;
+  .h4_item {
+    font-size: 13px;
+    font-weight: 100;
+  }
+}
 .left_main {
   width: 50%;
   height: 100vh;

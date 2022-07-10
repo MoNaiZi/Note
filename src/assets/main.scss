@@ -143,3 +143,15 @@ body {
         color: #fff;
     }
 }
+
+.isLeft {
+    .left_main {
+        width: 451px !important;
+    }
+
+    .right_main {
+        .index_main {
+            width: 248px;
+        }
+    }
+}

@@ -1,22 +1,31 @@
 <template>
-  <div class="wrap">
+  <div :class="['wrap', { isLeft }]">
     <transition name="main-fade">
-      <div class="left_main" v-show="isLeft">
-        <noteHeader :typeText="'left'" @close="openLeft"></noteHeader>
-        <Editor
-          class="editor"
-          style="overflow-y: hidden; text-align: left; height: 500px"
-          v-model="currentItem.html"
-          :defaultConfig="{ placeholder: '请输入内容...' }"
-          :mode="'default'"
-        />
+      <div class="left_main" v-if="isLeft">
+        <noteHeader
+          key="editor_home"
+          :typeText="'left'"
+          :title="currentItem.title"
+          @close="openLeft"
+        ></noteHeader>
+        <keep-alive>
+          <noteEditor key="home_index" :currentItem="currentItem" />
+        </keep-alive>
       </div>
     </transition>
 
     <transition name="main-fade">
       <div class="right_main">
         <noteHeader></noteHeader>
-        <router-view @openLeft="openLeft"> </router-view>
+        <keep-alive>
+          <router-view
+            @openLeft="openLeft"
+            :isLeft="isLeft"
+            :leftItem="currentItem"
+            @close="openLeft"
+          >
+          </router-view>
+        </keep-alive>
       </div>
     </transition>
   </div>
@@ -24,13 +33,13 @@
 <script>
 import { mapState } from "vuex";
 import { store } from "@/store";
-import { Editor } from "@wangeditor/editor-for-vue";
+import noteEditor from "@/components/note_editor";
 const { ipcRenderer } = require("electron");
 import noteHeader from "@/components/note_header";
 export default {
   components: {
+    noteEditor,
     noteHeader,
-    Editor,
   },
   computed: {
     ...mapState("header", {
@@ -39,7 +48,14 @@ export default {
       isEditedTitle: (state) => state.isEditedTitle,
     }),
   },
-  watch: {},
+  watch: {
+    currentItem: {
+      deep: true,
+      handler(val) {
+        console.log("home", val);
+      },
+    },
+  },
   data() {
     return {
       isTopping: false,
@@ -51,12 +67,13 @@ export default {
   },
   created() {
     // this.$router.psuh('/set')
-    console.log("home_note", this.note);
+    // console.log("home_note", this.note);
     if (this.note && this.note.title) {
       store.dispatch("header/setIsEditedTitle", false);
     }
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
+      // console.log("keyCode home", keyCode);
       if (keyCode === 13) {
         store.dispatch("header/setIsEditedTitle", false);
       }
@@ -64,18 +81,24 @@ export default {
   },
   mounted() {},
   methods: {
-    openLeft(item) {
-      console.log("打开右侧");
+    changeEditor(editor) {
+      // console.log("editor", editor);
+      this.currentItem.html = editor.getHtml();
+    },
+    openLeft(item, bool = null) {
+      console.log("打开右侧", bool);
       if (item && item._id != this.currentItem._id) {
         this.isLeft = true;
       } else {
         this.isLeft = false;
       }
-
+      if (bool != null && typeof bool != "undefined") {
+        this.isLeft = bool;
+      }
       if (this.isOpenLeft != this.isLeft) {
         this.isOpenLeft = this.isLeft;
 
-        ipcRenderer.invoke("openLeft", this.isLeft);
+        // ipcRenderer.invoke("openLeft", this.isLeft);
       }
       if (this.isOpenLeft) {
         this.currentItem = item;

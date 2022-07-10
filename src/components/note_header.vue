@@ -31,7 +31,7 @@
         </div>
         <drag class="title">
           <div οndragstart="return false;" v-show="pageTypeText != 'edited'">
-            便利贴
+            {{ typeText === "left" && title ? title : "无标题" }}
           </div>
           <div class="input_title" v-show="pageTypeText === 'edited'">
             <div @dblclick="editedTitle" v-if="!isEditedTitle">
@@ -121,6 +121,10 @@ export default {
   },
   props: {
     typeText: {
+      type: String,
+      default: "",
+    },
+    title: {
       type: String,
       default: "",
     },
@@ -242,6 +246,7 @@ export default {
   }
   .title {
     width: 50% !important;
+    text-align: center !important;
   }
   .left {
     width: 25%;
@@ -275,6 +280,7 @@ export default {
   .title {
     // @extend .drag;
     width: 30%;
+    text-align: right;
   }
 
   .right {

@@ -4,7 +4,8 @@ export default {
         return {
             user: {
                 dark: false,
-                startUp: true
+                startUp: true,
+                // isLeft: true
             }
         }
     },

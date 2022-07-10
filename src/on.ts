@@ -17,17 +17,22 @@ type note = {
 ipcMain.handle('openLeft', (event, bool = true) => {
     const webContents = event.sender
     const win: any = BrowserWindow.fromWebContents(webContents)
-    const bounds = win.getBounds()
+    let bounds = win.getBounds()
+
     if (bool) {
         bounds.width = bounds.width + 350
         bounds.x = bounds.x - 350
     } else {
-        bounds.width = 350
-        bounds.x = bounds.x + 350
+        // bounds.width = 350
+        // bounds.x = bounds.x + 350
+        bounds = { x: 1156, y: 116, width: 352, height: 600 }
     }
     // win.setBackgroundColor('#fff')
-    win.setBounds(bounds)
-
+    // win.setBounds(bounds)
+    console.log('bounds', bounds)
+    win.flashFrame(false)
+    win.setSize(bounds.width, 600)
+    win.setPosition(bounds.x, bounds.y)
 })
 
 

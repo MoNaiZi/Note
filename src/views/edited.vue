@@ -63,7 +63,7 @@ export default {
         const html = this.editor.getHtml();
         // // const text = this.editor.getText();
         let tempOjb = { html, ...note };
-
+        tempOjb.title = tempOjb.title || "无标题";
         if (timing) {
           tempOjb.timing = timing;
           tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
