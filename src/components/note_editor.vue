@@ -1,13 +1,13 @@
 <template>
   <Editor
+    class="editor"
     @mouseup="preventBlur($event)"
     style="overflow-y: hidden; text-align: left; height: 500px"
     :key="id"
     v-model="data.html"
-    :defaultConfig="{ placeholder: '请输入内容...' }"
+    :defaultConfig="editorConfig"
     :mode="'default'"
-    :id="id"
-    @onCreated="handleCreated"
+    @onCreated="onCreated"
   />
 </template>
 <script>
@@ -28,6 +28,7 @@ export default {
     return {
       id: this.$createdId(),
       data: this.currentItem,
+      editorConfig: { placeholder: "请输入内容...", readOnly: false },
       editor: {},
     };
   },
@@ -47,17 +48,22 @@ export default {
     preventBlur(event) {
       event.preventDefault();
     },
-    handleCreated(editor) {
-      editor.focus();
+    onCreated(editor) {
       this.editor = editor;
     },
   },
   unmounted() {
+    console.log("销毁");
     const editor = this.editor;
     if (editor == null) return;
     editor.destroy();
   },
 };
 </script>
-<style>
+<style lang="scss" scoped>
+.editor {
+  height: 80%;
+  overflow-y: hidden;
+  text-align: left;
+}
 </style>

@@ -109,7 +109,7 @@ const selfStarting = function (openAtLogin: boolean = true) {
         path: exePath
     })
     if (!global.isDevelopment) {
-        fs.writeFile('便利贴写入.txt', JSON.stringify({ appFolder, updateExe, exePath, openAtLogin }), function (err: any) { });
+        fs.writeFile('日志.txt', JSON.stringify({ appFolder, updateExe, exePath, openAtLogin }), function (err: any) { });
     }
 
 }

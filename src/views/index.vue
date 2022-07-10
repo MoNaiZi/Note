@@ -125,6 +125,16 @@ export default {
     };
   },
   watch: {
+    leftItem: {
+      deep: true,
+      handler: function (val) {
+        const cuttentIndex = this.cuttentIndex;
+        let item = val; //this.leftItem;
+        if (!item._id) return;
+        this.list[cuttentIndex] = item;
+        console.log("leftItem", item);
+      },
+    },
     isLeft: function (val) {
       console.log("isLeft", val);
 

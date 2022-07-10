@@ -31,7 +31,7 @@
         </div>
         <drag class="title">
           <div οndragstart="return false;" v-show="pageTypeText != 'edited'">
-            {{ typeText === "left" && title ? title : "无标题" }}
+            {{ typeText === "left" ? title || "无标题" : "便利贴" }}
           </div>
           <div class="input_title" v-show="pageTypeText === 'edited'">
             <div @dblclick="editedTitle" v-if="!isEditedTitle">

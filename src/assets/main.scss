@@ -31,6 +31,7 @@ body {
     }
 }
 
+//富文本
 .w-e-bar-bottom .w-e-select-list {
     margin-bottom: -140px;
 
@@ -62,6 +63,14 @@ body {
 
 .w-e-textarea-divider {
     padding: 3px;
+}
+
+.w-e-text-container [data-slate-editor] ul {
+    top: 0px !important;
+
+    li {
+        top: 0px !important;
+    }
 }
 
 .w-e-text-container [data-slate-editor] {
@@ -146,12 +155,14 @@ body {
 
 .isLeft {
     .left_main {
-        width: 451px !important;
+        width: 75% !important;
     }
 
     .right_main {
+        width: 40%;
+
         .index_main {
-            width: 248px;
+            width: 100%;
         }
     }
 }

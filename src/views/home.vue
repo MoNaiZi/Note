@@ -49,12 +49,12 @@ export default {
     }),
   },
   watch: {
-    currentItem: {
-      deep: true,
-      handler(val) {
-        console.log("home", val);
-      },
-    },
+    // currentItem: {
+    //   deep: true,
+    //   handler(val) {
+    //     console.log("home", val);
+    //   },
+    // },
   },
   data() {
     return {
@@ -68,9 +68,11 @@ export default {
   created() {
     // this.$router.psuh('/set')
     // console.log("home_note", this.note);
-    if (this.note && this.note.title) {
+    const that = this;
+    if (that.note && that.note.title) {
       store.dispatch("header/setIsEditedTitle", false);
     }
+
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
       // console.log("keyCode home", keyCode);
@@ -87,6 +89,12 @@ export default {
     },
     openLeft(item, bool = null) {
       console.log("打开右侧", bool);
+      if (!item) {
+        this.isLeft = false;
+        return;
+      }
+
+      item = JSON.parse(JSON.stringify(item));
       if (item && item._id != this.currentItem._id) {
         this.isLeft = true;
       } else {
