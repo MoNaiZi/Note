@@ -28,7 +28,8 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
@@ -37,20 +38,26 @@ const dayjs = require("dayjs");
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { DomEditor, Boot } from "@wangeditor/editor";
 import { getQueryByName } from "@/utils";
-export default {
+import { ElMessage } from "element-plus";
+interface Note {
+  title: string | undefined;
+  _id: string | undefined;
+  html: string | undefined;
+  timing: string | undefined;
+}
+export default defineComponent({
   components: {
     // Tree,
     Editor,
     Toolbar,
   },
-
   computed: {
     ...mapState("header", {
-      header: (state) => state.note,
-      headerClose: (state) => state.close,
+      header: (state: any) => state.note,
+      headerClose: (state: any) => state.close,
     }),
     ...mapState("note", {
-      list: (state) => state.list,
+      list: (state: any) => state.list,
     }),
   },
   watch: {
@@ -62,25 +69,26 @@ export default {
       },
     },
   },
+
   data() {
     return {
       skipPageType: 0, //跳进来的页面类型，0 主页，1.悬浮窗
-      note: {},
+      note: {} as Note,
       defaultProps: {
         children: "children",
         label: "label",
       },
-      editor: null,
+      editor: {} as any,
       toolbarConfig: {
         excludeKeys: ["group-video", "undo", "redo", "group-image"],
-      },
+      } as any,
       editorConfig: { placeholder: "请输入内容...", readOnly: false },
       mode: "default", // or 'simple'
       upKeyCode: -1,
     };
   },
   methods: {
-    saveEdited(typeText) {
+    saveEdited(typeText?: String) {
       let { timing } = this.header;
       const note = this.header;
       const html = this.editor.getHtml();
@@ -109,7 +117,7 @@ export default {
         // console.log("key", e);
         if (e.key === "s" && keyCode === 83) {
           this.saveEdited("save");
-          this.$message({
+          ElMessage({
             message: "保存成功",
             type: "success",
             duration: 1000,
@@ -125,7 +133,7 @@ export default {
       console.log("text", text);
       console.log("children", children);
     },
-    onCreated(editor) {
+    onCreated(editor: any) {
       this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
       const MENU_CONF = this.editor.getConfig().MENU_CONF;
 
@@ -146,7 +154,7 @@ export default {
 
       this.$nextTick(() => {});
     },
-    loadNode(node, resolve) {
+    loadNode(node: any, resolve: any) {
       const { layer, childrens } = node;
       if (childrens && childrens.length > 0) {
         resolve(childrens);
@@ -163,7 +171,7 @@ export default {
   },
   mounted() {
     setTimeout(() => {
-      const toolbar = DomEditor.getToolbar(this.editor);
+      const toolbar: any = DomEditor.getToolbar(this.editor);
 
       let toolbarKeys = toolbar.getConfig().toolbarKeys;
       toolbarKeys.push("|");
@@ -173,7 +181,7 @@ export default {
       console.log("toolbar", toolbar);
     }, 1000);
 
-    let edited_main = document.querySelector(".edited_main");
+    let edited_main: any = document.querySelector(".edited_main");
     edited_main.addEventListener("click", () => {
       const header = this.header;
       if (header && header.title) {
@@ -186,7 +194,7 @@ export default {
     // const MyDropPanelMenu = class IDropPanelMenu {
     //   // 菜单配置，代码可参考“颜色”菜单源码
     // };
-    const menu3Conf = {
+    const menu3Conf: any = {
       key: "timing", // menu key ，唯一。注册之后，可配置到工具栏
       title: "定时",
       factory() {},
@@ -195,16 +203,19 @@ export default {
     this.watchKey();
 
     let winId = getQueryByName("winId");
-    let note = {};
+    let note = {} as Note;
     if (winId === "undefined") {
       note._id = this.$createdId();
     } else {
       note = await ipcRenderer.invoke("getNote", winId);
     }
 
-    let skipPageType = getQueryByName("skipPageType");
-    if (typeof skipPageType != "undefined" && !isNaN(parseInt(skipPageType))) {
-      skipPageType = parseInt(skipPageType);
+    let skipPageTypeText: string = getQueryByName("skipPageType");
+    if (
+      typeof skipPageTypeText != "undefined" &&
+      !isNaN(parseInt(skipPageTypeText))
+    ) {
+      let skipPageType: number = parseInt(skipPageTypeText);
       if (skipPageType === 1) {
         note.timing = "";
       }
@@ -240,7 +251,7 @@ export default {
     if (editor == null) return;
     editor.destroy(); // 组件销毁时，及时销毁 editor ，重要！！！
   },
-};
+});
 </script>
 
 

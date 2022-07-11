@@ -97,7 +97,7 @@ body {
 }
 
 .dark {
-    background: #393939;
+    // background: #393939;
     height: 100vh;
     width: 100vw;
     --w-e-toolbar-color: #fff; //文字svg颜色
@@ -117,6 +117,9 @@ body {
         color: #fff !important;
     }
 
+
+    .wrap,
+    .context_menu,
     .el-input__wrapper {
         @include drak
     }

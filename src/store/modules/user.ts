@@ -5,7 +5,7 @@ export default {
             user: {
                 dark: false,
                 startUp: true,
-                // isLeft: true
+                pageSize: 10
             }
         }
     },
@@ -15,7 +15,10 @@ export default {
         }
     },
     mutations: {
-        setUser(state: any, user: string) {
+        setUser(state: any, user: any) {
+            if (!user.pageSize) {
+                user.pageSize = 10
+            }
             state.user = user
         }
     }

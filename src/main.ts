@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp, getCurrentInstance } from 'vue'
 import App from './App.vue'
 import { store } from './store'
 import router from './router/index'
@@ -28,6 +28,13 @@ const app = createApp(App)
 // db.defaults(initDatabase).write()
 
 app.config.globalProperties.$createdId = createNumberString
+
+declare module '@vue/runtime-core' {
+    export interface ComponentCustomProperties {
+        $createdId: typeof createNumberString
+    }
+}
+
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)

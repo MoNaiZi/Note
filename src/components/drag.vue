@@ -5,18 +5,19 @@
 </template>
 
 
-<script>
+<script lang="ts">
 const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
-let mouseX, mouseY;
-let beforeX, beforeY, afterX, afterY;
-export default {
+import { defineComponent } from "vue";
+let mouseX: number, mouseY: number;
+let beforeX: number, beforeY: number, afterX: number, afterY: number;
+export default defineComponent({
   computed: {
     ...mapState("header", {
-      pageTypeText: (state) => state.pageTypeText,
+      pageTypeText: (state: any) => state.pageTypeText,
     }),
   },
-  props: {},
+  // props: {},
   watch: {
     pageTypeText: function () {
       this.init();
@@ -43,7 +44,7 @@ export default {
       if (pageTypeText != "menu") {
         window.addEventListener("resize", function (e) {
           if (!that.isDrag) {
-            let currentTarget = e.currentTarget;
+            let currentTarget: any = e.currentTarget;
             that.width = currentTarget.outerWidth;
             that.height = currentTarget.outerHeight;
           }
@@ -68,7 +69,7 @@ export default {
           break;
       }
     },
-    end(e) {
+    end(e: any) {
       [afterX, afterY] = [e.offsetX, e.offsetY];
       this.isDrag = false;
       if (beforeX === afterX && beforeY === afterY) {
@@ -77,7 +78,7 @@ export default {
 
       // this.debounce(this.openMenu, 500, true);
     },
-    onMouseDown(e) {
+    onMouseDown(e: any) {
       this.isDrag = true;
       mouseX = e.clientX;
       mouseY = e.clientY;
@@ -86,12 +87,17 @@ export default {
     },
     move() {
       const that = this;
-      //   console.log(that);
+      type Config = {
+        mouseX: number;
+        mouseY: number;
+        height: number | undefined;
+        width: number | undefined;
+      };
       if (that.isDrag) {
         let config = {
           mouseX,
           mouseY,
-        };
+        } as Config;
         if (that.height) {
           config.height = that.height;
         }
@@ -103,7 +109,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

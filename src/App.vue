@@ -11,23 +11,27 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
 import { store } from "@/store";
-export default {
+export default defineComponent({
   name: "App",
   // components: { Header },
   computed: {
     ...mapState("header", {
-      pageTypeText: (state) => state.pageTypeText,
+      pageTypeText: (state: any) => state.pageTypeText,
     }),
     ...mapState("user", {
-      user: (state) => state.user,
+      user: (state: any) => state.user,
     }),
     classFn() {
-      const user = this.user;
-      const pageTypeText = this.pageTypeText;
+      type User = {
+        dark: Boolean | undefined;
+      };
+      const user: User = this.user;
+      const pageTypeText: string = this.pageTypeText;
       if (pageTypeText === "menu") return;
       return { dark: user.dark };
     },
@@ -42,7 +46,7 @@ export default {
     });
   },
   methods: {
-    setConfig(config) {
+    setConfig(config: Object) {
       if (config) {
         store.dispatch("user/setUser", config);
       }
@@ -51,7 +55,7 @@ export default {
   mounted() {
     console.log("AppMounted");
   },
-};
+});
 </script>
 
 <style src="@wangeditor/editor/dist/css/style.css"></style>

@@ -26,7 +26,7 @@
           <i
             v-show="pageTypeText === 'set' && typeText === ''"
             class="iconfont icon-back"
-            @click="this.$router.push('/')"
+            @click="toHome"
           ></i>
         </div>
         <drag class="title">
@@ -102,21 +102,22 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { mapState } from "vuex";
 import { store } from "@/store";
 
 const { ipcRenderer } = require("electron");
-import drag from "@/components/drag";
-export default {
+import drag from "@/components/drag.vue";
+import { defineComponent } from "vue";
+export default defineComponent({
   components: {
     drag,
   },
   computed: {
     ...mapState("header", {
-      pageTypeText: (state) => state.pageTypeText,
-      note: (state) => state.note || {},
-      isEditedTitle: (state) => state.isEditedTitle,
+      pageTypeText: (state: any) => state.pageTypeText,
+      note: (state: any) => state.note || {},
+      isEditedTitle: (state: any) => state.isEditedTitle,
     }),
   },
   props: {
@@ -153,13 +154,16 @@ export default {
   },
   mounted() {},
   methods: {
+    toHome() {
+      this.$router.push("/");
+    },
     zoomInAndOut() {
       const note = this.note;
       note.isZoomInAndOut = !note.isZoomInAndOut;
       store.dispatch("header/setNote", note);
       ipcRenderer.send("zoomInAndOut");
     },
-    showTiming(type) {
+    showTiming(type: number) {
       this.isShowTiming = !this.isShowTiming;
       if (type === 1) {
         store.dispatch("header/setNote", this.note);
@@ -198,7 +202,7 @@ export default {
       this.$router.push("/set");
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

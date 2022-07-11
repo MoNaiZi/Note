@@ -12,14 +12,15 @@
     </drag>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { store } from "@/store";
 import menuStyle from "@/components/menu_style.vue";
 import { getQueryByName } from "@/utils";
-import drag from "@/components/drag";
+import drag from "@/components/drag.vue";
 const { ipcRenderer } = require("electron");
-let timeout;
-export default {
+import { defineComponent } from "vue";
+let timeout: any;
+export default defineComponent({
   components: {
     menuStyle,
     drag,
@@ -41,7 +42,7 @@ export default {
     }
   },
   methods: {
-    itemStyle(item, index) {
+    itemStyle(item: any, index: number) {
       console.log(item, index);
       // const open = this.open;
       let result = {};
@@ -76,11 +77,11 @@ export default {
 
       return result;
     },
-    debounce(func, wait, immediate) {
+    debounce(func: any, wait: any, immediate: Boolean) {
       console.log("1");
-      return function () {
+      return () => {
         console.log("2");
-        let context = this;
+        let context: any = this;
         let args = arguments;
 
         if (timeout) clearTimeout(timeout);
@@ -118,9 +119,9 @@ export default {
     },
   },
   mounted() {
-    this.wrap = document.querySelector(".wrap");
+    // this.wrap = document.querySelector(".wrap");
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

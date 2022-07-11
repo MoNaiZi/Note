@@ -26,7 +26,7 @@
             v-for="(item, index) in list"
             :key="item._id"
             :class="['item', { item_active: cuttentIndex == index }]"
-            @mousedown.stop="this.cuttentIndex = index"
+            @mousedown.capture="setCuttentIndex(index)"
             @contextmenu="handleContextMenu($event, item)"
           >
             <div>
@@ -44,7 +44,7 @@
                 <el-icon
                   v-show="!isLeft"
                   class="ArrowDownBold"
-                  @click.stop="openDetaile(item, index)"
+                  @click.stop="openDetaile(item)"
                 >
                   <ArrowDownBold v-show="item.isOpenDetaile" />
                   <ArrowLeftBold v-show="!item.isOpenDetaile" />
@@ -90,15 +90,16 @@
   </div>
 </template>
 
-<script >
+<script lang="ts" >
 import { store } from "@/store";
-import { mapGetters } from "vuex";
+import { mapState } from "vuex";
 import contextMenu from "@/components/context_menu.vue";
-import noteEditor from "@/components/note_editor";
+import noteEditor from "@/components/note_editor.vue";
 import { fromNow } from "@/utils";
+import { defineComponent } from "vue";
 
 const { ipcRenderer } = require("electron");
-export default {
+export default defineComponent({
   components: {
     contextMenu,
     noteEditor,
@@ -109,7 +110,7 @@ export default {
   },
   data() {
     return {
-      list: [],
+      list: [] as any,
       searchKey: "",
       showMenu: false,
       currentItem: {},
@@ -120,8 +121,8 @@ export default {
       loading: true,
       loadMoreLoading: false,
       loadMore: 0, //0.有更多，1.没有更多了
-      pageSize: 10,
       page: 0,
+      listDiv: {} as any,
     };
   },
   watch: {
@@ -155,8 +156,8 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("note", {
-      // list: "getNoteList",
+    ...mapState("user", {
+      pageSize: (state: any) => state.user.pageSize,
     }),
   },
   beforeCreate() {
@@ -174,7 +175,7 @@ export default {
     window.onmessage = (event) => {
       // event.source === window 表示消息来自预加载脚本
       // 而不是来自 <iframe> 或其他来源
-      this.event = event;
+      // this.event = event;
       if (event.source === window && event.data === "main-world-port") {
         console.log("event", event);
         const [port] = event.ports;
@@ -188,7 +189,7 @@ export default {
     };
     this.getList();
     ipcRenderer.on("getEdited", (_event, tempOjb) => {
-      let index = this.list.findIndex((item) => item._id === tempOjb._id);
+      let index = this.list.findIndex((item: any) => item._id === tempOjb._id);
       this.cuttentIndex = index;
       if (this.isLeft) {
         this.openLeft(tempOjb, true);
@@ -258,11 +259,12 @@ export default {
     console.log("mounted");
     const that = this;
     that.loading = false;
-    that.listDiv = document.querySelector(".list");
-    if (that.listDiv) {
-      that.listDiv.addEventListener(
+    let listDiv = document.querySelector(".list");
+    this.listDiv = listDiv;
+    if (listDiv) {
+      listDiv.addEventListener(
         "scroll",
-        function (e) {
+        function (e: any) {
           let scrollTop = e.target.scrollTop;
           if (scrollTop > 300) {
             that.isScrollTop = true;
@@ -299,6 +301,9 @@ export default {
     console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    setCuttentIndex(index: number) {
+      this.cuttentIndex = index;
+    },
     getList() {
       const that = this;
       let list = that.list;
@@ -317,16 +322,16 @@ export default {
       // this.list.scrollTop = 0;
       this.listDiv.scroll({ top: 0 });
     },
-    fromNowFn(time) {
+    fromNowFn(time: any) {
       return fromNow(time);
     },
-    openDetaile(item) {
+    openDetaile(item: any) {
       this.showMenu = false;
       let isOpenDetaile =
         typeof item.isOpenDetaile === "undefined" ? false : item.isOpenDetaile;
       item.isOpenDetaile = isOpenDetaile ? false : true;
       // const that = this;
-      ipcRenderer.send("updateNote", JSON.palrse(JSON.stringify(item)));
+      ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
       //isOpenDetaile
     },
     search() {
@@ -337,7 +342,7 @@ export default {
         // store.dispatch("note/setNoteList", res);
       });
     },
-    edited(item) {
+    edited(item: any) {
       const cuttentIndex = this.cuttentIndex;
       ipcRenderer
         .invoke("newWindow", { _id: item._id, winId: item.winId })
@@ -345,10 +350,10 @@ export default {
           this.list[cuttentIndex].winId = id;
         });
     },
-    changeMenu(type) {
+    changeMenu(type: number) {
       console.log("type", type);
       const that = this;
-      const currentItem = this.currentItem;
+      const currentItem: any = this.currentItem;
       const cuttentIndex = this.cuttentIndex;
       switch (type) {
         case 0:
@@ -386,10 +391,10 @@ export default {
           break;
       }
     },
-    openLeft(item, bool = null) {
+    openLeft(item: any, bool: Boolean | null = null) {
       this.$emit("openLeft", item, bool);
     },
-    handleContextMenu(e, item) {
+    handleContextMenu(e: any, item: any) {
       console.log("clientX", e.clientX, "clientY", e.clientY);
       e.stopPropagation();
       e.preventDefault();
@@ -403,7 +408,7 @@ export default {
       ipcRenderer.postMessage("port", { message: "hello" }, [port1]);
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

@@ -12,12 +12,13 @@
     @onChange="onChange"
   />
 </template>
-<script>
+<script lang="ts">
 import { Editor } from "@wangeditor/editor-for-vue";
 import { SlateEditor } from "@wangeditor/editor";
-export default {
+import { defineComponent } from "vue";
+export default defineComponent({
   props: {
-    currentItem: {},
+    currentItem: {} as any,
   },
   watch: {
     currentItem: {
@@ -32,7 +33,7 @@ export default {
       id: this.$createdId(),
       data: this.currentItem,
       editorConfig: { placeholder: "请输入内容...", readOnly: false },
-      editor: {},
+      editor: {} as any,
     };
   },
   components: {
@@ -51,7 +52,7 @@ export default {
     getEditor() {
       this.$emit("getEditor", this.editor);
     },
-    onChange(editor) {
+    onChange(editor: any) {
       // if (!editor.isFocused()) {
       //   // editor.focus(true);
       // }
@@ -65,10 +66,10 @@ export default {
       console.log("onFocus");
       // this.$emit("onFocus");
     },
-    preventBlur(event) {
+    preventBlur(event: any) {
       event.preventDefault();
     },
-    onCreated(editor) {
+    onCreated(editor: any) {
       this.editor = editor;
     },
   },
@@ -78,7 +79,7 @@ export default {
     if (editor == null) return;
     editor.destroy();
   },
-};
+});
 </script>
 <style lang="scss" scoped>
 .editor {

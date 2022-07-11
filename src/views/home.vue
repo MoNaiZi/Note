@@ -35,22 +35,29 @@
     </transition>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { mapState } from "vuex";
 import { store } from "@/store";
-import noteEditor from "@/components/note_editor";
+import noteEditor from "@/components/note_editor.vue";
 const { ipcRenderer } = require("electron");
-import noteHeader from "@/components/note_header";
-export default {
+import noteHeader from "@/components/note_header.vue";
+import { defineComponent } from "vue";
+
+interface CurrentItem {
+  _id: string | undefined | null;
+  html: string | undefined | null;
+  title: string | undefined;
+}
+export default defineComponent({
   components: {
     noteEditor,
     noteHeader,
   },
   computed: {
     ...mapState("header", {
-      pageTypeText: (state) => state.pageTypeText,
-      note: (state) => state.note || {},
-      isEditedTitle: (state) => state.isEditedTitle,
+      pageTypeText: (state: any) => state.pageTypeText,
+      note: (state: any) => state.note || {},
+      isEditedTitle: (state: any) => state.isEditedTitle,
     }),
   },
   watch: {
@@ -67,7 +74,7 @@ export default {
       isShowTiming: false,
       isLeft: false,
       isOpenLeft: false,
-      currentItem: {},
+      currentItem: {} as CurrentItem,
       isBlur: false,
     };
   },
@@ -93,11 +100,11 @@ export default {
       console.log("onFocus");
       this.isBlur = true;
     },
-    changeEditor(editor) {
+    changeEditor(editor: any) {
       // console.log("editor", editor);
       this.currentItem.html = editor.getHtml();
     },
-    openLeft(item, bool = null) {
+    openLeft(item: any, bool = null) {
       console.log("打开右侧", bool);
       if (!item) {
         this.isLeft = false;
@@ -121,7 +128,7 @@ export default {
       if (this.isOpenLeft) {
         this.currentItem = item;
       } else {
-        this.currentItem = {};
+        this.currentItem = { _id: null, html: null, title: "" };
       }
     },
     zoomInAndOut() {
@@ -130,7 +137,7 @@ export default {
       store.dispatch("header/setNote", note);
       ipcRenderer.send("zoomInAndOut");
     },
-    showTiming(type) {
+    showTiming(type: number) {
       this.isShowTiming = !this.isShowTiming;
       if (type === 1) {
         store.dispatch("header/setNote", this.note);
@@ -164,7 +171,7 @@ export default {
       this.$router.push("/set");
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

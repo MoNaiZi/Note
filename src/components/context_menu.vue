@@ -15,8 +15,9 @@
     </ul>
   </div>
 </template>
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
   props: {
     X: {
       type: Number,
@@ -33,18 +34,18 @@ export default {
     currentItem: {
       type: Object,
       value: {},
-    },
+    } as any,
   },
   data() {
     return {};
   },
   methods: {
-    change(type) {
+    change(type: number) {
       this.$emit("change", type);
     },
     handleMouseUp() {},
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

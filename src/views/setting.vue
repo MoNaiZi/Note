@@ -17,16 +17,21 @@
         style="--el-switch-on-color: #13ce66"
       />
     </div>
+    <div class="item">
+      <span>显示条数</span>
+      <el-input-number v-model="setting.pageSize" :min="1" :max="100" />
+    </div>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 import { store } from "@/store";
-export default {
+import { defineComponent } from "vue";
+export default defineComponent({
   computed: {
     ...mapState("user", {
-      setting: (state) => state.user,
+      setting: (state: any) => state.user,
     }),
   },
   watch: {
@@ -47,9 +52,9 @@ export default {
     };
   },
   methods: {
-    floatingFn(status) {
-      console.log("status", status);
-    },
+    // floatingFn(status) {
+    //   console.log("status", status);
+    // },
   },
   mounted() {
     // this.count = 0;
@@ -67,7 +72,7 @@ export default {
     //   }
     // });
   },
-};
+});
 </script>
 <style lang="scss" scoped>
 .set_main {
