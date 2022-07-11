@@ -105,7 +105,7 @@ export default {
 
         const winIdList = that.winIdList;
         for (let id of winIdList) {
-          ipcRenderer.send("newWindow", id, 1);
+          ipcRenderer.invoke("newWindow", { _id: id, pageType: 1 });
           ipcRenderer.send("closeSuspensionWin", id);
         }
 

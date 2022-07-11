@@ -1,17 +1,20 @@
 <template>
   <Editor
     class="editor"
-    @mouseup="preventBlur($event)"
     style="overflow-y: hidden; text-align: left; height: 500px"
     :key="id"
     v-model="data.html"
     :defaultConfig="editorConfig"
     :mode="'default'"
     @onCreated="onCreated"
+    @onFocus="onFocus"
+    @onBlur="onBlur"
+    @onChange="onChange"
   />
 </template>
 <script>
 import { Editor } from "@wangeditor/editor-for-vue";
+import { SlateEditor } from "@wangeditor/editor";
 export default {
   props: {
     currentItem: {},
@@ -45,6 +48,23 @@ export default {
     // });
   },
   methods: {
+    getEditor() {
+      this.$emit("getEditor", this.editor);
+    },
+    onChange(editor) {
+      // if (!editor.isFocused()) {
+      //   // editor.focus(true);
+      // }
+      SlateEditor.end(editor, []);
+      console.log("onChange", editor.isFocused());
+    },
+    onBlur() {
+      console.log("onBlur");
+    },
+    onFocus() {
+      console.log("onFocus");
+      // this.$emit("onFocus");
+    },
     preventBlur(event) {
       event.preventDefault();
     },

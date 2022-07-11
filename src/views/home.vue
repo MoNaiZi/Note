@@ -7,9 +7,14 @@
           :typeText="'left'"
           :title="currentItem.title"
           @close="openLeft"
+          @onFocus="onFocus"
         ></noteHeader>
         <keep-alive>
-          <noteEditor key="home_index" :currentItem="currentItem" />
+          <noteEditor
+            ref="noteEditor"
+            key="home_index"
+            :currentItem="currentItem"
+          />
         </keep-alive>
       </div>
     </transition>
@@ -21,7 +26,7 @@
           <router-view
             @openLeft="openLeft"
             :isLeft="isLeft"
-            :leftItem="currentItem"
+            :leftItem="!isLeft ? currentItem : {}"
             @close="openLeft"
           >
           </router-view>
@@ -63,6 +68,7 @@ export default {
       isLeft: false,
       isOpenLeft: false,
       currentItem: {},
+      isBlur: false,
     };
   },
   created() {
@@ -83,6 +89,10 @@ export default {
   },
   mounted() {},
   methods: {
+    onFocus() {
+      console.log("onFocus");
+      this.isBlur = true;
+    },
     changeEditor(editor) {
       // console.log("editor", editor);
       this.currentItem.html = editor.getHtml();
@@ -148,7 +158,7 @@ export default {
     },
 
     addNote() {
-      ipcRenderer.send("newWindow");
+      ipcRenderer.invoke("newWindow");
     },
     toSet() {
       this.$router.push("/set");

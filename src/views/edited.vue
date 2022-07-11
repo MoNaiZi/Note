@@ -58,24 +58,7 @@ export default {
       deep: true,
       handler(val) {
         if (val) return;
-        let { timing } = this.header;
-        const note = this.header;
-        const html = this.editor.getHtml();
-        // // const text = this.editor.getText();
-        let tempOjb = { html, ...note };
-        tempOjb.title = tempOjb.title || "无标题";
-        if (timing) {
-          tempOjb.timing = timing;
-          tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
-          tempOjb.timingStatus = 0;
-        }
-
-        ipcRenderer.send(
-          "closeEdited",
-          note._id,
-          JSON.parse(JSON.stringify(tempOjb))
-        );
-        store.dispatch("header/setHeaderClose", false);
+        this.saveEdited();
       },
     },
   },
@@ -97,12 +80,40 @@ export default {
     };
   },
   methods: {
+    saveEdited(typeText) {
+      let { timing } = this.header;
+      const note = this.header;
+      const html = this.editor.getHtml();
+      // // const text = this.editor.getText();
+      let tempOjb = { html, ...note };
+      tempOjb.title = tempOjb.title || "无标题";
+      if (timing) {
+        tempOjb.timing = timing;
+        tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
+        tempOjb.timingStatus = 0;
+      }
+
+      ipcRenderer.send(
+        "closeEdited",
+        note._id,
+        JSON.parse(JSON.stringify(tempOjb)),
+        typeText
+      );
+      if (typeText != "save") {
+        store.dispatch("header/setHeaderClose", false);
+      }
+    },
     watchKey() {
       window.addEventListener("keydown", (e) => {
         let keyCode = e.keyCode;
         // console.log("key", e);
         if (e.key === "s" && keyCode === 83) {
-          console.log("保存");
+          this.saveEdited("save");
+          this.$message({
+            message: "保存成功",
+            type: "success",
+            duration: 1000,
+          });
         }
       });
     },

@@ -192,7 +192,7 @@ export default {
     },
 
     addNote() {
-      ipcRenderer.send("newWindow");
+      ipcRenderer.invoke("newWindow");
     },
     toSet() {
       this.$router.push("/set");

@@ -338,7 +338,12 @@ export default {
       });
     },
     edited(item) {
-      ipcRenderer.send("newWindow", item._id);
+      const cuttentIndex = this.cuttentIndex;
+      ipcRenderer
+        .invoke("newWindow", { _id: item._id, winId: item.winId })
+        .then((id) => {
+          this.list[cuttentIndex].winId = id;
+        });
     },
     changeMenu(type) {
       console.log("type", type);

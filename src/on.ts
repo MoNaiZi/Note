@@ -130,6 +130,7 @@ ipcMain.on('updateNote', (event, item) => {
     const _id = item._id
     item.timeStamp = dayjs().valueOf()
     item.time = dayjs().format('YYYY-MM-DD HH:mm')
+    delete item.winId
     db.get('NoteList').find({ _id }).assign(item).write()
 })
 
@@ -260,7 +261,7 @@ ipcMain.handle('search', (_event, key) => {
     return result || []
 })
 
-ipcMain.on('closeEdited', (event, winId, tempOjb = {}) => {
+ipcMain.on('closeEdited', (event, winId, tempOjb = {}, typeText) => {
     if (!winId) return
     const webContents = event.sender
     const win: any = BrowserWindow.fromWebContents(webContents)
@@ -278,7 +279,10 @@ ipcMain.on('closeEdited', (event, winId, tempOjb = {}) => {
     }
 
     global.mainWin.webContents.send('getEdited', tempOjb)
-    win.close()
+    if (typeText != 'save') {
+        win.close()
+    }
+
 })
 
 ipcMain.on('minimize', (event) => {
@@ -287,7 +291,7 @@ ipcMain.on('minimize', (event) => {
     win.minimize()
 })
 
-ipcMain.on('newWindow', async (event, winId, pageType) => {
+ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
     const mainWindows = mainProcess.mainWindows()
     const { config, winURL } = mainWindows
     let newOjb: any = {
@@ -298,8 +302,8 @@ ipcMain.on('newWindow', async (event, winId, pageType) => {
         frame: false
     }
     newOjb = Object.assign(config, newOjb)
-    const note = db.get('NoteList').find({ _id: winId }).value() || {}
-    if (winId) {
+    const note = db.get('NoteList').find({ _id }).value() || {}
+    if (_id) {
         const winAttribute = note.winAttribute
         if (winAttribute && !note.isZoomInAndOut) {
             newOjb.width = winAttribute.width
@@ -309,14 +313,28 @@ ipcMain.on('newWindow', async (event, winId, pageType) => {
         }
 
     }
-    const win = new BrowserWindow(newOjb)
+    let win: any = {}
+    if (winId) {
+        win = BrowserWindow.fromId(winId)
+        if (win.isMinimized()) {
+            win.restore()
+        }
+        if (!win.isFocused()) {
+            win.focus()
+        }
+        win.show()
+    } else {
+        win = new BrowserWindow(newOjb)
+        const url = `${winURL}/#/edited?winId=${_id}&skipPageType=${pageType}`
+        win.setIcon(logo)
+        win.loadURL(url)
+    }
+
 
     if (note.isZoomInAndOut) {
         win.maximize()
     }
-    const url = `${winURL}/#/edited?winId=${winId}&skipPageType=${pageType}`
-    win.setIcon(logo)
-    win.loadURL(url)
+    return win.id
 })
 
 
