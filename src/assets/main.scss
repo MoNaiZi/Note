@@ -159,10 +159,12 @@ body {
 .isLeft {
     .left_main {
         width: 75% !important;
+        transition: all 0.5;
     }
 
     .right_main {
-        width: 40%;
+        width: 40% !important;
+        transition: all 0.5s;
 
         .index_main {
             width: 100%;

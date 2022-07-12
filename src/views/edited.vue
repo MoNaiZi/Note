@@ -1,3 +1,4 @@
+@@ -1,243 +1,254 @@
 <template>
   <!-- <button @click="getValue">getValue</button> -->
   <div class="edited_main">
@@ -28,8 +29,7 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { defineComponent } from "vue";
+<script>
 import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
@@ -38,26 +38,20 @@ const dayjs = require("dayjs");
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { DomEditor, Boot } from "@wangeditor/editor";
 import { getQueryByName } from "@/utils";
-import { ElMessage } from "element-plus";
-interface Note {
-  title: string | undefined;
-  _id: string | undefined;
-  html: string | undefined;
-  timing: string | undefined;
-}
-export default defineComponent({
+export default {
   components: {
     // Tree,
     Editor,
     Toolbar,
   },
+
   computed: {
     ...mapState("header", {
-      header: (state: any) => state.note,
-      headerClose: (state: any) => state.close,
+      header: (state) => state.note,
+      headerClose: (state) => state.close,
     }),
     ...mapState("note", {
-      list: (state: any) => state.list,
+      list: (state) => state.list,
     }),
   },
   watch: {
@@ -65,30 +59,47 @@ export default defineComponent({
       deep: true,
       handler(val) {
         if (val) return;
+        let { timing } = this.header;
+        const note = this.header;
+        const html = this.editor.getHtml();
+        // // const text = this.editor.getText();
+        let tempOjb = { html, ...note };
+        tempOjb.title = tempOjb.title || "无标题";
+        if (timing) {
+          tempOjb.timing = timing;
+          tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
+          tempOjb.timingStatus = 0;
+        }
+
+        ipcRenderer.send(
+          "closeEdited",
+          note._id,
+          JSON.parse(JSON.stringify(tempOjb))
+        );
+        store.dispatch("header/setHeaderClose", false);
         this.saveEdited();
       },
     },
   },
-
   data() {
     return {
       skipPageType: 0, //跳进来的页面类型，0 主页，1.悬浮窗
-      note: {} as Note,
+      note: {},
       defaultProps: {
         children: "children",
         label: "label",
       },
-      editor: {} as any,
+      editor: null,
       toolbarConfig: {
         excludeKeys: ["group-video", "undo", "redo", "group-image"],
-      } as any,
+      },
       editorConfig: { placeholder: "请输入内容...", readOnly: false },
       mode: "default", // or 'simple'
       upKeyCode: -1,
     };
   },
   methods: {
-    saveEdited(typeText?: String) {
+    saveEdited(typeText) {
       let { timing } = this.header;
       const note = this.header;
       const html = this.editor.getHtml();
@@ -116,8 +127,9 @@ export default defineComponent({
         let keyCode = e.keyCode;
         // console.log("key", e);
         if (e.key === "s" && keyCode === 83) {
+          console.log("保存");
           this.saveEdited("save");
-          ElMessage({
+          this.$message({
             message: "保存成功",
             type: "success",
             duration: 1000,
@@ -133,7 +145,7 @@ export default defineComponent({
       console.log("text", text);
       console.log("children", children);
     },
-    onCreated(editor: any) {
+    onCreated(editor) {
       this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
       const MENU_CONF = this.editor.getConfig().MENU_CONF;
 
@@ -154,7 +166,7 @@ export default defineComponent({
 
       this.$nextTick(() => {});
     },
-    loadNode(node: any, resolve: any) {
+    loadNode(node, resolve) {
       const { layer, childrens } = node;
       if (childrens && childrens.length > 0) {
         resolve(childrens);
@@ -171,7 +183,7 @@ export default defineComponent({
   },
   mounted() {
     setTimeout(() => {
-      const toolbar: any = DomEditor.getToolbar(this.editor);
+      const toolbar = DomEditor.getToolbar(this.editor);
 
       let toolbarKeys = toolbar.getConfig().toolbarKeys;
       toolbarKeys.push("|");
@@ -181,7 +193,7 @@ export default defineComponent({
       console.log("toolbar", toolbar);
     }, 1000);
 
-    let edited_main: any = document.querySelector(".edited_main");
+    let edited_main = document.querySelector(".edited_main");
     edited_main.addEventListener("click", () => {
       const header = this.header;
       if (header && header.title) {
@@ -194,7 +206,7 @@ export default defineComponent({
     // const MyDropPanelMenu = class IDropPanelMenu {
     //   // 菜单配置，代码可参考“颜色”菜单源码
     // };
-    const menu3Conf: any = {
+    const menu3Conf = {
       key: "timing", // menu key ，唯一。注册之后，可配置到工具栏
       title: "定时",
       factory() {},
@@ -203,19 +215,16 @@ export default defineComponent({
     this.watchKey();
 
     let winId = getQueryByName("winId");
-    let note = {} as Note;
+    let note = {};
     if (winId === "undefined") {
       note._id = this.$createdId();
     } else {
       note = await ipcRenderer.invoke("getNote", winId);
     }
 
-    let skipPageTypeText: string = getQueryByName("skipPageType");
-    if (
-      typeof skipPageTypeText != "undefined" &&
-      !isNaN(parseInt(skipPageTypeText))
-    ) {
-      let skipPageType: number = parseInt(skipPageTypeText);
+    let skipPageType = getQueryByName("skipPageType");
+    if (typeof skipPageType != "undefined" && !isNaN(parseInt(skipPageType))) {
+      skipPageType = parseInt(skipPageType);
       if (skipPageType === 1) {
         note.timing = "";
       }
@@ -251,7 +260,7 @@ export default defineComponent({
     if (editor == null) return;
     editor.destroy(); // 组件销毁时，及时销毁 editor ，重要！！！
   },
-});
+};
 </script>
 
 

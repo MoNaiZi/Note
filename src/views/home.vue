@@ -1,7 +1,7 @@
 <template>
   <div :class="['wrap', { isLeft }]">
     <transition name="main-fade">
-      <div class="left_main" v-if="isLeft">
+      <div class="left_main" v-show="isLeft">
         <noteHeader
           key="editor_home"
           :typeText="'left'"
@@ -9,28 +9,25 @@
           @close="openLeft"
           @onFocus="onFocus"
         ></noteHeader>
-        <keep-alive>
-          <noteEditor
-            ref="noteEditor"
-            key="home_index"
-            :currentItem="currentItem"
-          />
-        </keep-alive>
+
+        <noteEditor
+          ref="noteEditor"
+          key="home_index"
+          :currentItem="currentItem"
+        />
       </div>
     </transition>
 
     <transition name="main-fade">
       <div class="right_main">
         <noteHeader></noteHeader>
-        <keep-alive>
-          <router-view
-            @openLeft="openLeft"
-            :isLeft="isLeft"
-            :leftItem="!isLeft ? currentItem : {}"
-            @close="openLeft"
-          >
-          </router-view>
-        </keep-alive>
+        <router-view
+          @openLeft="openLeft"
+          :isLeft="isLeft"
+          :leftItem="!isLeft ? currentItem : {}"
+          @close="openLeft"
+        >
+        </router-view>
       </div>
     </transition>
   </div>
@@ -105,9 +102,10 @@ export default defineComponent({
       this.currentItem.html = editor.getHtml();
     },
     openLeft(item: any, bool = null) {
-      console.log("打开右侧", bool);
+      // console.log("打开右侧", bool, item);
       if (!item) {
         this.isLeft = false;
+        this.currentItem = { _id: null, html: null, title: "" };
         return;
       }
 
@@ -120,12 +118,11 @@ export default defineComponent({
       if (bool != null && typeof bool != "undefined") {
         this.isLeft = bool;
       }
-      if (this.isOpenLeft != this.isLeft) {
-        this.isOpenLeft = this.isLeft;
-
-        // ipcRenderer.invoke("openLeft", this.isLeft);
-      }
-      if (this.isOpenLeft) {
+      // console.log("isLeft", this.isLeft);
+      // if (this.isOpenLeft != this.isLeft) {
+      //   this.isOpenLeft = this.isLeft;
+      // }
+      if (this.isLeft) {
         this.currentItem = item;
       } else {
         this.currentItem = { _id: null, html: null, title: "" };
@@ -181,7 +178,8 @@ export default defineComponent({
   border-radius: 10px;
   height: 100%;
   .right_main {
-    // width: 100%;
+    width: 100%;
+    // transition: all 0.5s;
     // height: 100%;
   }
   .left_main {

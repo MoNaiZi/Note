@@ -190,6 +190,7 @@ export default defineComponent({
     this.getList();
     ipcRenderer.on("getEdited", (_event, tempOjb) => {
       let index = this.list.findIndex((item: any) => item._id === tempOjb._id);
+
       this.cuttentIndex = index;
       if (this.isLeft) {
         this.openLeft(tempOjb, true);
@@ -501,6 +502,7 @@ li {
     }
     .content {
       position: relative;
+      transition: all 0.5s;
       .time {
         font-size: 13px;
         color: #9c9c9c;

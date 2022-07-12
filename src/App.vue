@@ -5,9 +5,9 @@
         <component :is="'Header'"></component>
       </template>
     </transition> -->
-    <!-- <transition name="main-fade"> -->
-    <router-view> </router-view>
-    <!-- </transition> -->
+    <transition name="main-fade">
+      <router-view> </router-view>
+    </transition>
   </div>
 </template>
 
@@ -75,6 +75,7 @@ export default defineComponent({
   height: 100vh;
   .app_wrap {
     height: 100%;
+    transition: all 1s;
   }
 }
 

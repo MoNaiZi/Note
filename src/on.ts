@@ -228,7 +228,9 @@ const getNote = function (_id: string) {
 }
 
 ipcMain.handle('getNote', (_event, winId) => {
-    return getNote(winId)
+    let result = getNote(winId)
+    console.log('result', result)
+    return result
 })
 
 ipcMain.handle('getList', (event, page, pageSize) => {
@@ -269,9 +271,11 @@ ipcMain.on('closeEdited', (event, winId, tempOjb = {}, typeText) => {
     const getValue = db.get('NoteList').find({ _id: winId }).value()
     tempOjb._id = winId
     tempOjb.winAttribute = bounds
-    console.log('bounds', bounds)
+
     tempOjb.timeStamp = dayjs().valueOf()
     tempOjb.time = dayjs().format('YYYY-MM-DD HH:mm')
+
+    delete tempOjb.winId;
     if (!getValue) {
         db.get('NoteList').unshift(tempOjb).write()
     } else if (getValue) {
@@ -313,23 +317,31 @@ ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
         }
 
     }
+    let newWin = function () {
+        let result = new BrowserWindow(newOjb)
+        const url = `${winURL}/#/edited?winId=${_id}&skipPageType=${pageType}`
+        result.setIcon(logo)
+        result.loadURL(url)
+    }
     let win: any = {}
     if (winId) {
         win = BrowserWindow.fromId(winId)
-        if (win.isMinimized()) {
-            win.restore()
+        console.log('win', win)
+        if (win) {
+            if (win.isMinimized()) {
+                win.restore()
+            }
+            if (!win.isFocused()) {
+                win.focus()
+            }
+            win.show()
+        } else {
+            win = newWin()
         }
-        if (!win.isFocused()) {
-            win.focus()
-        }
-        win.show()
-    } else {
-        win = new BrowserWindow(newOjb)
-        const url = `${winURL}/#/edited?winId=${_id}&skipPageType=${pageType}`
-        win.setIcon(logo)
-        win.loadURL(url)
-    }
 
+    } else {
+        win = newWin()
+    }
 
     if (note.isZoomInAndOut) {
         win.maximize()
