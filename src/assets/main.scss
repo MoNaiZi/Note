@@ -32,6 +32,8 @@ body {
 }
 
 //富文本
+
+
 .w-e-bar-bottom .w-e-select-list {
     margin-bottom: -140px;
 
@@ -75,6 +77,7 @@ body {
 
 .w-e-text-container [data-slate-editor] {
     padding: 0px;
+    height: 100%
 }
 
 .w-e-hover-bar {
@@ -168,6 +171,18 @@ body {
 
         .index_main {
             width: 100%;
+
+            // .content {
+            //     height: 0px !important;
+            //     transition: all 0.5s;
+
+            .editor {
+                height: 0px !important;
+                transition: all 0.5s;
+            }
+
+            // }
+
         }
     }
 }

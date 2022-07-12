@@ -32,7 +32,7 @@
             <div>
               <h4 @click="openLeft(item)">
                 {{ item.title || "无标题" }}
-                <div class="h4_item" v-show="isLeft">
+                <!-- <div class="h4_item" v-show="isLeft">
                   <el-tooltip
                     effect="light"
                     :content="item.time"
@@ -40,7 +40,7 @@
                   >
                     {{ fromNowFn(item.timeStamp) }}
                   </el-tooltip>
-                </div>
+                </div> -->
                 <el-icon
                   v-show="!isLeft"
                   class="ArrowDownBold"
@@ -50,7 +50,7 @@
                   <ArrowLeftBold v-show="!item.isOpenDetaile" />
                 </el-icon>
               </h4>
-              <div class="content" v-show="!isLeft">
+              <div class="content">
                 <keep-alive>
                   <noteEditor
                     class="editor"
@@ -140,6 +140,7 @@ export default defineComponent({
     },
     isLeft: function (val) {
       console.log("isLeft", val);
+
       ipcRenderer.invoke("openLeft", this.isLeft);
     },
     list: {

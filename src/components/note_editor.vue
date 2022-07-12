@@ -83,8 +83,11 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .editor {
-  height: 80%;
-  overflow-y: hidden;
+  // height: 80%;
   text-align: left;
+  scrollbar-width: none; /* firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 </style>
