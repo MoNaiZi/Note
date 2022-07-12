@@ -1,32 +1,19 @@
-# Note 使用技术
+English | [简体中文](./README.CN.md)
+
+### Note 使用技术
 
 ```
 vue3
+ts
 electron19
 vuex
 vur-router
+lowdb
 ```
 
+# 介绍
+现在很多electron教程都是11版本的或者之前的，electron11版本之后进行了重大更改去除了remote模块禁止在渲染层调用主进程的api。
+本次项目实现点：开机自启，黑夜模式，悬浮窗，用于定时提醒，优化的窗口拖动，优雅丝滑的改变窗口大小和位置显示界面，自定义安装，以及自定义图标，最小化，自定义托盘。
+<br>
+</p>
 
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

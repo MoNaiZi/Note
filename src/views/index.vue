@@ -59,7 +59,7 @@
                     :currentItem="item"
                   />
                 </keep-alive>
-                <div class="time">
+                <div class="time" @click="openLeft(item)">
                   <el-tooltip
                     class="item"
                     effect="light"
@@ -106,6 +106,7 @@ export default defineComponent({
   },
   props: {
     leftItem: {},
+    upCurrentItem: {},
     isLeft: Boolean,
   },
   data() {
@@ -127,6 +128,19 @@ export default defineComponent({
   },
   inject: ["home"],
   watch: {
+    upCurrentItem: {
+      deep: true,
+      handler: function (val) {
+        let item = val; //this.leftItem;
+        if (!item._id) return;
+        const cuttentIndex = this.list.findIndex(
+          (j: any) => j._id === item._id
+        );
+        if (cuttentIndex >= 0) {
+          this.list[cuttentIndex] = item;
+        }
+      },
+    },
     leftItem: {
       deep: true,
       handler: function (val) {
@@ -135,18 +149,18 @@ export default defineComponent({
         if (!item._id) return;
         this.$emit("changeIsSave", false);
         this.list[cuttentIndex] = item;
-        console.log("leftItem", item);
+        // console.log("leftItem", item);
       },
     },
-    isLeft: function (val) {
-      console.log("isLeft", val);
+    isLeft: function () {
+      // console.log("isLeft", val);
 
       ipcRenderer.invoke("openLeft", this.isLeft);
     },
     list: {
       deep: true,
       handler(val) {
-        console.log("监听list", val);
+        // console.log("监听list", val);
         const cuttentIndex = this.cuttentIndex;
         let list = val;
         if (cuttentIndex != -1) {
@@ -163,10 +177,10 @@ export default defineComponent({
     }),
   },
   beforeCreate() {
-    console.log("实例化初始之后");
+    // console.log("实例化初始之后");
   },
   created() {
-    console.log("在实例创建完成");
+    // console.log("在实例创建完成");
 
     // const channel = new MessageChannel();
     // console.log("ipcRenderer", ipcRenderer);
@@ -260,7 +274,7 @@ export default defineComponent({
     console.log("挂载之前");
   },
   mounted() {
-    console.log("mounted");
+    // console.log("mounted");
     const that = this;
     that.loading = false;
     let listDiv = document.querySelector(".list");
@@ -299,10 +313,10 @@ export default defineComponent({
     // };
   },
   beforeUpdate() {
-    console.log("数据发生改变后DOM被更新之前调用");
+    // console.log("数据发生改变后DOM被更新之前调用");
   },
   updated() {
-    console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
+    // console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
     setCuttentIndex(index: number) {
@@ -355,7 +369,7 @@ export default defineComponent({
         });
     },
     changeMenu(type: number) {
-      console.log("type", type);
+      // console.log("type", type);
       const that = this;
       const currentItem: any = this.currentItem;
       const cuttentIndex = this.cuttentIndex;
@@ -387,7 +401,7 @@ export default defineComponent({
           this.edited(currentItem);
           break;
         case 3:
-          console.log("打开右侧");
+          // console.log("打开右侧");
 
           that.openLeft(currentItem);
           break;
@@ -399,7 +413,7 @@ export default defineComponent({
       this.$emit("openLeft", item, bool);
     },
     handleContextMenu(e: any, item: any) {
-      console.log("clientX", e.clientX, "clientY", e.clientY);
+      // console.log("clientX", e.clientX, "clientY", e.clientY);
       e.stopPropagation();
       e.preventDefault();
       this.X = e.clientX;

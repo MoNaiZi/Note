@@ -163,6 +163,19 @@ body {
     .left_main {
         width: 75% !important;
         transition: all 0.5;
+
+        .header_main {
+            padding: 8px 5px;
+
+            .title {
+                width: 136%;
+                text-align: center;
+                margin-left: 10%;
+                padding: 0px 10px;
+            }
+        }
+
+
     }
 
     .right_main {

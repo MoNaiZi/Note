@@ -25,6 +25,7 @@
           @openLeft="openLeft"
           :isLeft="isLeft"
           :leftItem="!isLeft ? currentItem : {}"
+          :upCurrentItem="upCurrentItem"
           @close="openLeft"
           @changeIsSave="changeIsSave"
         >
@@ -61,8 +62,9 @@ export default defineComponent({
   watch: {
     // currentItem: {
     //   deep: true,
+    //   immediate: true,
     //   handler(val) {
-    //     console.log("home", val);
+    //     console.log("currentItem", val);
     //   },
     // },
   },
@@ -73,6 +75,7 @@ export default defineComponent({
       isLeft: false,
       isSave: false,
       currentItem: {} as CurrentItem,
+      upCurrentItem: {} as CurrentItem,
     };
   },
   provide: {
@@ -113,6 +116,7 @@ export default defineComponent({
         this.isLeft = false;
         this.$nextTick(() => {
           this.currentItem = { _id: null, html: null, title: "" };
+          this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
 
         return;
@@ -121,6 +125,7 @@ export default defineComponent({
       item = JSON.parse(JSON.stringify(item));
       if (item && item._id != this.currentItem._id) {
         this.isLeft = true;
+        this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
       } else {
         this.isLeft = false;
       }
@@ -134,7 +139,10 @@ export default defineComponent({
       if (this.isLeft) {
         this.currentItem = item;
       } else {
-        this.currentItem = { _id: null, html: null, title: "" };
+        this.$nextTick(() => {
+          this.currentItem = { _id: null, html: null, title: "" };
+          this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
+        });
       }
     },
     zoomInAndOut() {
