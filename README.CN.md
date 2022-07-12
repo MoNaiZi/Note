@@ -25,9 +25,11 @@ lowdb
 <div style="display:flex">
  <h4>侧边栏</h4>
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/left_main.gif"/>
+  <h4>黑夜模式</h4>
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
 </div>
 <div style="display:flex">
+ <h4>定时提醒功能</h4>
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/定时提醒功能.gif"/>
 
 </div>
