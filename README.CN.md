@@ -1,15 +1,10 @@
+# 介绍
+现在很多electron教程都是11版本的或者之前的，electron11版本之后进行了重大更改去除了remote模块禁止在渲染层调用主进程的api。
+本次项目实现点：开机自启，黑夜模式，悬浮窗，用于定时提醒，优化的窗口拖动，优雅丝滑的改变窗口大小和位置显示界面，自定义安装，以及自定义图标，最小化，自定义托盘。
 
-# Introduction
+### 大家点点星星谢谢
 
-At present, many electronic tutorials are of version 11 or earlier. Major changes have been made after version 11. The remote module has been removed, and it is forbidden to call the API of the main process in the rendering layer.
-
-The realization points of this project: start-up, night mode, floating window, for timing reminder, optimized window dragging, elegant and smooth change of window size and position display interface, custom installation, as well as custom icons, minimization, custom tray.
-
-
-### Everyone, dot the stars. Thank you
-
-
-### Note using technology
+### Note 使用技术
 
 ```
 vue3
@@ -19,9 +14,9 @@ vuex
 vur-router
 lowdb
 
-Install yarn install
-Run yarn serve
-Package yarn build
+安装 yarn install
+运行 yarn serve
+打包 yarn build
 ```
 
 <br>
@@ -29,9 +24,10 @@ Package yarn build
 
 <div style="display:flex">
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/left_main.gif"/>
+<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
 </div>
 <div style="display:flex">
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/定时提醒功能.gif"/>
-<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
+
 </div>
 
