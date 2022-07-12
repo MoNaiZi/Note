@@ -125,6 +125,7 @@ export default defineComponent({
       listDiv: {} as any,
     };
   },
+  inject: ["home"],
   watch: {
     leftItem: {
       deep: true,
@@ -132,13 +133,13 @@ export default defineComponent({
         const cuttentIndex = this.cuttentIndex;
         let item = val; //this.leftItem;
         if (!item._id) return;
+        this.$emit("changeIsSave", false);
         this.list[cuttentIndex] = item;
         console.log("leftItem", item);
       },
     },
     isLeft: function (val) {
       console.log("isLeft", val);
-
       ipcRenderer.invoke("openLeft", this.isLeft);
     },
     list: {
@@ -221,36 +222,37 @@ export default defineComponent({
       // e.returnValue = false;
     };
 
+    const that = this;
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
-      console.log("keyCode", keyCode);
-      // if (this.list.length) {
-      //   let cuttentIndex = this.cuttentIndex;
-      //   let index = cuttentIndex;
-      //   if (keyCode == 40 && this.cuttentIndex < this.list.length) {
-      //     //下
-      //     index += 1;
-      //   } else if (keyCode == 38 && this.cuttentIndex >= -1) {
-      //     //上
-      //     index -= 1;
-      //   }
+      let code = e.code;
+      console.log("this", this);
+      if (that.list.length && ["ArrowDown", "ArrowUp"].includes(code)) {
+        let cuttentIndex = that.cuttentIndex;
+        let index = cuttentIndex;
+        if (code == "ArrowDown" && index < that.list.length - 1) {
+          //下
+          index += 1;
+        } else if (code == "ArrowUp" && index >= 1) {
+          //上
+          index -= 1;
+        }
 
-      //   this.currentItem = this.list[index];
-      //   console.log("index", index);
-      //   if (this.isLeft && index != this.cuttentIndex) {
-      //     let item = this.currentItem;
-      //     console.log("item", item);
-      //     if (item) {
-      //       this.openLeft(item);
-      //     }
+        that.cuttentIndex = index;
+        if (index >= 0) {
+          let item = that.list[index];
+          that.currentItem = item;
+          if (that.isLeft) {
+            if (item) {
+              that.openLeft(item, true);
+            }
+          }
+        }
+      }
 
-      //     this.cuttentIndex = index;
-      //   }
-      // }
-
-      // if (keyCode === 27) {
-      //   this.cuttentIndex = -1;
-      // }
+      if (keyCode === 27) {
+        this.cuttentIndex = -1;
+      }
     });
   },
   beforeMount() {

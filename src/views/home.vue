@@ -26,6 +26,7 @@
           :isLeft="isLeft"
           :leftItem="!isLeft ? currentItem : {}"
           @close="openLeft"
+          @changeIsSave="changeIsSave"
         >
         </router-view>
       </div>
@@ -70,10 +71,12 @@ export default defineComponent({
       isTopping: false,
       isShowTiming: false,
       isLeft: false,
-      isOpenLeft: false,
+      isSave: false,
       currentItem: {} as CurrentItem,
-      isBlur: false,
     };
+  },
+  provide: {
+    // homeCurrentItem: this.currentItem,
   },
   created() {
     // this.$router.psuh('/set')
@@ -93,16 +96,19 @@ export default defineComponent({
   },
   mounted() {},
   methods: {
+    changeIsSave(bool: boolean) {
+      this.isSave = bool;
+    },
     onFocus() {
       console.log("onFocus");
-      this.isBlur = true;
+      // this.isBlur = true;
     },
     changeEditor(editor: any) {
       // console.log("editor", editor);
       this.currentItem.html = editor.getHtml();
     },
     openLeft(item: any, bool = null) {
-      // console.log("打开右侧", bool, item);
+      console.log("打开右侧", bool, item);
       if (!item) {
         this.isLeft = false;
         this.$nextTick(() => {
@@ -120,11 +126,11 @@ export default defineComponent({
       }
       if (bool != null && typeof bool != "undefined") {
         this.isLeft = bool;
+        if (bool) {
+          this.isSave = bool;
+        }
       }
-      // console.log("isLeft", this.isLeft);
-      // if (this.isOpenLeft != this.isLeft) {
-      //   this.isOpenLeft = this.isLeft;
-      // }
+
       if (this.isLeft) {
         this.currentItem = item;
       } else {
