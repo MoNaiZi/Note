@@ -23,6 +23,7 @@ lowdb
 </p>
 
 <div style="display:flex">
+  ### 侧边栏
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/left_main.gif"/>
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
 </div>
