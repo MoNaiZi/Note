@@ -17,3 +17,4 @@ lowdb
 <br>
 </p>
 
+<img src="https://github.com/MoNaiZi/Note/blob/master/public/img/left_main.gif"/>
