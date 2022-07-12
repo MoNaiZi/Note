@@ -19,7 +19,10 @@ lowdb
 <br>
 </p>
 
+<div style="display:flex">
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/main.png"/>
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/left_main.gif"/>
+</div>
+
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/定时提醒功能.gif"/>
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
