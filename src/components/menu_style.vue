@@ -17,7 +17,7 @@
   position: absolute;
   font-size: 26px;
   z-index: 10;
-  left: 13px;
+  left: 12px;
   top: 10px;
 }
 .box {
