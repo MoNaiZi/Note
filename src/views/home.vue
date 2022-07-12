@@ -105,7 +105,10 @@ export default defineComponent({
       // console.log("打开右侧", bool, item);
       if (!item) {
         this.isLeft = false;
-        this.currentItem = { _id: null, html: null, title: "" };
+        this.$nextTick(() => {
+          this.currentItem = { _id: null, html: null, title: "" };
+        });
+
         return;
       }
 
