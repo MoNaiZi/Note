@@ -1,36 +1,41 @@
 <template>
   <div>
     <div class="">
-      <div
-        :class="[
-          'header_main',
-          { edited: pageTypeText === 'edited' },
-          { home: pageTypeText != 'edited' },
-        ]"
-      >
-        <div class="left">
-          <i v-show="pageTypeText === 'edited'">
-            <el-icon @click="minimize">
-              <Minus />
-            </el-icon>
-            <el-icon @click="showTiming">
-              <Bell />
-            </el-icon>
-          </i>
+      <drag>
+        <div
+          :class="[
+            'header_main',
+            { edited: pageTypeText === 'edited' },
+            { home: pageTypeText != 'edited' },
+          ]"
+        >
+          <div class="left">
+            <i v-show="pageTypeText === 'edited'">
+              <el-icon @click="minimize">
+                <Minus />
+              </el-icon>
+              <el-icon @click="showTiming">
+                <Bell />
+              </el-icon>
+            </i>
 
-          <i
-            v-show="pageTypeText === 'home' && typeText === ''"
-            class="iconfont icon-add"
-            @click="addNote"
-          ></i>
-          <i
-            v-show="pageTypeText === 'set' && typeText === ''"
-            class="iconfont icon-back"
-            @click="toHome"
-          ></i>
-        </div>
-        <drag class="title">
-          <div οndragstart="return false;" v-show="pageTypeText != 'edited'">
+            <i
+              v-show="pageTypeText === 'home' && typeText === ''"
+              class="iconfont icon-add"
+              @click="addNote"
+            ></i>
+            <i
+              v-show="pageTypeText === 'set' && typeText === ''"
+              class="iconfont icon-back"
+              @click="toHome"
+            ></i>
+          </div>
+
+          <div
+            class="title"
+            οndragstart="return false;"
+            v-show="pageTypeText != 'edited'"
+          >
             {{ typeText === "left" ? title || "无标题" : "便利贴" }}
           </div>
           <div class="input_title" v-show="pageTypeText === 'edited'">
@@ -47,36 +52,35 @@
 
             <input v-else v-model="note.title" placeholder="请输入标题" />
           </div>
-        </drag>
 
-        <div class="right">
-          <img
-            @click="zoomInAndOut"
-            v-show="pageTypeText === 'edited'"
-            :src="
-              note.isZoomInAndOut
-                ? require('@/assets/reduction_window.png')
-                : require('@/assets/maximize.png')
-            "
-          />
-          <i
-            v-show="typeText === ''"
-            :class="[
-              'iconfont',
-              isTopping ? 'icon-thepin-active' : 'icon-thepin',
-            ]"
-            @click="topping"
-          ></i>
-          <i
-            v-show="pageTypeText === 'home' && typeText === ''"
-            class="iconfont icon-setting"
-            @click="toSet"
-          ></i>
+          <div class="right">
+            <img
+              @click="zoomInAndOut"
+              v-show="pageTypeText === 'edited'"
+              :src="
+                note.isZoomInAndOut
+                  ? require('@/assets/reduction_window.png')
+                  : require('@/assets/maximize.png')
+              "
+            />
+            <i
+              v-show="typeText === ''"
+              :class="[
+                'iconfont',
+                isTopping ? 'icon-thepin-active' : 'icon-thepin',
+              ]"
+              @click="topping"
+            ></i>
+            <i
+              v-show="pageTypeText === 'home' && typeText === ''"
+              class="iconfont icon-setting"
+              @click="toSet"
+            ></i>
 
-          <i class="iconfont icon-close" @click="close"></i>
+            <i class="iconfont icon-close" @click="close"></i>
+          </div>
         </div>
-      </div>
-
+      </drag>
       <el-dialog
         v-model="isShowTiming"
         title="定时提醒"
@@ -196,7 +200,7 @@ export default defineComponent({
     },
 
     addNote() {
-      ipcRenderer.invoke("newWindow");
+      ipcRenderer.invoke("newWindow", {});
     },
     toSet() {
       this.$router.push("/set");
@@ -249,7 +253,7 @@ export default defineComponent({
     width: 25%;
   }
   .title {
-    width: 50% !important;
+    width: 68% !important;
     text-align: center !important;
   }
   .left {

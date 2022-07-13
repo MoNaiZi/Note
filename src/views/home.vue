@@ -38,7 +38,6 @@
 import { mapState } from "vuex";
 import { store } from "@/store";
 import noteEditor from "@/components/note_editor.vue";
-const { ipcRenderer } = require("electron");
 import noteHeader from "@/components/note_header.vue";
 import { defineComponent } from "vue";
 
@@ -144,45 +143,6 @@ export default defineComponent({
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
       }
-    },
-    zoomInAndOut() {
-      const note = this.note;
-      note.isZoomInAndOut = !note.isZoomInAndOut;
-      store.dispatch("header/setNote", note);
-      ipcRenderer.send("zoomInAndOut");
-    },
-    showTiming(type: number) {
-      this.isShowTiming = !this.isShowTiming;
-      if (type === 1) {
-        store.dispatch("header/setNote", this.note);
-      }
-    },
-    minimize() {
-      ipcRenderer.send("minimize");
-    },
-    editedTitle() {
-      store.dispatch("header/setIsEditedTitle", true);
-    },
-    topping() {
-      this.isTopping = !this.isTopping;
-      ipcRenderer.send("topping", this.isTopping);
-    },
-    async close() {
-      const pageTypeText = this.pageTypeText;
-      let { note } = this;
-      if (pageTypeText === "edited") {
-        store.dispatch("header/setHeaderClose", false);
-        store.dispatch("header/setNote", note);
-      } else {
-        await ipcRenderer.send("closeWindow", note._id);
-      }
-    },
-
-    addNote() {
-      ipcRenderer.invoke("newWindow");
-    },
-    toSet() {
-      this.$router.push("/set");
     },
   },
 });
