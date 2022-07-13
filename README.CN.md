@@ -12,6 +12,7 @@ ts
 electron19
 vuex
 vur-router
+node 16.15.0
 lowdb
 
 安装 yarn install
