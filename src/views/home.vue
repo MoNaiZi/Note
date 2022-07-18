@@ -6,14 +6,16 @@
           key="editor_home"
           :typeText="'left'"
           :title="currentItem.title"
+          :isLeft="isLeft"
           @close="openLeft"
-          @onFocus="onFocus"
         ></noteHeader>
 
         <noteEditor
           ref="noteEditor"
           key="home_index"
           :currentItem="currentItem"
+          @onChange="onChange"
+          style="height: 100%"
         />
       </div>
     </transition>
@@ -27,7 +29,6 @@
           :leftItem="!isLeft ? currentItem : {}"
           :upCurrentItem="upCurrentItem"
           @close="openLeft"
-          @changeIsSave="changeIsSave"
         >
         </router-view>
       </div>
@@ -72,7 +73,6 @@ export default defineComponent({
       isTopping: false,
       isShowTiming: false,
       isLeft: false,
-      isSave: false,
       currentItem: {} as CurrentItem,
       upCurrentItem: {} as CurrentItem,
     };
@@ -98,21 +98,19 @@ export default defineComponent({
   },
   mounted() {},
   methods: {
-    changeIsSave(bool: boolean) {
-      this.isSave = bool;
-    },
-    onFocus() {
-      console.log("onFocus");
-      // this.isBlur = true;
+    onChange({ html }: { html: string; _id: string }) {
+      this.currentItem.html = html;
+      this.upCurrentItem.html = html;
     },
     changeEditor(editor: any) {
       // console.log("editor", editor);
       this.currentItem.html = editor.getHtml();
     },
     openLeft(item: any, bool = null) {
-      console.log("打开右侧", bool, item);
+      // console.log("打开右侧", bool, item);
       if (!item) {
         this.isLeft = false;
+
         this.$nextTick(() => {
           this.currentItem = { _id: null, html: null, title: "" };
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
@@ -130,9 +128,6 @@ export default defineComponent({
       }
       if (bool != null && typeof bool != "undefined") {
         this.isLeft = bool;
-        if (bool) {
-          this.isSave = bool;
-        }
       }
 
       if (this.isLeft) {

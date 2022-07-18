@@ -22,10 +22,11 @@ ipcMain.handle('openLeft', (event, bool = true) => {
     if (bool) {
         bounds.width = bounds.width + 350
         bounds.x = bounds.x - 350
+        // bounds = { x: 806, y: 116, width: 701, height: 600 }
     } else {
-        // bounds.width = 350
-        // bounds.x = bounds.x + 350
-        bounds = { x: 1156, y: 116, width: 352, height: 600 }
+        bounds.width = 350
+        bounds.x = bounds.x + 350
+        // bounds = { x: 1156, y: 116, width: 352, height: 600 }
     }
     // win.setBackgroundColor('#fff')
     // win.setBounds(bounds)
@@ -158,7 +159,6 @@ ipcMain.on('windowMoving', (event, { mouseX, mouseY, width, height }) => {
     const win: any = BrowserWindow.fromWebContents(webContents)
     const { x, y } = screen.getCursorScreenPoint()
     // win.setPosition(x - mouseX, y - mouseY)
-
     win.setBounds({ x: x - mouseX, y: y - mouseY, width, height })
 });
 
@@ -229,7 +229,6 @@ const getNote = function (_id: string) {
 
 ipcMain.handle('getNote', (_event, winId) => {
     let result = getNote(winId)
-    console.log('result', result)
     return result
 })
 
@@ -322,6 +321,7 @@ ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
         const url = `${winURL}/#/edited?winId=${_id}&skipPageType=${pageType}`
         result.setIcon(logo)
         result.loadURL(url)
+        return result
     }
     let win: any = {}
     if (winId) {
@@ -346,6 +346,7 @@ ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
     if (note.isZoomInAndOut) {
         win.maximize()
     }
+
     return win.id
 })
 

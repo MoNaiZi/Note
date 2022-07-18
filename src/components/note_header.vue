@@ -74,9 +74,11 @@
             <i
               v-show="pageTypeText === 'home' && typeText === ''"
               class="iconfont icon-setting"
-              @click="toSet"
+              @click.stop="toSet"
             ></i>
-
+            <el-icon v-show="isLeft" @click="showToolBarFn">
+              <Edit />
+            </el-icon>
             <i class="iconfont icon-close" @click="close"></i>
           </div>
         </div>
@@ -118,6 +120,9 @@ export default defineComponent({
     drag,
   },
   computed: {
+    ...mapState("note", {
+      showToolBar: (state: any) => state.showToolBar,
+    }),
     ...mapState("header", {
       pageTypeText: (state: any) => state.pageTypeText,
       note: (state: any) => state.note || {},
@@ -133,13 +138,16 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    isLeft: {
+      type: Boolean,
+      default: false,
+    },
   },
   watch: {},
   data() {
     return {
       isTopping: false,
       isShowTiming: false,
-      isLeft: false,
       currentItem: {},
     };
   },
@@ -158,6 +166,9 @@ export default defineComponent({
   },
   mounted() {},
   methods: {
+    showToolBarFn() {
+      store.dispatch("note/setShowToolBar", !this.showToolBar);
+    },
     toHome() {
       this.$router.push("/");
     },
@@ -262,6 +273,7 @@ export default defineComponent({
     cursor: pointer;
     .el-icon {
       margin-right: 10px;
+      cursor: pointer;
     }
   }
 }
@@ -303,6 +315,7 @@ export default defineComponent({
       opacity: 0.8;
     }
     i {
+      cursor: pointer;
       margin-left: 10px;
     }
   }

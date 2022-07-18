@@ -57,6 +57,7 @@
                     key="editor_index"
                     :style="{ height: !item.isOpenDetaile ? '60px' : '250px' }"
                     :currentItem="item"
+                    @onChange="onChange"
                   />
                 </keep-alive>
                 <div class="time" @click="openLeft(item)">
@@ -114,7 +115,7 @@ export default defineComponent({
       list: [] as any,
       searchKey: "",
       showMenu: false,
-      currentItem: {},
+      currentItem: {} as any,
       cuttentIndex: -1,
       X: 0,
       Y: 0,
@@ -147,14 +148,13 @@ export default defineComponent({
         const cuttentIndex = this.cuttentIndex;
         let item = val; //this.leftItem;
         if (!item._id) return;
-        this.$emit("changeIsSave", false);
         this.list[cuttentIndex] = item;
         // console.log("leftItem", item);
       },
     },
     isLeft: function () {
       // console.log("isLeft", val);
-
+      store.dispatch("note/setShowToolBar", false);
       ipcRenderer.invoke("openLeft", this.isLeft);
     },
     list: {
@@ -185,19 +185,15 @@ export default defineComponent({
     // const channel = new MessageChannel();
     // console.log("ipcRenderer", ipcRenderer);
     store.dispatch("header/setPageTypeText", "home");
-    console.log("ipcRenderer", ipcRenderer);
-    console.log("window", window);
 
     window.onmessage = (event) => {
       // event.source === window 表示消息来自预加载脚本
       // 而不是来自 <iframe> 或其他来源
       // this.event = event;
       if (event.source === window && event.data === "main-world-port") {
-        console.log("event", event);
         const [port] = event.ports;
         // 一旦我们有了这个端口，我们就可以直接与主进程通信
         port.onmessage = (event) => {
-          console.log("from main process:", event.data);
           let test = event.data.test;
           port.postMessage(test * 2);
         };
@@ -241,7 +237,7 @@ export default defineComponent({
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
       let code = e.code;
-      console.log("this", this);
+
       if (that.list.length && ["ArrowDown", "ArrowUp"].includes(code)) {
         let cuttentIndex = that.cuttentIndex;
         let index = cuttentIndex;
@@ -319,6 +315,12 @@ export default defineComponent({
     // console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    onChange({ html, _id }: { html: string; _id: string }) {
+      let cuttentIndex = this.list.findIndex((item: any) => item._id === _id);
+      if (cuttentIndex >= 0) {
+        this.list[cuttentIndex].html = html;
+      }
+    },
     setCuttentIndex(index: number) {
       this.cuttentIndex = index;
     },

@@ -56,7 +56,6 @@ async function createWindow() {
   const mainWindows = mainProcess.mainWindows()
   const { config, winURL } = mainWindows
   const size = screen.getPrimaryDisplay().workAreaSize
-  console.log('size', size)
   config.x = size.width - 380
   config.y = size.height - 700
   const win = new BrowserWindow(config)
@@ -69,7 +68,7 @@ async function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(winURL)
-    // if (!process.env.IS_TEST) win.webContents.openDevTools()
+    if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development

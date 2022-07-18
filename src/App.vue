@@ -1,5 +1,5 @@
 <template>
-  <div :class="['app_wrap', classFn]">
+  <div :class="['app_wrap', classFn]" :style="[styleFn]">
     <!-- <transition>
       <template v-if="['home', 'edited', 'set'].includes(pageTypeText)">
         <component :is="'Header'"></component>
@@ -26,6 +26,13 @@ export default defineComponent({
     ...mapState("user", {
       user: (state: any) => state.user,
     }),
+    styleFn() {
+      let result = { transition: "all 1s" };
+      if (this.pageTypeText === "edited") {
+        result.transition = "";
+      }
+      return result;
+    },
     classFn() {
       type User = {
         dark: Boolean | undefined;
@@ -75,7 +82,6 @@ export default defineComponent({
   height: 100vh;
   .app_wrap {
     height: 100%;
-    transition: all 1s;
   }
 }
 

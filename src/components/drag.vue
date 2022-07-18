@@ -11,6 +11,27 @@ import { mapState } from "vuex";
 import { defineComponent } from "vue";
 let mouseX: number, mouseY: number;
 let beforeX: number, beforeY: number, afterX: number, afterY: number;
+// const debounce = function (func: any, wait: number, immediate: boolean | null) {
+//   let timeout: any;
+//   return () => {
+//     console.log("2", timeout);
+//     let context: any = this;
+//     let args = arguments;
+
+//     if (timeout) clearTimeout(timeout);
+//     if (immediate) {
+//       let callNow = !timeout;
+//       timeout = setTimeout(function () {
+//         timeout = null;
+//       }, wait);
+//       if (callNow) func.apply(context, args);
+//     } else {
+//       timeout = setTimeout(function () {
+//         func.apply(context, args);
+//       }, wait);
+//     }
+//   };
+// };
 export default defineComponent({
   computed: {
     ...mapState("header", {
@@ -26,7 +47,7 @@ export default defineComponent({
   data() {
     return {
       isDrag: false,
-      width: 350,
+      width: 100,
       height: 600,
     };
   },
@@ -38,35 +59,38 @@ export default defineComponent({
     window.addEventListener("mouseup", that.end);
   },
   methods: {
+    handleResize(e: any) {
+      if (!this.isDrag) {
+        let currentTarget: any = e.currentTarget;
+        this.width = currentTarget.outerWidth;
+        this.height = currentTarget.outerHeight;
+      }
+    },
     init() {
-      const that = this;
+      // const that = this;
       const pageTypeText = this.pageTypeText;
       if (pageTypeText != "menu") {
-        window.addEventListener("resize", function (e) {
-          if (!that.isDrag) {
-            let currentTarget: any = e.currentTarget;
-            that.width = currentTarget.outerWidth;
-            that.height = currentTarget.outerHeight;
-          }
-        });
+        window.addEventListener("resize", this.handleResize);
       }
-      switch (pageTypeText) {
-        case "edited":
-          {
-            this.width = 700;
-            this.height = 500;
-          }
-          break;
-        case "menu":
-          {
-            this.width = 100;
-            this.height = 100;
-          }
-          break;
-        default:
-          this.width = 350;
-          this.height = 600;
-          break;
+      if (this.width === 100) {
+        switch (pageTypeText) {
+          case "edited":
+            {
+              this.width = 700;
+              this.height = 500;
+            }
+            break;
+          case "menu":
+            {
+              this.width = 100;
+              this.height = 100;
+            }
+            break;
+          default:
+            this.width = 350;
+            this.height = 600;
+            break;
+        }
       }
     },
     end(e: any) {
@@ -79,14 +103,15 @@ export default defineComponent({
       // this.debounce(this.openMenu, 500, true);
     },
     onMouseDown(e: any) {
-      this.isDrag = true;
       mouseX = e.clientX;
       mouseY = e.clientY;
       beforeX = e.offsetX;
       beforeY = e.offsetY;
+      this.isDrag = true;
     },
     move() {
       const that = this;
+
       type Config = {
         mouseX: number;
         mouseY: number;
@@ -104,7 +129,7 @@ export default defineComponent({
         if (that.width) {
           config.width = that.width;
         }
-        // console.log("config", config);
+
         ipcRenderer.send("windowMoving", config);
       }
     },

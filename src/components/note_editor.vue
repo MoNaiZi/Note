@@ -1,22 +1,42 @@
 <template>
-  <Editor
-    class="editor"
-    style="overflow-y: hidden; text-align: left; height: 500px"
-    :key="id"
-    v-model="data.html"
-    :defaultConfig="editorConfig"
-    :mode="'default'"
-    @onCreated="onCreated"
-    @onFocus="onFocus"
-    @onBlur="onBlur"
-    @onChange="onChange"
-  />
+  <div>
+    <Toolbar
+      v-show="showToolBar"
+      :editor="editorRef"
+      style="border: 1px solid #ccc"
+    />
+    <Editor
+      :defaultConfig="editorConfig"
+      v-model="valueHtml"
+      @onCreated="handleCreated"
+      @onChange="onChange"
+      class="editor"
+    />
+  </div>
 </template>
+
 <script lang="ts">
-import { Editor } from "@wangeditor/editor-for-vue";
-import { SlateEditor } from "@wangeditor/editor";
-import { defineComponent } from "vue";
+import {
+  defineComponent,
+  ref,
+  onBeforeUnmount,
+  shallowRef,
+  reactive,
+} from "vue";
+import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import "@wangeditor/editor/dist/css/style.css";
+import { IDomEditor } from "@wangeditor/editor";
+import { mapState } from "vuex";
 export default defineComponent({
+  computed: {
+    ...mapState("note", {
+      showToolBar: (state: any) => state.showToolBar,
+    }),
+  },
+  components: {
+    Editor,
+    Toolbar,
+  },
   props: {
     currentItem: {} as any,
   },
@@ -24,63 +44,49 @@ export default defineComponent({
     currentItem: {
       deep: true,
       handler(val) {
-        this.data = val;
+        this.valueHtml = val.html;
       },
     },
   },
-  data() {
-    return {
-      id: this.$createdId(),
-      data: this.currentItem,
-      editorConfig: { placeholder: "请输入内容...", readOnly: false },
-      editor: {} as any,
+  setup(props: any, { emit }) {
+    // 编辑器唯一id值
+    const editorRef = shallowRef<IDomEditor | undefined>(undefined);
+    let valueHtml = ref(props.currentItem.html);
+    // 编辑器相关配置
+    const editorConfig = {
+      placeholder: "请输入内容...",
+      readOnly: false,
     };
-  },
-  components: {
-    Editor,
-  },
-  mounted() {
-    // const that = this;
-    // window.addEventListener("keydown", () => {
-    //   //   console.log("editor", that.editor);
-    //   if (that.editor.focus) {
-    //     // that.editor.focus();
-    //   }
-    // });
-  },
-  methods: {
-    getEditor() {
-      this.$emit("getEditor", this.editor);
-    },
-    onChange(editor: any) {
-      // if (!editor.isFocused()) {
-      //   // editor.focus(true);
-      // }
-      SlateEditor.end(editor, []);
-      console.log("onChange", editor.isFocused());
-    },
-    onBlur() {
-      console.log("onBlur");
-    },
-    onFocus() {
-      console.log("onFocus");
-      // this.$emit("onFocus");
-    },
-    preventBlur(event: any) {
-      event.preventDefault();
-    },
-    onCreated(editor: any) {
-      this.editor = editor;
-    },
-  },
-  unmounted() {
-    console.log("销毁");
-    const editor = this.editor;
-    if (editor == null) return;
-    editor.destroy();
+
+    const handleCreated = (editor: IDomEditor) => {
+      editorRef.value = editor;
+      console.log(editor.getConfig());
+    };
+
+    let currentItem = reactive(props.currentItem);
+    const onChange = (ediotr: IDomEditor) => {
+      let html = ediotr.getHtml();
+      emit("onChange", { html, _id: currentItem._id });
+    };
+    // 组件销毁时，也及时销毁编辑器
+    onBeforeUnmount(() => {
+      const editor: any = editorRef.value;
+      console.log("组件销毁时，也及时销毁编辑器");
+      if (editor == null) return;
+      editor.destroy();
+    });
+
+    return {
+      editorRef,
+      editorConfig,
+      valueHtml,
+      handleCreated,
+      onChange,
+    };
   },
 });
 </script>
+
 <style lang="scss" scoped>
 .editor {
   // height: 80%;
