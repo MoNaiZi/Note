@@ -98,7 +98,7 @@ import contextMenu from "@/components/context_menu.vue";
 import noteEditor from "@/components/note_editor.vue";
 import { fromNow } from "@/utils";
 import { defineComponent } from "vue";
-
+const dayjs = require("dayjs");
 const { ipcRenderer } = require("electron");
 export default defineComponent({
   components: {
@@ -138,6 +138,8 @@ export default defineComponent({
           (j: any) => j._id === item._id
         );
         if (cuttentIndex >= 0) {
+          item.timeStamp = dayjs().valueOf();
+          item.time = dayjs().format("YYYY-MM-DD HH:mm");
           this.list[cuttentIndex] = item;
         }
       },
@@ -148,6 +150,8 @@ export default defineComponent({
         const cuttentIndex = this.cuttentIndex;
         let item = val; //this.leftItem;
         if (!item._id) return;
+        item.timeStamp = dayjs().valueOf();
+        item.time = dayjs().format("YYYY-MM-DD HH:mm");
         this.list[cuttentIndex] = item;
         // console.log("leftItem", item);
       },
@@ -165,7 +169,8 @@ export default defineComponent({
         let list = val;
         if (cuttentIndex != -1) {
           let item = list[cuttentIndex];
-
+          item.timeStamp = dayjs().valueOf();
+          item.time = dayjs().format("YYYY-MM-DD HH:mm");
           ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
         }
       },
@@ -230,7 +235,7 @@ export default defineComponent({
       //建议使用对话框 API 让用户确认关闭应用程序.
       // this.close();
       ipcRenderer.send("closeWindow");
-      // e.returnValue = false;
+      e.returnValue = false;
     };
 
     const that = this;
