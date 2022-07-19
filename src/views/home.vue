@@ -15,7 +15,7 @@
           key="home_index"
           :currentItem="currentItem"
           @onChange="onChange"
-          style="height: 100%"
+          style="height: 90%; overflow-y: auto"
         />
       </div>
     </transition>
@@ -59,15 +59,6 @@ export default defineComponent({
       isEditedTitle: (state: any) => state.isEditedTitle,
     }),
   },
-  watch: {
-    // currentItem: {
-    //   deep: true,
-    //   immediate: true,
-    //   handler(val) {
-    //     console.log("currentItem", val);
-    //   },
-    // },
-  },
   data() {
     return {
       isTopping: false,
@@ -100,7 +91,6 @@ export default defineComponent({
   methods: {
     onChange({ html }: { html: string; _id: string }) {
       this.currentItem.html = html;
-      this.upCurrentItem.html = html;
     },
     changeEditor(editor: any) {
       // console.log("editor", editor);
@@ -149,6 +139,8 @@ export default defineComponent({
   background: #fff;
   border-radius: 10px;
   height: 100%;
+  margin: 10px;
+  box-shadow: 0 0 6px #9e9e9e;
   .right_main {
     width: 100%;
     // transition: all 0.5s;

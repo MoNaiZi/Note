@@ -3,6 +3,7 @@
     <Toolbar
       v-show="showToolBar"
       :editor="editorRef"
+      :defaultConfig="toolbarConfig"
       style="border: 1px solid #ccc"
     />
     <Editor
@@ -60,7 +61,17 @@ export default defineComponent({
 
     const handleCreated = (editor: IDomEditor) => {
       editorRef.value = editor;
-      console.log(editor.getConfig());
+      const MENU_CONF: any = editor.getConfig().MENU_CONF;
+      MENU_CONF["codeSelectLang"] = {
+        // 代码语言
+        codeLangs: [
+          { text: "Javascript", value: "javascript" },
+          { text: "CSS", value: "css" },
+          { text: "HTML", value: "html" },
+          { text: "Typescript", value: "typescript" },
+          // 其他
+        ],
+      };
     };
 
     let currentItem = reactive(props.currentItem);
@@ -80,6 +91,15 @@ export default defineComponent({
       editorRef,
       editorConfig,
       valueHtml,
+      toolbarConfig: {
+        excludeKeys: [
+          "group-video",
+          "undo",
+          "redo",
+          "group-image",
+          "fullScreen",
+        ],
+      },
       handleCreated,
       onChange,
     };

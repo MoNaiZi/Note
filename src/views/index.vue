@@ -235,7 +235,7 @@ export default defineComponent({
       //建议使用对话框 API 让用户确认关闭应用程序.
       // this.close();
       ipcRenderer.send("closeWindow");
-      e.returnValue = false;
+      // e.returnValue = false;
     };
 
     const that = this;
@@ -454,7 +454,7 @@ h4 {
 }
 .index_main {
   height: 600px;
-  width: 350px;
+  // width: 350px;
 }
 .top {
   position: absolute;
@@ -496,7 +496,7 @@ li {
   padding: 0px;
 }
 .list {
-  height: 86vh;
+  height: 84vh;
   overflow: auto;
   overflow-x: hidden;
   .loadMore {
