@@ -56,7 +56,6 @@ async function createWindow() {
   const mainWindows = mainProcess.mainWindows()
   const { config, winURL } = mainWindows
   const size = screen.getPrimaryDisplay().workAreaSize
-  console.log('size', size)
   config.x = size.width - 380
   config.y = size.height - 700
   const win = new BrowserWindow(config)

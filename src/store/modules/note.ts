@@ -3,7 +3,9 @@ export default {
     state() {
         return {
             list: [],
-            item: {}
+            item: {},
+            showToolBar: false,
+            isLeft: false
         }
     },
     getters: {
@@ -20,7 +22,10 @@ export default {
         },
         setNoteItem(context: any, item: Object) {
             context.commit('setNoteItem', item)
-        }
+        },
+        setShowToolBar(context: any, bool: Boolean) {
+            context.commit('setShowToolBar', bool)
+        },
     },
     mutations: {
         setNoteList(state: any, list: []) {
@@ -29,7 +34,11 @@ export default {
         setNoteItem(state: any, item: object) {
             state.item = item
         },
+        setShowToolBar(state: any, bool: Boolean) {
+            state.showToolBar = bool
+        },
     }
+
 }
 
 
