@@ -59,15 +59,6 @@ export default defineComponent({
       isEditedTitle: (state: any) => state.isEditedTitle,
     }),
   },
-  watch: {
-    // currentItem: {
-    //   deep: true,
-    //   immediate: true,
-    //   handler(val) {
-    //     console.log("currentItem", val);
-    //   },
-    // },
-  },
   data() {
     return {
       isTopping: false,
@@ -100,7 +91,6 @@ export default defineComponent({
   methods: {
     onChange({ html }: { html: string; _id: string }) {
       this.currentItem.html = html;
-      this.upCurrentItem.html = html;
     },
     changeEditor(editor: any) {
       // console.log("editor", editor);
