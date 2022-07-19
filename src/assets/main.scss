@@ -32,10 +32,14 @@ body {
 }
 
 //富文本
-
+.w-e-text-container * {
+    margin: 4px 1px !important;
+    position: relative;
+    top: -0.5px;
+}
 
 .w-e-bar-bottom .w-e-select-list {
-    margin-bottom: -140px;
+    margin-bottom: -140px !important;
 
     .w-e-select-list ul li {
         top: 0%;
@@ -46,11 +50,7 @@ body {
     }
 }
 
-.w-e-text-container * {
-    margin: 4px 1px !important;
-    position: relative;
-    top: -0.5px;
-}
+
 
 .w-e-scroll,
 .w-e-scroll>div {
@@ -65,6 +65,17 @@ body {
 
 .w-e-textarea-divider {
     padding: 3px;
+}
+
+.w-e-hover-bar {
+    .w-e-select-list ul li {
+        margin: 0px !important;
+    }
+
+    .w-e-select-list ul li svg {
+        margin: 0px !important;
+        top: 28% !important;
+    }
 }
 
 .w-e-text-container [data-slate-editor] ul {

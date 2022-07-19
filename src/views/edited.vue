@@ -186,6 +186,7 @@ export default {
       const toolbar = DomEditor.getToolbar(this.editor);
 
       let toolbarKeys = toolbar.getConfig().toolbarKeys;
+      console.log("toolbarKeys", toolbarKeys);
       toolbarKeys.push("|");
       let obj = { toolbarKeys };
       this.toolbarConfig = obj;
