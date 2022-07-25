@@ -27,7 +27,8 @@
         :render-content="renderContent"
         @more="more"
         @node-drag-start="handleDragStart"
-        @node-expand="handleExpand"
+        @node-collapse="collapse"
+        @node-expand="expand"
       >
       </zmy-tree>
     </div>
@@ -120,9 +121,9 @@ import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 const dayjs = require("dayjs");
 import { getQueryByName } from "@/utils";
-import mitt from "mitt";
+// import mitt from "mitt";
 
-const mittExample = mitt();
+// const mittExample = mitt();
 export default {
   components: {
     zmyTree,
@@ -212,7 +213,6 @@ export default {
         });
       }
     });
-    mittExample.on("node-expand", this.handleExpand);
   },
 
   methods: {
@@ -222,7 +222,7 @@ export default {
       if (winId === "undefined") {
         note._id = this.$createdId();
       } else {
-        note = this.currentItem;
+        note = JSON.parse(JSON.stringify(this.currentItem));
         if (JSON.stringify(note) === "{}") {
           note = await ipcRenderer.invoke("getNote", winId);
         }
@@ -287,8 +287,38 @@ export default {
       this.Y = event.clientY;
       this.showMenu = true;
     },
-    handleExpand(nodeData, node) {
-      console.log("展开", nodeData, node);
+    collapse(data, node) {
+      this.findNodeId(data, false, node);
+    },
+    expand(data) {
+      this.findNodeId(data, true);
+    },
+    findNodeId(data, bool, node) {
+      // console.log("idList", idList);
+      // if (!idList.length) return;
+      console.log("node", node);
+      if (bool) {
+        this.expandedList.push(data.id);
+      } else {
+        let idList = [];
+        const fn = function (array) {
+          if (array.length) {
+            for (let item of array) {
+              idList.push(item.id);
+              if (item.child.length) {
+                fn(item.child);
+              }
+            }
+          }
+          return;
+        };
+        fn(data.child);
+        idList.forEach((id) => {
+          let i = this.expandedList.findIndex((item) => item === id);
+          this.expandedList.splice(i, 1);
+        });
+      }
+      this.updateTree();
     },
     handleDragStart(node) {
       console.log("drag start", node);
@@ -345,11 +375,15 @@ export default {
         this.treeData = child;
       }
     },
-    mouseover() {
-      event.currentTarget.style.background = "#cfcfcf";
+    mouseover(node) {
+      if (node.expanded || !node.childNodes.length) {
+        event.currentTarget.style.background = "#cfcfcf";
+      }
     },
-    mouseout() {
-      event.currentTarget.style.background = "#fff";
+    mouseout(node) {
+      if (node.expanded || !node.childNodes.length) {
+        event.currentTarget.style.background = "#fff";
+      }
     },
     updateTree() {
       let tree = JSON.parse(JSON.stringify(this.treeData));
@@ -453,8 +487,8 @@ export default {
         <div class="ly-tree-node" onClick={() => (this.showMenu = false)}>
           <li
             onClick={() => this.toChild(data)}
-            onMouseover={() => this.mouseover()}
-            onMouseout={() => this.mouseout()}
+            onMouseover={() => this.mouseover(node)}
+            onMouseout={() => this.mouseout(node)}
             style={{
               background: node.isLeaf || node.expanded ? "#fff" : "#cfcfcf",
             }}

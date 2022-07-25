@@ -93,6 +93,7 @@
         :node="child"
         @node-expand="handleChildNodeExpand"
         @dragStart="dragStart"
+        @node-collapse="collapse"
       >
       </el-tree-node>
     </div>
@@ -213,14 +214,9 @@ export default {
       }
     },
     styleFn(node) {
-      // console.log("node", node);
-      let level = node.level;
-      let result = "-35px";
-      let number = 60;
-      if (level > 1) {
-        number = level * 20 - number;
-        result = number + "px";
-      }
+      let num = (node.level - 1) * this.tree.indent;
+      num -= 35;
+      let result = num + "px";
       return { left: result };
     },
     getNodeKey(node) {
@@ -274,10 +270,11 @@ export default {
         this
       );
     },
-
+    collapse(nodeData, node, instance) {
+      this.$emit("node-collapse", nodeData, node, instance);
+    },
     handleExpandIconClick() {
-      console.log("node-expand");
-      mittExample.emit("node-expand", this.node.data, this.node, this);
+      console.log("node-expand", this.expanded);
       if (this.node.isLeaf) return;
       if (this.expanded) {
         this.$emit("node-collapse", this.node.data, this.node, this);
@@ -302,8 +299,8 @@ export default {
     },
 
     handleChildNodeExpand(nodeData, node, instance) {
-      this.broadcast("ElTreeNode", "tree-node-expand", node);
-      this.tree.$emit("node-expand", nodeData, node, instance);
+      // this.broadcast("ElTreeNode", "tree-node-expand", node);
+      this.$emit("node-expand", nodeData, node, instance);
     },
 
     handleDragStart(event) {

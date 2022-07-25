@@ -200,8 +200,8 @@ export default {
     more(node) {
       this.$emit("more", node);
     },
-    collapse() {
-      // debugger;
+    collapse(nodeData, node, instance) {
+      this.$emit("node-collapse", nodeData, node, instance);
     },
     dragStart() {
       console.log("接收开始拖动");
@@ -307,9 +307,8 @@ export default {
     },
 
     handleNodeExpand(nodeData, node, instance) {
-      debugger;
-      this.broadcast("ElTreeNode", "tree-node-expand", node);
-      mittExample.emit("node-expand", nodeData, node, instance);
+      // this.broadcast("ElTreeNode", "tree-node-expand", node);
+      this.$emit("node-expand", nodeData, node, instance);
     },
 
     updateKeyChildren(key, data) {
