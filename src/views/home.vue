@@ -11,12 +11,19 @@
         ></noteHeader>
 
         <noteEditor
+          v-if="!currentItem.modeType"
           ref="noteEditor"
           key="home_index"
           :currentItem="currentItem"
           @onChange="onChange"
           style="height: 90%; overflow-y: auto"
         />
+        <outline
+          v-else
+          :currentItem="currentItem"
+          :setPageTypeText="'home'"
+          @onChangeTree="onChangeTree"
+        ></outline>
       </div>
     </transition>
 
@@ -40,17 +47,22 @@ import { mapState } from "vuex";
 import { store } from "@/store";
 import noteEditor from "@/components/note_editor.vue";
 import noteHeader from "@/components/note_header.vue";
+import outline from "./outline.vue";
 import { defineComponent } from "vue";
 
 interface CurrentItem {
   _id: string | undefined | null;
   html: string | undefined | null;
   title: string | undefined;
+  modeType: number | undefined;
+  tree: object | undefined | null;
+  expandedList: [] | undefined | null;
 }
 export default defineComponent({
   components: {
     noteEditor,
     noteHeader,
+    outline,
   },
   computed: {
     ...mapState("header", {
@@ -94,6 +106,10 @@ export default defineComponent({
   },
   mounted() {},
   methods: {
+    onChangeTree(tree: any, expandedList: any) {
+      this.currentItem.tree = tree;
+      this.currentItem.expandedList = expandedList;
+    },
     onChange({ html }: { html: string; _id: string }) {
       this.currentItem.html = html;
     },
@@ -107,7 +123,14 @@ export default defineComponent({
         this.isLeft = false;
 
         this.$nextTick(() => {
-          this.currentItem = { _id: null, html: null, title: "" };
+          this.currentItem = {
+            _id: null,
+            html: null,
+            title: "",
+            modeType: undefined,
+            tree: undefined,
+            expandedList: undefined,
+          };
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
 
@@ -129,7 +152,14 @@ export default defineComponent({
         this.currentItem = item;
       } else {
         this.$nextTick(() => {
-          this.currentItem = { _id: null, html: null, title: "" };
+          this.currentItem = {
+            _id: null,
+            html: null,
+            title: "",
+            modeType: undefined,
+            tree: undefined,
+            expandedList: undefined,
+          };
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
       }

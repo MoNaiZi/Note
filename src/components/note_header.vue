@@ -84,7 +84,10 @@
               class="iconfont icon-setting"
               @click.stop="toSet"
             ></i>
-            <el-icon v-show="isLeft" @click="showToolBarFn">
+            <el-icon
+              v-show="isLeft && note.modeType != 1"
+              @click="showToolBarFn"
+            >
               <Edit />
             </el-icon>
             <i class="iconfont icon-close" @click="close"></i>
@@ -245,7 +248,7 @@ export default defineComponent({
         return;
       }
       let { note } = this;
-      if (pageTypeText === "edited") {
+      if (pageTypeText === "edited" || pageTypeText === "outline") {
         store.dispatch("header/setHeaderClose", false);
         store.dispatch("header/setNote", note);
       } else {

@@ -4,7 +4,9 @@
     <div class="header">
       <el-breadcrumb separator=">">
         <el-breadcrumb-item
-          ><span class="item" @click="goBack">标题</span></el-breadcrumb-item
+          ><span class="item" @click="goBack">{{
+            header.title
+          }}</span></el-breadcrumb-item
         >
         <el-breadcrumb-item v-for="(item, index) in HierarchyList" :key="index"
           ><span class="item" @click="goBack(item)">{{
@@ -116,6 +118,7 @@ import contextMenu from "@/components/context_menu.vue";
 import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
+const dayjs = require("dayjs");
 import { getQueryByName } from "@/utils";
 import mitt from "mitt";
 
@@ -130,14 +133,6 @@ export default {
       header: (state) => state.note,
       headerClose: (state) => state.close,
     }),
-  },
-  watch: {
-    headerClose: {
-      deep: true,
-      handler() {
-        store.dispatch("header/setHeaderClose", false);
-      },
-    },
   },
   data() {
     return {
@@ -159,7 +154,7 @@ export default {
         },
       ],
       tree: [],
-      expandedList: [3],
+      expandedList: [],
       treeData: [],
       defaultProps: {
         children: "child",
@@ -168,43 +163,121 @@ export default {
       HierarchyList: [],
     };
   },
-
+  props: {
+    currentItem: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    setPageTypeText: {
+      type: String,
+      default: "outline",
+    },
+  },
+  watch: {
+    setPageTypeText: function () {
+      store.dispatch("header/setPageTypeText", this.setPageTypeText);
+    },
+    currentItem: {
+      deep: true,
+      handler() {
+        this.init();
+      },
+    },
+    headerClose: {
+      deep: true,
+      handler(val) {
+        if (val) return;
+        this.saveTree();
+      },
+    },
+  },
   async created() {
-    store.dispatch("header/setPageTypeText", "outline");
+    store.dispatch("header/setPageTypeText", this.setPageTypeText);
+    await this.init();
 
-    let winId = getQueryByName("winId");
-    let note = {};
-    if (winId === "undefined") {
-      note._id = this.$createdId();
-    } else {
-      note = await ipcRenderer.invoke("getNote", winId);
-      this.expandedList = note.expandedList || [];
-      this.tree = note.tree;
-    }
-    if (!note.tree) {
-      let id = this.$createdId();
-      this.tree.push({
-        id,
-        name: "",
-        level: 1,
-        child: [],
-      });
-
-      this.$nextTick(() => {
-        let div = document.getElementById(`${id}`);
-        div.focus();
-      });
-    }
-
-    store.dispatch("header/setNote", note || {});
-    this.refresh();
     window.addEventListener("click", () => {
       this.showMenu = false;
+    });
+    window.addEventListener("keydown", (e) => {
+      let keyCode = e.keyCode;
+      if (e.key === "s" && keyCode === 83) {
+        console.log("保存");
+        this.saveTree("save");
+        this.$message({
+          message: "保存成功",
+          type: "success",
+          duration: 1000,
+        });
+      }
     });
     mittExample.on("node-expand", this.handleExpand);
   },
 
   methods: {
+    async init() {
+      let winId = getQueryByName("winId");
+      let note = {};
+      if (winId === "undefined") {
+        note._id = this.$createdId();
+      } else {
+        note = this.currentItem;
+        if (JSON.stringify(note) === "{}") {
+          note = await ipcRenderer.invoke("getNote", winId);
+        }
+        this.expandedList = JSON.parse(JSON.stringify(note.expandedList || []));
+        this.tree = JSON.parse(JSON.stringify(note.tree || []));
+        if (note.title) {
+          store.dispatch("header/setIsEditedTitle", false);
+        }
+      }
+      if (!note.tree) {
+        let id = this.$createdId();
+        this.tree.push({
+          id,
+          name: "",
+          level: 1,
+          child: [],
+        });
+        this.refresh();
+        this.$nextTick(() => {
+          let div = document.getElementById(`${id}`);
+          // console.log("div", div);
+          div.focus();
+        });
+      } else {
+        this.refresh();
+      }
+      delete note.tree;
+      delete note.expandedList;
+      store.dispatch("header/setNote", note || {});
+    },
+    saveTree(typeText) {
+      let { timing } = this.header;
+      const note = this.header;
+      const tree = this.tree;
+      const expandedList = this.expandedList;
+      // // const text = this.editor.getText();
+      let tempOjb = { tree, expandedList, ...note };
+      tempOjb.title = tempOjb.title || "无标题";
+      tempOjb.modeType = 1;
+      if (timing) {
+        tempOjb.timing = timing;
+        tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
+        tempOjb.timingStatus = 0;
+      }
+
+      ipcRenderer.send(
+        "closeEdited",
+        note._id,
+        JSON.parse(JSON.stringify(tempOjb)),
+        typeText
+      );
+      if (typeText != "save") {
+        store.dispatch("header/setHeaderClose", false);
+      }
+    },
     changeMenu() {
       this.showMenu = false;
     },
@@ -236,7 +309,7 @@ export default {
 
       let value = event.currentTarget.innerText;
       data.name = value;
-      console.log("data", data);
+      // console.log("data", data);
       event.currentTarget.innerText = value;
       this.updateTree();
       this.$nextTick(() => {
@@ -279,12 +352,14 @@ export default {
       event.currentTarget.style.background = "#fff";
     },
     updateTree() {
-      this.tree = JSON.parse(JSON.stringify(this.treeData));
+      let tree = JSON.parse(JSON.stringify(this.treeData));
+      this.tree = tree;
+      this.$emit("onChangeTree", tree, this.expandedList);
     },
     shortcutKey(node, data) {
       // console.log("event", event);
       let keyText = event.key;
-      console.log(keyText);
+      // console.log(keyText);
       if (["Enter", "Tab", "Backspace"].includes(keyText)) {
         if (["Enter", "Tab"].includes(keyText)) {
           event.preventDefault();
@@ -293,7 +368,7 @@ export default {
           if (data.name.length) return;
         }
         let parent = node.parent;
-        console.log("node", node);
+        // console.log("node", node);
 
         let parentData = parent.data;
         let newObj = {
@@ -351,7 +426,7 @@ export default {
         const that = this;
         that.$nextTick(() => {
           let div = document.getElementById(`${newObj.id}`);
-          console.log("div", div);
+          // console.log("div", div);
           if (div) {
             // div.focus();
             div.addEventListener(
@@ -411,7 +486,7 @@ export default {
     cursor: pointer;
   }
   span {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 600;
   }
 }
