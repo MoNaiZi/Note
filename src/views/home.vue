@@ -80,9 +80,14 @@ export default defineComponent({
     }
 
     window.addEventListener("keydown", (e) => {
+      let currentTarget: any = e.target;
       let keyCode = e.keyCode;
       // console.log("keyCode home", keyCode);
-      if (keyCode === 13) {
+      if (
+        keyCode === 13 &&
+        currentTarget == document.activeElement &&
+        currentTarget.value.length
+      ) {
         store.dispatch("header/setIsEditedTitle", false);
       }
     });

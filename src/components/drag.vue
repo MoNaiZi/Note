@@ -1,5 +1,10 @@
 <template>
-  <div class="drag_main" @mousedown="onMouseDown" @mouseup="end">
+  <div
+    class="drag_main"
+    @dblclick="handWinSize"
+    @mousedown="onMouseDown"
+    @mouseup="end"
+  >
     <slot></slot>
   </div>
 </template>
@@ -59,6 +64,9 @@ export default defineComponent({
     window.addEventListener("mouseup", that.end);
   },
   methods: {
+    handWinSize() {
+      ipcRenderer.send("zoomInAndOut");
+    },
     handleResize(e: any) {
       if (!this.isDrag) {
         let currentTarget: any = e.currentTarget;
@@ -75,6 +83,7 @@ export default defineComponent({
       if (this.width === 100) {
         switch (pageTypeText) {
           case "edited":
+          case "outline":
             {
               this.width = 700;
               this.height = 500;

@@ -6,6 +6,14 @@ body {
     margin: 0px;
 }
 
+.divider {
+    height: 1px;
+    background: #d2d2d2;
+    width: 100%;
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+
 .main-fade-enter,
 .main-fade-leave-to {
     display: none;
@@ -208,5 +216,129 @@ body {
             // }
 
         }
+    }
+}
+
+//树组件
+.ly-tree-container {
+    width: 90%;
+    padding: 0px 20px 20px 45px;
+
+    span {
+        font-size: 14px;
+    }
+
+    .el-tree>.el-tree-node>.el-tree-node__content:first-child {
+
+        &::before,
+        &::after {
+            border: none;
+        }
+    }
+
+    .ly-visible {
+        margin-left: 50px;
+        visibility: hidden;
+    }
+
+    .ly-edit__text {
+        width: 25%;
+        height: 25px;
+        border: 1px solid #e6e6e6;
+        border-radius: 3px;
+        color: #666;
+        text-indent: 10px;
+    }
+
+    .ly-tree__loading {
+        color: #666;
+        font-weight: bold;
+    }
+
+    .ly-tree-node {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        // justify-content: space-between;
+        justify-content: flex-start;
+        font-size: 14px;
+        padding-right: 8px;
+        text-align: left;
+
+
+        li {
+            list-style: none;
+            text-align: center;
+            border-radius: 50%;
+            background: #cfcfcf;
+            width: 20px;
+            height: 20px;
+            z-index: 99;
+            line-height: 22px;
+        }
+
+        li::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: black;
+            vertical-align: middle;
+            border-radius: 50%;
+            margin-top: -3px;
+        }
+    }
+
+    .ly-tree-node>div>span:last-child {
+        display: inline-block;
+        width: 110px;
+        text-align: left;
+    }
+
+    .ly-tree-node>span:last-child {
+        display: inline-block;
+        width: 110px;
+        text-align: left;
+    }
+
+    .el-tree-node>.el-tree-node__children {
+        overflow: visible;
+    }
+
+    .el-tree-node .el-tree-node__content {
+        height: 30px;
+
+        &:hover .ly-visible {
+            visibility: visible;
+        }
+
+        &::before,
+        &::after {
+            content: '';
+            position: absolute;
+            right: auto;
+        }
+
+        &::before {
+            border-left: 1px solid #e6e6e6;
+            bottom: 50px;
+            height: 100%;
+            top: 0;
+            width: 1px;
+            margin-left: -5px;
+            margin-top: -15px;
+        }
+
+        &::after {
+            border-top: 1px solid #e6e6e6;
+            height: 20px;
+            top: 14px;
+            width: 10px;
+            margin-left: -5px;
+        }
+    }
+
+    .el-tree .el-tree-node {
+        position: relative;
     }
 }

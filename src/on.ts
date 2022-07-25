@@ -294,7 +294,7 @@ ipcMain.on('minimize', (event) => {
     win.minimize()
 })
 
-ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
+ipcMain.handle('newWindow', async (event, { _id, pageType, winId, modeType }) => {
     const mainWindows = mainProcess.mainWindows()
     const { config, winURL } = mainWindows
     let newOjb: any = {
@@ -318,7 +318,7 @@ ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
     }
     let newWin = function () {
         let result = new BrowserWindow(newOjb)
-        const url = `${winURL}/#/edited?winId=${_id}&skipPageType=${pageType}`
+        const url = `${winURL}/#/${modeType ? 'outline' : 'edited'}?winId=${_id}&skipPageType=${pageType}`
         result.setIcon(logo)
         result.loadURL(url)
         return result

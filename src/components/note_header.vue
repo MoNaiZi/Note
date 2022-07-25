@@ -5,12 +5,12 @@
         <div
           :class="[
             'header_main',
-            { edited: pageTypeText === 'edited' },
+            { edited: ['edited', 'outline'].includes(pageTypeText) },
             { home: pageTypeText != 'edited' },
           ]"
         >
           <div class="left">
-            <i v-show="pageTypeText === 'edited'">
+            <i v-show="['edited', 'outline'].includes(pageTypeText)">
               <el-icon @click="minimize">
                 <Minus />
               </el-icon>
@@ -22,7 +22,7 @@
             <i
               v-show="pageTypeText === 'home' && typeText === ''"
               class="iconfont icon-add"
-              @click="addNote"
+              @click.stop="addNote"
             ></i>
             <i
               v-show="pageTypeText === 'set' && typeText === ''"
@@ -34,12 +34,15 @@
           <div
             class="title"
             οndragstart="return false;"
-            v-show="pageTypeText != 'edited'"
+            v-show="!['edited', 'outline'].includes(pageTypeText)"
           >
             {{ typeText === "left" ? title || "无标题" : "便利贴" }}
           </div>
-          <div class="input_title" v-show="pageTypeText === 'edited'">
-            <div @dblclick="editedTitle" v-if="!isEditedTitle">
+          <div
+            class="input_title"
+            v-show="['edited', 'outline'].includes(pageTypeText)"
+          >
+            <div @dblclick.stop="editedTitle" v-if="!isEditedTitle">
               <el-tooltip
                 class="item"
                 effect="light"
@@ -50,7 +53,12 @@
               </el-tooltip>
             </div>
 
-            <input v-else v-model="note.title" placeholder="请输入标题" />
+            <input
+              v-else
+              id="editedTitle"
+              v-model="note.title"
+              placeholder="请输入标题"
+            />
           </div>
 
           <div class="right">
@@ -83,6 +91,13 @@
           </div>
         </div>
       </drag>
+      <contextMenu
+        :X="X"
+        :Y="Y"
+        :menuShow="showMenu"
+        @change="changeMenu"
+        :menuList="menuList"
+      ></contextMenu>
       <el-dialog
         v-model="isShowTiming"
         title="定时提醒"
@@ -115,9 +130,11 @@ import { store } from "@/store";
 const { ipcRenderer } = require("electron");
 import drag from "@/components/drag.vue";
 import { defineComponent } from "vue";
+import contextMenu from "@/components/context_menu.vue";
 export default defineComponent({
   components: {
     drag,
+    contextMenu,
   },
   computed: {
     ...mapState("note", {
@@ -146,9 +163,22 @@ export default defineComponent({
   watch: {},
   data() {
     return {
+      showMenu: false,
+      X: 30,
+      Y: 30,
       isTopping: false,
       isShowTiming: false,
       currentItem: {},
+      menuList: [
+        {
+          key: 0,
+          name: "文本模式",
+        },
+        {
+          key: 1,
+          name: "大纲模式",
+        },
+      ],
     };
   },
   created() {
@@ -157,15 +187,28 @@ export default defineComponent({
     if (this.note && this.note.title) {
       store.dispatch("header/setIsEditedTitle", false);
     }
-    window.addEventListener("keydown", (e) => {
-      let keyCode = e.keyCode;
-      if (keyCode === 13) {
-        store.dispatch("header/setIsEditedTitle", false);
-      }
+    window.addEventListener("keydown", () => {
+      // let keyCode = e.keyCode;
+      // if (keyCode === 13) {
+      //   store.dispatch("header/setIsEditedTitle", false);
+      // }
+    });
+    window.addEventListener("click", () => {
+      this.showMenu = false;
     });
   },
   mounted() {},
   methods: {
+    changeMenu(number: number) {
+      console.log("选择类型", number);
+      ipcRenderer.invoke("newWindow", { modeType: number });
+      // switch (number) {
+      //   case 0:
+      //     break;
+      //   default:
+      //     break;
+      // }
+    },
     showToolBarFn() {
       store.dispatch("note/setShowToolBar", !this.showToolBar);
     },
@@ -210,8 +253,10 @@ export default defineComponent({
       }
     },
 
-    addNote() {
-      ipcRenderer.invoke("newWindow", {});
+    addNote(e: any) {
+      this.X = e.clientX;
+      this.Y = e.clientY;
+      this.showMenu = !this.showMenu;
     },
     toSet() {
       this.$router.push("/set");
