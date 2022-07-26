@@ -391,8 +391,8 @@ export default {
       this.$emit("onChangeTree", tree, this.expandedList);
     },
     shortcutKey(node, data) {
-      // console.log("event", event);
       let keyText = event.key;
+      // console.log(event);
       // console.log(keyText);
       if (["Enter", "Tab", "Backspace"].includes(keyText)) {
         if (["Enter", "Tab"].includes(keyText)) {
@@ -401,7 +401,7 @@ export default {
         if (keyText === "Backspace") {
           if (data.name.length) return;
         }
-        let parent = node.parent;
+        const parent = node.parent;
         // console.log("node", node);
 
         let parentData = parent.data;
@@ -417,6 +417,7 @@ export default {
         let parentChild = parentData.child || [];
         let index = parentChild.findIndex((item) => item.id === data.id);
         let expandedList = this.expandedList;
+
         if (keyText === "Enter") {
           if (data.level === 1) newObj.level = 1;
 
@@ -426,15 +427,32 @@ export default {
             parentChild.splice(index + 1, 0, newObj);
           }
           expandedList.push(newObj.id);
-        } else if (keyText === "Tab" && parent.childNodes.length > 1) {
-          newObj.level++;
-          if (index === -1) {
-            parentChild = this.treeData;
+        } else if (keyText === "Tab") {
+          const shiftKey = event.shiftKey;
+          if (parent.childNodes.length > 1 && !shiftKey) {
+            newObj.level++;
+            if (index === -1) {
+              parentChild = this.treeData;
+              index = parentChild.findIndex((item) => item.id === data.id);
+            }
+            parentChild.splice(index, 1);
+            let childObj = parentChild[parentChild.length - 1];
+            childObj.child.splice(index, 0, newObj);
+          } else if (shiftKey) {
             index = parentChild.findIndex((item) => item.id === data.id);
+            parentChild.splice(index, 1);
+            newObj.level--;
+            if (parent.parent && !Array.isArray(parent.parent.data)) {
+              parent.parent.data.child.push(newObj);
+            } else if (parent && parent.data) {
+              const treeDataIndex = this.treeData.findIndex(
+                (item) => item.id === data.id
+              );
+              if (treeDataIndex === -1) {
+                this.treeData.push(newObj);
+              }
+            }
           }
-          parentChild.splice(index, 1);
-          let childObj = parentChild[parentChild.length - 1];
-          childObj.child.splice(index, 0, newObj);
         } else if (
           keyText === "Backspace" &&
           !data.name.length &&

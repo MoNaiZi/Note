@@ -378,5 +378,8 @@ export default {
     position: relative;
     top: 2px;
   }
+  .expanded:hover {
+    color: #000;
+  }
 }
 </style>
