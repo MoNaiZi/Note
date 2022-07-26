@@ -52,7 +52,11 @@
         <el-icon
           @click.stop="handleExpandIconClick"
           :class="[
-            { 'is-leaf': node.isLeaf, expanded: !node.isLeaf && expanded },
+            {
+              'is-leaf': node.isLeaf,
+              expanded: !node.isLeaf && expanded,
+              'no-left': !node.isLeaf,
+            },
             'el-tree-node__expand-icon',
           ]"
         >
@@ -371,15 +375,20 @@ export default {
   display: none;
   position: absolute;
   left: -22px;
-  top: 4px;
-  z-index: 10;
+  top: 0px;
+  // z-index: 10;
   width: 45px;
   ::v-deep i:first-child {
     position: relative;
     top: 2px;
   }
-  .expanded:hover {
+  .no-left:hover {
     color: #000;
   }
 }
+// .row:hover {
+//   .expanded {
+//     color: #000;
+//   }
+// }
 </style>

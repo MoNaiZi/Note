@@ -230,6 +230,8 @@ body {
 .ly-tree-container {
     width: 90%;
     padding: 0px 20px 20px 45px;
+    white-space: normal !important;
+    word-wrap: break-word !important;
 
     span {
         font-size: 14px;
@@ -265,7 +267,7 @@ body {
     .ly-tree-node {
         flex: 1;
         display: flex;
-        align-items: center;
+        // align-items: center;
         // justify-content: space-between;
         justify-content: flex-start;
         font-size: 14px;
@@ -278,7 +280,7 @@ body {
             text-align: center;
             border-radius: 50%;
             background: #cfcfcf;
-            width: 21px;
+            width: 20px;
             height: 20px;
             z-index: 99;
             line-height: 22px;
@@ -313,8 +315,8 @@ body {
     }
 
     .el-tree-node .el-tree-node__content {
-        height: 30px;
-
+        height: auto;
+        margin-top: 10px;
 
         &:hover .ly-visible {
             visibility: visible;
@@ -348,5 +350,6 @@ body {
 
     .el-tree .el-tree-node {
         position: relative;
+        width: 50vw
     }
 }

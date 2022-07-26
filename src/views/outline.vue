@@ -514,7 +514,7 @@ export default {
           <div
             id={data.id}
             onInput={() => this.getName(data)}
-            style="width: 100%;outline: none;margin-left:10px;"
+            style="width: 47vw;outline: none;margin-left:10px;margin-top: 3px;"
             contenteditable="true"
             onKeydown={() => this.shortcutKey(node, data)}
           >
