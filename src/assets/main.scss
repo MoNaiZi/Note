@@ -223,7 +223,8 @@ body {
 
 //树组件
 .el-tree-node {
-    white-space: break-spaces !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
 }
 
 .ly-tree-container {
