@@ -98,6 +98,7 @@
         @node-expand="handleChildNodeExpand"
         @dragStart="dragStart"
         @node-collapse="collapse"
+        @more="more(node)"
       >
       </el-tree-node>
     </div>
@@ -376,7 +377,7 @@ export default {
   position: absolute;
   left: -22px;
   top: 0px;
-  // z-index: 10;
+  z-index: 10;
   width: 45px;
   ::v-deep i:first-child {
     position: relative;

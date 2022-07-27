@@ -162,6 +162,7 @@ export default {
         label: "name",
       },
       HierarchyList: [],
+      cursorPosition: -1,
     };
   },
   props: {
@@ -284,7 +285,7 @@ export default {
     more(node) {
       console.log(node);
       this.X = event.clientX;
-      this.Y = event.clientY;
+      this.Y = event.clientY + 20;
       this.showMenu = true;
     },
     collapse(data, node) {
@@ -327,16 +328,25 @@ export default {
       this.treeData = JSON.parse(JSON.stringify(this.tree));
     },
     customFocus(node, len) {
+      console.log("len", len);
       let range = document.createRange();
       let sel = window.getSelection();
+      if (len > 0) {
+        if (len > this.cursorPosition) {
+          len = this.cursorPosition + 1;
+        }
+        if (len < this.cursorPosition) {
+          len = this.cursorPosition - 1;
+        }
+      }
+      console.log("光标位置", len);
       range.setStart(node, len);
       range.collapse(true);
       sel.removeAllRanges();
       sel.addRange(range);
     },
     getName(data) {
-      // console.log("event", event.currentTarget.childNodes);
-
+      // console.log("event", event.currentTarget.selectionStart);
       let value = event.currentTarget.innerText;
       data.name = value;
       // console.log("data", data);
@@ -391,10 +401,12 @@ export default {
       this.$emit("onChangeTree", tree, this.expandedList);
     },
     shortcutKey(node, data) {
-      let keyText = event.key;
-      // console.log(event);
-      // console.log(keyText);
-      if (["Enter", "Tab", "Backspace"].includes(keyText)) {
+      const keyText = event.key;
+      console.log(event);
+      const cursor = this.getCaretPosition(event.currentTarget);
+      if (
+        ["Enter", "Tab", "Backspace", "ArrowUp", "ArrowDown"].includes(keyText)
+      ) {
         if (["Enter", "Tab"].includes(keyText)) {
           event.preventDefault();
         }
@@ -402,7 +414,8 @@ export default {
           if (data.name.length) return;
         }
         const parent = node.parent;
-        // console.log("node", node);
+        const expanded = node.expanded;
+        console.log("node", node);
 
         let parentData = parent.data;
         let newObj = {
@@ -414,17 +427,42 @@ export default {
         if (data && keyText != "Enter") {
           newObj = JSON.parse(JSON.stringify(data));
         }
-        let parentChild = parentData.child || [];
+        console.log("parentData ", parentData);
+        let parentChild = parentData.child;
+        if (!parentChild && Array.isArray(parentData)) {
+          parentChild = parentData;
+        }
         let index = parentChild.findIndex((item) => item.id === data.id);
         let expandedList = this.expandedList;
 
         if (keyText === "Enter") {
           if (data.level === 1) newObj.level = 1;
 
-          if (index === -1 && node.level === 1) {
-            this.treeData.push(newObj);
+          if (data.level === 1 && (!cursor || !expanded)) {
+            let insertIndex = this.treeData.findIndex(
+              (item) => item.id === data.id
+            );
+            if (insertIndex === -1) insertIndex = 0;
+            if (cursor) {
+              insertIndex++;
+            } else if (insertIndex > 0) {
+              // insertIndex--;
+            }
+            this.treeData.splice(insertIndex, 0, newObj);
           } else {
-            parentChild.splice(index + 1, 0, newObj);
+            if (!node.childNodes.length) {
+              if (cursor) {
+                index++;
+              }
+              parentChild.splice(index, 0, newObj);
+            } else {
+              index = data.child.findIndex((item) => item.id === data.id);
+              if (index >= 0) {
+                data.child.splice(index, 0, newObj);
+              } else {
+                data.child.unshift(newObj);
+              }
+            }
           }
           expandedList.push(newObj.id);
         } else if (keyText === "Tab") {
@@ -436,7 +474,10 @@ export default {
               index = parentChild.findIndex((item) => item.id === data.id);
             }
             parentChild.splice(index, 1);
-            let childObj = parentChild[parentChild.length - 1];
+            let childObj = {};
+            if (index > 0) {
+              childObj = parentChild[index - 1];
+            }
             childObj.child.splice(index, 0, newObj);
           } else if (shiftKey) {
             index = parentChild.findIndex((item) => item.id === data.id);
@@ -459,31 +500,66 @@ export default {
           !data.child.length
         ) {
           event.preventDefault();
-          parentChild.splice(index, 1);
-          let lastNodeObj = parentChild[parentChild.length - 1];
-          if (lastNodeObj) {
-            newObj = lastNodeObj;
+
+          if (data.level === 1) {
+            const treeDataIndex = this.treeData.findIndex(
+              (item) => item.id === data.id
+            );
+            this.treeData.splice(treeDataIndex, 1);
+            if (treeDataIndex > 0) {
+              newObj = this.treeData[treeDataIndex - 1];
+            }
           } else {
-            newObj = JSON.parse(JSON.stringify(parentData));
+            parentChild.splice(index, 1);
+            let lastNodeObj = parentChild[parentChild.length - 1];
+            if (lastNodeObj) {
+              newObj = lastNodeObj;
+            } else {
+              newObj = JSON.parse(JSON.stringify(parentData));
+            }
           }
+          this.cursorPosition = newObj.name.length;
+          // debugger;
           let expandedIndex = expandedList.findIndex(
             (item) => item === data.id
           );
           if (expandedIndex >= 0) {
             expandedList.splice(expandedIndex, 1);
           }
+        } else if (["ArrowUp", "ArrowDown"].includes(keyText)) {
+          // debugger;
+          if (keyText === "ArrowUp") {
+            if (index >= 1) {
+              newObj = parentChild[index - 1];
+            } else {
+              newObj = parentData;
+            }
+            this.cursorPosition = newObj.name.length;
+          } else {
+            if (index >= 0 && parentChild.length - 1 > index) {
+              newObj = parentChild[index + 1];
+            } else {
+              if (newObj.child && newObj.child.length) {
+                newObj = newObj.child[0];
+              }
+            }
+          }
         }
         this.treeData = JSON.parse(JSON.stringify(this.treeData));
         this.updateTree();
         const that = this;
+        let sel = window.getSelection();
+        sel.removeAllRanges();
         that.$nextTick(() => {
-          let div = document.getElementById(`${newObj.id}`);
-          // console.log("div", div);
+          let id = newObj.id;
+          let div = document.getElementById(`${id}`);
+          console.log(div);
           if (div) {
             // div.focus();
             div.addEventListener(
               "focus",
               (e) => {
+                // console.log("触发聚焦");
                 e.preventDefault();
               },
               {
@@ -491,12 +567,43 @@ export default {
                 once: true,
               }
             );
+
             let focus = new Event("focus");
             div.dispatchEvent(focus);
-            that.customFocus(div.childNodes[0], newObj.name.length);
+
+            setTimeout(() => {
+              that.customFocus(div.childNodes[0], newObj.name.length);
+            }, 200);
           }
         });
       }
+    },
+    getCaretPosition(editableDiv) {
+      let caretPos = 0,
+        sel,
+        range;
+      if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+          range = sel.getRangeAt(0);
+          if (range.commonAncestorContainer.parentNode == editableDiv) {
+            caretPos = range.endOffset;
+          }
+        }
+      } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        if (range.parentElement() == editableDiv) {
+          var tempEl = document.createElement("span");
+          editableDiv.insertBefore(tempEl, editableDiv.firstChild);
+          var tempRange = range.duplicate();
+          tempRange.moveToElementText(tempEl);
+          tempRange.setEndPoint("EndToEnd", range);
+          caretPos = tempRange.text.length;
+        }
+      }
+
+      this.cursorPosition = caretPos;
+      return caretPos;
     },
     renderContent(h, { node, data }) {
       // console.log("node", node, "data", data, _self);
