@@ -29,6 +29,9 @@
         @node-drag-start="handleDragStart"
         @node-collapse="collapse"
         @node-expand="expand"
+        @dragStart="dragStart"
+        @dragOver="dragOver"
+        @dragEnd="dragEnd"
       >
       </zmy-tree>
     </div>
@@ -44,76 +47,6 @@
 </template>
 
 <script>
-// const getServiceTree = function () {
-//   return [
-//     {
-//       id: 1,
-//       name: "技术部",
-//       level: 1,
-//       child: [
-//         {
-//           id: 2,
-//           name: "运维组",
-//           level: 2,
-//           child: [
-//             {
-//               id: 3,
-//               name: "godo",
-//               level: 3,
-//               child: [
-//                 {
-//                   id: 66,
-//                   name: "最后一层",
-//                   level: 4,
-//                   child: [
-//                     {
-//                       id: 77,
-//                       name: "1111",
-//                       level: 5,
-//                       child: [],
-//                     },
-//                   ],
-//                 },
-//               ],
-//             },
-//           ],
-//         },
-//         {
-//           id: 4,
-//           name: "测试组",
-//           level: 2,
-//           child: [],
-//         },
-//       ],
-//     },
-//     {
-//       id: 2,
-//       name: "运营组",
-//       level: 1,
-//       child: [
-//         {
-//           id: 8,
-//           name: "销售",
-//           level: 2,
-//           child: [
-//             {
-//               id: 5,
-//               name: "godo",
-//               level: 3,
-//               child: [],
-//             },
-//           ],
-//         },
-//         {
-//           id: 5,
-//           name: "推广",
-//           level: 2,
-//           child: [],
-//         },
-//       ],
-//     },
-//   ];
-// };
 import zmyTree from "@/components/newTree/tree.vue";
 import contextMenu from "@/components/context_menu.vue";
 import { store } from "@/store";
@@ -217,6 +150,22 @@ export default {
   },
 
   methods: {
+    dragEnd(event, that) {
+      console.log("结束", event, that);
+      console.log(event.clientX);
+      console.log(event.clientY);
+    },
+    dragOver(event, that) {
+      console.log("拖拽中", event, that);
+      console.log(event.clientX);
+      console.log(event.clientY);
+    },
+    dragStart(event, that) {
+      console.log("拖拽", event, that);
+      console.log(event.clientX);
+      console.log(event.clientY);
+      event.dataTransfer.effectAllowed = "move";
+    },
     async init() {
       let winId = getQueryByName("winId");
       let note = {};
@@ -294,10 +243,10 @@ export default {
     expand(data) {
       this.findNodeId(data, true);
     },
-    findNodeId(data, bool, node) {
+    findNodeId(data, bool) {
       // console.log("idList", idList);
       // if (!idList.length) return;
-      console.log("node", node);
+      // console.log("node", node);
       if (bool) {
         this.expandedList.push(data.id);
       } else {
@@ -328,7 +277,7 @@ export default {
       this.treeData = JSON.parse(JSON.stringify(this.tree));
     },
     customFocus(node, len) {
-      console.log("len", len);
+      // console.log("len", len);
       let range = document.createRange();
       let sel = window.getSelection();
       if (len > 0) {
@@ -339,7 +288,7 @@ export default {
           len = this.cursorPosition - 1;
         }
       }
-      console.log("光标位置", len);
+      // console.log("光标位置", len);
       range.setStart(node, len);
       range.collapse(true);
       sel.removeAllRanges();
@@ -402,7 +351,7 @@ export default {
     },
     shortcutKey(node, data) {
       const keyText = event.key;
-      console.log(event);
+      // console.log(event);
       const cursor = this.getCaretPosition(event.currentTarget);
       if (
         ["Enter", "Tab", "Backspace", "ArrowUp", "ArrowDown"].includes(keyText)
@@ -415,7 +364,7 @@ export default {
         }
         const parent = node.parent;
         const expanded = node.expanded;
-        console.log("node", node);
+        // console.log("node", node);
 
         let parentData = parent.data;
         let newObj = {
@@ -427,7 +376,7 @@ export default {
         if (data && keyText != "Enter") {
           newObj = JSON.parse(JSON.stringify(data));
         }
-        console.log("parentData ", parentData);
+        // console.log("parentData ", parentData);
         let parentChild = parentData.child;
         if (!parentChild && Array.isArray(parentData)) {
           parentChild = parentData;
@@ -500,7 +449,7 @@ export default {
           !data.child.length
         ) {
           event.preventDefault();
-
+          // debugger;
           if (data.level === 1) {
             const treeDataIndex = this.treeData.findIndex(
               (item) => item.id === data.id
@@ -553,7 +502,7 @@ export default {
         that.$nextTick(() => {
           let id = newObj.id;
           let div = document.getElementById(`${id}`);
-          console.log(div);
+          // console.log(div);
           if (div) {
             // div.focus();
             div.addEventListener(

@@ -97,6 +97,8 @@
         :node="child"
         @node-expand="handleChildNodeExpand"
         @dragStart="dragStart"
+        @dragOver="dragOver"
+        @dragEnd="dragEnd"
         @node-collapse="collapse"
         @more="more(node)"
       >
@@ -201,8 +203,14 @@ export default {
     more(node) {
       this.$emit("more", node);
     },
-    dragStart() {
-      console.log("接收开始拖动");
+    dragStart(event, that) {
+      this.$emit("dragStart", event, that);
+    },
+    dragOver(event, that) {
+      this.$emit("dragOver", event, that);
+    },
+    dragEnd(event, that) {
+      this.$emit("dragEnd", event, that);
     },
     hover(event) {
       try {
@@ -279,7 +287,7 @@ export default {
       this.$emit("node-collapse", nodeData, node, instance);
     },
     handleExpandIconClick() {
-      console.log("node-expand", this.expanded);
+      // console.log("node-expand", this.expanded);
       if (this.node.isLeaf) return;
       if (this.expanded) {
         this.$emit("node-collapse", this.node.data, this.node, this);
@@ -309,18 +317,17 @@ export default {
     },
 
     handleDragStart(event) {
-      console.log("开始拖动", this.tree);
       if (!this.tree.draggable) return;
       // this.tree.$emit("tree-node-drag-start", event, this);
-      const parent = this.$parent;
-      const tree = parent.tree;
-      tree.$emit("dragStart", event, this);
-      // this.$emit("dragStart", event, this);
+      // const parent = this.$parent;
+      // const tree = parent.tree;
+      // tree.$emit("dragStart", event, this);
+      this.$emit("dragStart", event, this);
     },
 
     handleDragOver(event) {
       if (!this.tree.draggable) return;
-      mittExample.emit("tree-node-drag-over", event, this);
+      this.$emit("dragOver", event, this);
       event.preventDefault();
     },
 
@@ -330,7 +337,7 @@ export default {
 
     handleDragEnd(event) {
       if (!this.tree.draggable) return;
-      mittExample.emit("tree-node-drag-end", event, this);
+      this.$emit("dragEnd", event, this);
     },
   },
 

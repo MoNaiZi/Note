@@ -19,6 +19,8 @@
       :render-content="renderContent"
       @node-expand="handleNodeExpand"
       @dragStart="dragStart"
+      @dragOver="dragOver"
+      @dragEnd="dragEnd"
       @node-collapse="collapse"
       @more="more"
     >
@@ -203,8 +205,14 @@ export default {
     collapse(nodeData, node, instance) {
       this.$emit("node-collapse", nodeData, node, instance);
     },
-    dragStart() {
-      console.log("接收开始拖动");
+    dragEnd(event, that) {
+      this.$emit("dragEnd", event, that);
+    },
+    dragStart(event, that) {
+      this.$emit("dragStart", event, that);
+    },
+    dragOver(event, that) {
+      this.$emit("dragOver", event, that);
     },
     filter(value) {
       if (!this.filterNodeMethod)
