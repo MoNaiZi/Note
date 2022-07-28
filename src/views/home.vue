@@ -11,12 +11,19 @@
         ></noteHeader>
 
         <noteEditor
+          v-if="!currentItem.modeType"
           ref="noteEditor"
           key="home_index"
           :currentItem="currentItem"
           @onChange="onChange"
           style="height: 90%; overflow-y: auto"
         />
+        <outline
+          v-else
+          :currentItem="currentItem"
+          :setPageTypeText="'home'"
+          @onChangeTree="onChangeTree"
+        ></outline>
       </div>
     </transition>
 
@@ -40,17 +47,22 @@ import { mapState } from "vuex";
 import { store } from "@/store";
 import noteEditor from "@/components/note_editor.vue";
 import noteHeader from "@/components/note_header.vue";
+import outline from "./outline.vue";
 import { defineComponent } from "vue";
 
 interface CurrentItem {
   _id: string | undefined | null;
   html: string | undefined | null;
   title: string | undefined;
+  modeType: number | undefined;
+  tree: object | undefined | null;
+  expandedList: [] | undefined | null;
 }
 export default defineComponent({
   components: {
     noteEditor,
     noteHeader,
+    outline,
   },
   computed: {
     ...mapState("header", {
@@ -80,15 +92,24 @@ export default defineComponent({
     }
 
     window.addEventListener("keydown", (e) => {
+      let currentTarget: any = e.target;
       let keyCode = e.keyCode;
       // console.log("keyCode home", keyCode);
-      if (keyCode === 13) {
+      if (
+        keyCode === 13 &&
+        currentTarget == document.activeElement &&
+        currentTarget.value.length
+      ) {
         store.dispatch("header/setIsEditedTitle", false);
       }
     });
   },
   mounted() {},
   methods: {
+    onChangeTree(tree: any, expandedList: any) {
+      this.currentItem.tree = tree;
+      this.currentItem.expandedList = expandedList;
+    },
     onChange({ html }: { html: string; _id: string }) {
       this.currentItem.html = html;
     },
@@ -102,7 +123,14 @@ export default defineComponent({
         this.isLeft = false;
 
         this.$nextTick(() => {
-          this.currentItem = { _id: null, html: null, title: "" };
+          this.currentItem = {
+            _id: null,
+            html: null,
+            title: "",
+            modeType: undefined,
+            tree: undefined,
+            expandedList: undefined,
+          };
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
 
@@ -124,7 +152,14 @@ export default defineComponent({
         this.currentItem = item;
       } else {
         this.$nextTick(() => {
-          this.currentItem = { _id: null, html: null, title: "" };
+          this.currentItem = {
+            _id: null,
+            html: null,
+            title: "",
+            modeType: undefined,
+            tree: undefined,
+            expandedList: undefined,
+          };
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
       }
@@ -139,7 +174,7 @@ export default defineComponent({
   background: #fff;
   border-radius: 10px;
   height: 100%;
-  margin: 10px;
+  margin: 5px;
   box-shadow: 0 0 6px #9e9e9e;
   .right_main {
     width: 100%;

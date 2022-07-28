@@ -22,6 +22,7 @@
     "element-plus": "^2.2.6",
     "javascript-obfuscator": "^4.0.0",
     "lowdb": "1.0.0",
+    "mitt": "^3.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "pg-hstore": "2.3.4",
     "rimraf": "3.0.2",

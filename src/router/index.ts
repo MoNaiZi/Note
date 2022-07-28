@@ -41,6 +41,11 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'edited',
                 component: () => import('@/views/edited.vue')
             },
+            {
+                path: '/outline',
+                name: 'outline',
+                component: () => import('@/views/outline.vue')
+            },
         ]
     },
     {

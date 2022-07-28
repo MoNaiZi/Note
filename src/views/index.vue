@@ -42,7 +42,7 @@
                   </el-tooltip>
                 </div> -->
                 <el-icon
-                  v-show="!isLeft"
+                  v-show="!isLeft && !item.modeType"
                   class="ArrowDownBold"
                   @click.stop="openDetaile(item)"
                 >
@@ -53,6 +53,7 @@
               <div class="content">
                 <keep-alive>
                   <noteEditor
+                    v-if="!item.modeType"
                     class="editor"
                     key="editor_index"
                     :style="{ height: !item.isOpenDetaile ? '60px' : '250px' }"
@@ -235,7 +236,7 @@ export default defineComponent({
       //建议使用对话框 API 让用户确认关闭应用程序.
       // this.close();
       ipcRenderer.send("closeWindow");
-      // e.returnValue = false;
+      e.returnValue = false;
     };
 
     const that = this;
@@ -370,7 +371,11 @@ export default defineComponent({
     edited(item: any) {
       const cuttentIndex = this.cuttentIndex;
       ipcRenderer
-        .invoke("newWindow", { _id: item._id, winId: item.winId })
+        .invoke("newWindow", {
+          _id: item._id,
+          winId: item.winId,
+          modeType: item.modeType,
+        })
         .then((id) => {
           this.list[cuttentIndex].winId = id;
         });

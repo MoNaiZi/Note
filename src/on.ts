@@ -12,6 +12,7 @@ type note = {
     isTopping: boolean | undefined | null,
     timingStatus: number | undefined,
     timinGtimeStamp: any,
+    modeType: number | undefined
 }
 
 ipcMain.handle('openLeft', (event, bool = true) => {
@@ -81,14 +82,14 @@ app.whenReady().then(() => {
                 return { _id: item._id }
             }
         }).value() || []
-        const idList: string[] = []
+        const itemList: Object[] = []
         for (const item of list) {
-            idList.push(item._id)
+            itemList.push({ _id: item._id, modeType: item.modeType || 0 })
             db.get('NoteList').find({ _id: item._id }).assign({ timingStatus: 1 }).write()
         }
         // console.log('轮询', list)
-        if (idList.length) {
-            suspensionWin(idList)
+        if (itemList.length) {
+            suspensionWin(itemList)
         }
 
 
@@ -164,7 +165,7 @@ ipcMain.on('windowMoving', (event, { mouseX, mouseY, width, height }) => {
 
 
 
-const suspensionWin = function (idList?: any) {
+const suspensionWin = function (itemList?: any) {
     const mainWindows = mainProcess.mainWindows()
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     const { winURL } = mainWindows
@@ -191,7 +192,7 @@ const suspensionWin = function (idList?: any) {
         const { x, y, width, height } = display.workArea;
         win.setBounds({ x: width - 100, y: height - 100, width: 500, height: 500 })
     });
-    const url = `${winURL}/#/menu?winIdList=${JSON.stringify(idList)}`
+    const url = `${winURL}/#/menu?itemList=${JSON.stringify(itemList)}`
     win.loadURL(url)
     return win
 }
@@ -294,7 +295,7 @@ ipcMain.on('minimize', (event) => {
     win.minimize()
 })
 
-ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
+ipcMain.handle('newWindow', async (event, { _id, pageType, winId, modeType }) => {
     const mainWindows = mainProcess.mainWindows()
     const { config, winURL } = mainWindows
     let newOjb: any = {
@@ -318,7 +319,7 @@ ipcMain.handle('newWindow', async (event, { _id, pageType, winId }) => {
     }
     let newWin = function () {
         let result = new BrowserWindow(newOjb)
-        const url = `${winURL}/#/edited?winId=${_id}&skipPageType=${pageType}`
+        const url = `${winURL}/#/${modeType ? 'outline' : 'edited'}?winId=${_id}&skipPageType=${pageType}`
         result.setIcon(logo)
         result.loadURL(url)
         return result

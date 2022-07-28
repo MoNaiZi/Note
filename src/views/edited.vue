@@ -2,13 +2,6 @@
 <template>
   <!-- <button @click="getValue">getValue</button> -->
   <div class="edited_main">
-    <!-- <Tree
-      :data="data"
-      label="title"
-      children="childrens"
-      :load="loadNode"
-      :lazy="true"
-    /> -->
     <div style="border: 1px solid #ccc; height: 100%">
       <Toolbar
         id="toolbar-container"
@@ -59,24 +52,6 @@ export default {
       deep: true,
       handler(val) {
         if (val) return;
-        let { timing } = this.header;
-        const note = this.header;
-        const html = this.editor.getHtml();
-        // // const text = this.editor.getText();
-        let tempOjb = { html, ...note };
-        tempOjb.title = tempOjb.title || "无标题";
-        if (timing) {
-          tempOjb.timing = timing;
-          tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
-          tempOjb.timingStatus = 0;
-        }
-
-        ipcRenderer.send(
-          "closeEdited",
-          note._id,
-          JSON.parse(JSON.stringify(tempOjb))
-        );
-        store.dispatch("header/setHeaderClose", false);
         this.saveEdited();
       },
     },
@@ -106,6 +81,7 @@ export default {
       // // const text = this.editor.getText();
       let tempOjb = { html, ...note };
       tempOjb.title = tempOjb.title || "无标题";
+      tempOjb.modeType = 0;
       if (timing) {
         tempOjb.timing = timing;
         tempOjb.timinGtimeStamp = dayjs(timing).valueOf();
