@@ -30,15 +30,15 @@ export default defineComponent({
       tip: "",
       open: false,
       open_item: false,
-      winIdList: [],
+      itemList: [],
     };
   },
   created() {
     store.dispatch("header/setPageTypeText", "menu");
-    let winIdList = getQueryByName("winIdList");
-    console.log("winIdList", winIdList);
-    if (winIdList && winIdList != "undefined") {
-      this.winIdList = JSON.parse(winIdList);
+    let itemList = getQueryByName("itemList");
+    console.log("itemList", itemList);
+    if (itemList && itemList != "undefined") {
+      this.itemList = JSON.parse(itemList);
     }
   },
   methods: {
@@ -101,13 +101,15 @@ export default defineComponent({
     openMenu() {
       const that = this;
       let fn = function () {
-        console.log("openMenu");
         that.open = !that.open;
-
-        const winIdList = that.winIdList;
-        for (let id of winIdList) {
-          ipcRenderer.invoke("newWindow", { _id: id, pageType: 1 });
-          ipcRenderer.send("closeSuspensionWin", id);
+        const itemList: any = that.itemList;
+        for (const item of itemList) {
+          ipcRenderer.invoke("newWindow", {
+            _id: item._id,
+            pageType: 1,
+            modeType: item.modeType,
+          });
+          ipcRenderer.send("closeSuspensionWin", item._id);
         }
 
         setTimeout(() => {

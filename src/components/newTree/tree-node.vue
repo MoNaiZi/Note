@@ -80,7 +80,8 @@
       </span>
       <node-content :node="node"></node-content>
     </div>
-    <!-- <el-collapse-transition> -->
+    <!-- <collapse-transition> -->
+    <!-- <transition-group> -->
     <div
       class="el-tree-node__children"
       v-if="!renderAfterExpand || childNodeRendered"
@@ -100,20 +101,23 @@
         @dragOver="dragOver"
         @dragEnd="dragEnd"
         @node-collapse="collapse"
-        @more="more(node)"
+        @more="more"
       >
       </el-tree-node>
     </div>
-    <!-- </el-collapse-transition> -->
+    <!-- </transition-group> -->
+    <!-- </collapse-transition> -->
   </div>
 </template>
 
 <script type="text/jsx">
 // import ElCollapseTransition from "element-ui/src/transitions/collapse-transition";
 // import ElCheckbox from "element-ui/packages/checkbox";
+// import collapseTransition from "../collapse-transition";
 import emitter from "./model/emitter";
 import { getNodeKey } from "./model/util";
 import mitt from "mitt";
+
 const mittExample = mitt();
 export default {
   name: "ElTreeNode",
@@ -138,8 +142,8 @@ export default {
   },
 
   components: {
-    // ElCollapseTransition,
     // ElCheckbox,
+    // collapseTransition,
     NodeContent: {
       props: {
         node: {
@@ -343,7 +347,7 @@ export default {
 
   created() {
     const parent = this.$parent;
-
+    // console.log("this", this);
     if (parent.isTree) {
       this.tree = parent;
     } else {
@@ -351,6 +355,7 @@ export default {
     }
 
     const tree = this.tree;
+
     if (!tree) {
       console.warn("Can not find node's tree.");
     }

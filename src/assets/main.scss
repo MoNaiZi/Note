@@ -312,6 +312,7 @@ body {
 
     .el-tree-node>.el-tree-node__children {
         overflow: visible;
+        transition: all 0.5s;
     }
 
     .el-tree-node .el-tree-node__content {

@@ -174,7 +174,7 @@ export default defineComponent({
   background: #fff;
   border-radius: 10px;
   height: 100%;
-  margin: 10px;
+  margin: 5px;
   box-shadow: 0 0 6px #9e9e9e;
   .right_main {
     width: 100%;

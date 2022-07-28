@@ -4,7 +4,7 @@
     <div class="header">
       <el-breadcrumb separator=">">
         <el-breadcrumb-item
-          ><span class="item" @click="goBack">{{
+          ><span v-show="header.title" class="item" @click="goBack">{{
             header.title
           }}</span></el-breadcrumb-item
         >
@@ -17,7 +17,7 @@
     </div>
     <!-- <div class="divider"></div> -->
     <div class="ly-tree-container">
-      <zmy-tree
+      <tree
         node-key="id"
         :draggable="true"
         :treeData="treeData"
@@ -33,7 +33,7 @@
         @dragOver="dragOver"
         @dragEnd="dragEnd"
       >
-      </zmy-tree>
+      </tree>
     </div>
   </div>
 
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import zmyTree from "@/components/newTree/tree.vue";
+import Tree from "@/components/newTree/tree.vue";
 import contextMenu from "@/components/context_menu.vue";
 import { store } from "@/store";
 import { mapState } from "vuex";
@@ -59,7 +59,7 @@ import { getQueryByName } from "@/utils";
 // const mittExample = mitt();
 export default {
   components: {
-    zmyTree,
+    Tree,
     contextMenu,
   },
   computed: {
@@ -78,10 +78,10 @@ export default {
           key: 0,
           name: "完成",
         },
-        {
-          key: 1,
-          name: "编辑描述",
-        },
+        // {
+        //   key: 1,
+        //   name: "编辑描述",
+        // },
         {
           key: 2,
           name: "删除",
@@ -96,6 +96,7 @@ export default {
       },
       HierarchyList: [],
       cursorPosition: -1,
+      currentNode: {},
     };
   },
   props: {
@@ -228,14 +229,45 @@ export default {
         store.dispatch("header/setHeaderClose", false);
       }
     },
-    changeMenu() {
+    changeMenu(key) {
+      let currentNode = this.currentNode;
+      switch (key) {
+        case 0:
+          {
+            currentNode.data.isComplete = currentNode.data.isComplete
+              ? false
+              : true;
+          }
+
+          break;
+        case 2:
+          {
+            let parentChild = currentNode.parent.data.child;
+            const index = parentChild.findIndex(
+              (item) => item.id === currentNode.data.id
+            );
+            parentChild.splice(index, 1);
+          }
+
+          break;
+        default:
+          break;
+      }
+      this.updateTree();
       this.showMenu = false;
     },
     more(node) {
-      console.log(node);
+      // console.log(node);
       this.X = event.clientX;
       this.Y = event.clientY + 20;
-      this.showMenu = true;
+      this.currentNode = node;
+      const data = node.data;
+      if (data.isComplete) {
+        this.menuList[0].name = "取消完成";
+      } else {
+        this.menuList[0].name = "完成";
+      }
+      this.showMenu = !this.showMenu;
     },
     collapse(data, node) {
       this.findNodeId(data, false, node);
@@ -277,7 +309,8 @@ export default {
       this.treeData = JSON.parse(JSON.stringify(this.tree));
     },
     customFocus(node, len) {
-      // console.log("len", len);
+      console.log("node", node, len);
+      if (typeof node === "undefined") return;
       let range = document.createRange();
       let sel = window.getSelection();
       if (len > 0) {
@@ -356,7 +389,7 @@ export default {
       if (
         ["Enter", "Tab", "Backspace", "ArrowUp", "ArrowDown"].includes(keyText)
       ) {
-        if (["Enter", "Tab"].includes(keyText)) {
+        if (["Enter", "Tab", "ArrowUp", "ArrowDown"].includes(keyText)) {
           event.preventDefault();
         }
         if (keyText === "Backspace") {
@@ -476,6 +509,7 @@ export default {
             expandedList.splice(expandedIndex, 1);
           }
         } else if (["ArrowUp", "ArrowDown"].includes(keyText)) {
+          event.stopImmediatePropagation();
           // debugger;
           if (keyText === "ArrowUp") {
             if (index >= 1) {
@@ -554,9 +588,27 @@ export default {
       this.cursorPosition = caretPos;
       return caretPos;
     },
+    nodeStyle(data) {
+      let result = {
+        width: "47vw",
+        outline: "none",
+        marginLeft: "10px",
+        marginTop: "3px",
+      };
+      if (data.isComplete) {
+        result = Object.assign(result, {
+          textDecorationLine: "line-through",
+          color: "#b8b8b8",
+          textDecorationColor: " #878787",
+          textDecorationThickness: "2px",
+        });
+      }
+      return result;
+    },
     renderContent(h, { node, data }) {
       // console.log("node", node, "data", data, _self);
       data = data || {};
+      const nodeStyle = this.nodeStyle(data);
       return (
         <div class="ly-tree-node" onClick={() => (this.showMenu = false)}>
           <li
@@ -570,7 +622,7 @@ export default {
           <div
             id={data.id}
             onInput={() => this.getName(data)}
-            style="width: 47vw;outline: none;margin-left:10px;margin-top: 3px;"
+            style={nodeStyle}
             contenteditable="true"
             onKeydown={() => this.shortcutKey(node, data)}
           >
@@ -596,6 +648,7 @@ export default {
   span {
     font-size: 13px;
     font-weight: 600;
+    margin-bottom: 20px;
   }
 }
 </style>

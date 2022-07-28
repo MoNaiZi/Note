@@ -9,6 +9,7 @@
     }"
     role="tree"
   >
+    <!-- <transition-group> -->
     <el-tree-node
       v-for="child in root.childNodes"
       :node="child"
@@ -25,6 +26,7 @@
       @more="more"
     >
     </el-tree-node>
+    <!-- </transition-group> -->
     <div class="el-tree__empty-block" v-if="isEmpty">
       <span class="el-tree__empty-text">{{ emptyText }}</span>
     </div>
@@ -50,7 +52,7 @@ import emitter from "./model/emitter";
 import mitt from "mitt";
 const mittExample = mitt();
 export default {
-  name: "zmyTree",
+  name: "Tree",
 
   mixins: [emitter],
 
