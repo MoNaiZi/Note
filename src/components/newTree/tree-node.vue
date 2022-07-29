@@ -322,6 +322,7 @@ export default {
 
     handleDragStart(event) {
       if (!this.tree.draggable) return;
+      // console.log("开始拖动", event, this.node.data);
       // this.tree.$emit("tree-node-drag-start", event, this);
       // const parent = this.$parent;
       // const tree = parent.tree;
@@ -331,6 +332,7 @@ export default {
 
     handleDragOver(event) {
       if (!this.tree.draggable) return;
+      // console.log("拖动中", event, this.node);
       this.$emit("dragOver", event, this);
       event.preventDefault();
     },
@@ -341,6 +343,7 @@ export default {
 
     handleDragEnd(event) {
       if (!this.tree.draggable) return;
+      // console.log("拖动结束", event, this.node);
       this.$emit("dragEnd", event, this);
     },
   },

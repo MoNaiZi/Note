@@ -97,6 +97,7 @@ export default {
       HierarchyList: [],
       cursorPosition: -1,
       currentNode: {},
+      targetObj: {},
     };
   },
   props: {
@@ -152,20 +153,57 @@ export default {
 
   methods: {
     dragEnd(event, that) {
-      console.log("结束", event, that);
-      console.log(event.clientX);
-      console.log(event.clientY);
+      // console.log("结束", event, that.node);
+      let targetObj = this.targetObj;
+      console.log("目标对象", targetObj);
+      let targetObjParentList = targetObj.parent.data;
+
+      let data = that.node;
+      console.log("拖动对象", data);
+      let dataParent = data.parent.data;
+
+      if (!Array.isArray(targetObjParentList)) {
+        if (targetObjParentList.id === data.data.id) return;
+        targetObjParentList = targetObjParentList.child;
+      }
+      if (!Array.isArray(dataParent)) {
+        dataParent = dataParent.child;
+      }
+      let currentIndex = targetObjParentList.findIndex(
+        (item) => item.id === targetObj.data.id
+      );
+      let dataIndex = dataParent.findIndex((item) => item.id === data.data.id);
+      // debugger;
+      if (data.data.level === targetObj.data.level) {
+        targetObjParentList.splice(currentIndex, 1, data.data);
+        dataParent.splice(dataIndex, 1, targetObj.data);
+      } else {
+        let targetLevel = targetObj.data.level;
+        // let dataLevel = data.data.level;
+        // [data.data.level, targetObj.data.level] = [targetLevel, dataLevel];
+
+        data.data.level = targetLevel;
+        targetObjParentList.splice(currentIndex, 0, data.data);
+        dataParent.splice(dataIndex, 1);
+      }
+
+      this.treeData = JSON.parse(JSON.stringify(this.treeData));
+      this.updateTree();
+      this.targetObj = {};
     },
     dragOver(event, that) {
-      console.log("拖拽中", event, that);
-      console.log(event.clientX);
-      console.log(event.clientY);
+      const node = that.node;
+      this.targetObj = node;
+      const currentNode = this.currentNode;
+      console.log("拖拽中", currentNode);
+      if (!Array.isArray(node.parent.data) && currentNode) {
+        if (node.parent.data.id === currentNode.data.id) {
+          event.dataTransfer.effectAllowed = "none";
+        }
+      }
     },
-    dragStart(event, that) {
-      console.log("拖拽", event, that);
-      console.log(event.clientX);
-      console.log(event.clientY);
-      event.dataTransfer.effectAllowed = "move";
+    dragStart(that) {
+      this.currentNode = that.node;
     },
     async init() {
       let winId = getQueryByName("winId");
@@ -612,6 +650,7 @@ export default {
       return (
         <div class="ly-tree-node" onClick={() => (this.showMenu = false)}>
           <li
+            id={data.id}
             onClick={() => this.toChild(data)}
             onMouseover={() => this.mouseover(node)}
             onMouseout={() => this.mouseout(node)}

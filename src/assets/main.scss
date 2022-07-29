@@ -225,6 +225,7 @@ body {
 .el-tree-node {
     white-space: normal !important;
     word-wrap: break-word !important;
+
 }
 
 .ly-tree-container {
@@ -237,12 +238,18 @@ body {
         font-size: 14px;
     }
 
-    .el-tree>.el-tree-node>.el-tree-node__content:first-child {
+
+
+    .el-tree-node__content:first-child {
 
         &::before,
         &::after {
             border: none;
         }
+    }
+
+    .el-tree-node__content::before {
+        border-left: 2px solid #e6e6e6 !important;
     }
 
     .ly-visible {
