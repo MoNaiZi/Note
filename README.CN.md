@@ -31,7 +31,7 @@ lowdb
 
 <div style="display:flex">
   <h4>大纲模式</h4>
-  <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/大纲模式.gif"/>
+  <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/%E5%B9%95%E5%B8%83%E5%A4%A7%E7%BA%B2%E6%95%88%E6%9E%9C%20.gif"/>
   <h4>定时提醒功能</h4>
   <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/定时提醒功能.gif"/>
 </div>
