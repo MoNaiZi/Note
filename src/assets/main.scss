@@ -222,6 +222,8 @@ body {
 
 
 //树组件
+
+
 .el-tree-node {
     white-space: normal !important;
     word-wrap: break-word !important;
@@ -248,10 +250,6 @@ body {
         }
     }
 
-    .el-tree-node__content::before {
-        border-left: 2px solid #e6e6e6 !important;
-    }
-
     .ly-visible {
         margin-left: 50px;
         visibility: hidden;
@@ -271,6 +269,12 @@ body {
         font-weight: bold;
     }
 
+    .node_main {
+        position: relative;
+
+
+    }
+
     .ly-tree-node {
         flex: 1;
         display: flex;
@@ -280,6 +284,7 @@ body {
         font-size: 14px;
         padding-right: 8px;
         text-align: left;
+        margin-bottom: 3px;
 
 
         li {
@@ -326,6 +331,16 @@ body {
         height: auto;
         margin-top: 10px;
 
+        .line {
+            height: 2px;
+            background-color: rgba(67, 67, 255, 0.786);
+            width: 100%;
+            position: absolute;
+            z-index: 10;
+            top: 21px;
+            display: none;
+        }
+
         &:hover .ly-visible {
             visibility: visible;
         }
@@ -338,13 +353,13 @@ body {
         }
 
         &::before {
-            border-left: 1px solid #e6e6e6;
+            border-left: 3px solid #e6e6e6;
             bottom: 50px;
             height: 100%;
             top: 0;
             width: 1px;
-            margin-left: -5px;
-            margin-top: -15px;
+            margin-left: -9px;
+            margin-top: -18px;
         }
 
         &::after {

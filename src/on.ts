@@ -250,14 +250,31 @@ ipcMain.handle('removeNote', (_event, winId) => {
     return getNoteList()
 })
 
-ipcMain.handle('search', (_event, key) => {
-    if (key === '') {
+ipcMain.handle('search', (_event, key, modeType) => {
+    if (key === '' && isNaN(modeType)) {
         return getNoteList()
     }
     const result = db.get('NoteList').filter((o: note) => {
         // 模糊查询
-        if (o.title) {
-            return o.title.match(key)
+        let isKeyBool = o.title && key && o.title.match(key)
+        if (isNaN(modeType)) {
+            return isKeyBool
+        }
+        if (!isNaN(modeType)) {
+            if (modeType === 0) {
+                const idBool = o.modeType === 0 || typeof o.modeType === 'undefined'
+                if (key) {
+                    return isKeyBool && idBool
+                }
+                return idBool
+            } else {
+                const idBool = o.modeType === 1
+                if (key) {
+                    return isKeyBool && idBool
+                }
+                return idBool
+            }
+
         }
     }).value()
     return result || []

@@ -22,6 +22,7 @@
       :draggable="tree.draggable"
       @dragstart.stop="handleDragStart"
       @dragover.stop="handleDragOver"
+      @dragleave.stop="handleDragLeave"
       @dragend.stop="handleDragEnd"
       @drop.stop="handleDrop"
       class="el-tree-node__content"
@@ -39,16 +40,6 @@
         <el-icon @click.stop="more(node)">
           <MoreFilled />
         </el-icon>
-
-        <!-- <span
-          @click.stop="handleExpandIconClick"
-          :class="[
-            { 'is-leaf': node.isLeaf, expanded: !node.isLeaf && expanded },
-            'el-tree-node__expand-icon',
-            tree.iconClass ? tree.iconClass : 'el-icon-caret-right',
-          ]"
-        >
-        </span> -->
         <el-icon
           @click.stop="handleExpandIconClick"
           :class="[
@@ -63,16 +54,7 @@
           <component :is="'CaretRight'"></component>
         </el-icon>
       </div>
-
-      <!-- <el-checkbox
-        v-if="showCheckbox"
-        v-model="node.checked"
-        :indeterminate="node.indeterminate"
-        :disabled="!!node.disabled"
-        @click.stop
-        @change="handleCheckChange"
-      >
-      </el-checkbox> -->
+      <div class="line" :id="`line_${node.data.id}}`"></div>
       <span
         v-if="node.loading"
         class="el-tree-node__loading-icon el-icon-loading"
@@ -100,6 +82,7 @@
         @dragStart="dragStart"
         @dragOver="dragOver"
         @dragEnd="dragEnd"
+        @dragLeave="dragLeave"
         @node-collapse="collapse"
         @more="more"
       >
@@ -206,6 +189,9 @@ export default {
   methods: {
     more(node) {
       this.$emit("more", node);
+    },
+    dragLeave(event, that) {
+      this.$emit("dragLeave", event, that);
     },
     dragStart(event, that) {
       this.$emit("dragStart", event, that);
@@ -335,6 +321,11 @@ export default {
       // console.log("拖动中", event, this.node);
       this.$emit("dragOver", event, this);
       event.preventDefault();
+    },
+    handleDragLeave(event) {
+      if (!this.tree.draggable) return;
+      // console.log("拖动中", event, this.node);
+      this.$emit("dragLeave", event, this);
     },
 
     handleDrop(event) {

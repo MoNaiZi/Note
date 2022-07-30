@@ -1,21 +1,42 @@
 <template>
   <div class="index_main">
+    <contextMenu
+      :X="X"
+      :Y="Y"
+      :menuShow="showMenu"
+      :currentItem="currentItem"
+      @change="changeMenu"
+    ></contextMenu>
     <!-- <div class="left_main"></div> -->
     <div class="">
-      <el-input
-        v-model="searchKey"
-        class="w-50 m-2"
-        placeholder="请输入标题"
-        :suffix-icon="'Search'"
-        @input="search"
-      />
-      <contextMenu
-        :X="X"
-        :Y="Y"
-        :menuShow="showMenu"
-        :currentItem="currentItem"
-        @change="changeMenu"
-      ></contextMenu>
+      <div class="search_main">
+        <el-input
+          style="width: 81%"
+          v-model="searchKey"
+          class="w-50 m-2"
+          placeholder="请输入标题"
+          :suffix-icon="'Search'"
+          @input="search"
+        />
+        <div style="width: 15%; margin-left: 5px">
+          <el-dropdown @command="selectMode">
+            <span class="el-dropdown-link">
+              {{ modeTypeText }}
+              <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="all">全部</el-dropdown-item>
+                <el-dropdown-item command="0">文本</el-dropdown-item>
+                <el-dropdown-item command="1">大纲</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </div>
+
       <div v-show="isScrollTop" class="top">
         <el-icon @click="toTop"><CaretTop /></el-icon>
       </div>
@@ -126,6 +147,7 @@ export default defineComponent({
       loadMore: 0, //0.有更多，1.没有更多了
       page: 0,
       listDiv: {} as any,
+      modeType: isNaN as any,
     };
   },
   inject: ["home"],
@@ -181,6 +203,18 @@ export default defineComponent({
     ...mapState("user", {
       pageSize: (state: any) => state.user.pageSize,
     }),
+    modeTypeText() {
+      let result = "全部";
+      const modeType = this.modeType;
+      if (!isNaN(modeType)) {
+        if (modeType) {
+          result = "大纲";
+        } else {
+          result = "文本";
+        }
+      }
+      return result;
+    },
   },
   beforeCreate() {
     // console.log("实例化初始之后");
@@ -236,7 +270,7 @@ export default defineComponent({
       //建议使用对话框 API 让用户确认关闭应用程序.
       // this.close();
       ipcRenderer.send("closeWindow");
-      e.returnValue = false;
+      // e.returnValue = false;
     };
 
     const that = this;
@@ -321,6 +355,10 @@ export default defineComponent({
     // console.log("在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。");
   },
   methods: {
+    selectMode(key: string | number | object) {
+      this.modeType = Number(key);
+      this.search();
+    },
     onChange({ html, _id }: { html: string; _id: string }) {
       let cuttentIndex = this.list.findIndex((item: any) => item._id === _id);
       if (cuttentIndex >= 0) {
@@ -361,9 +399,10 @@ export default defineComponent({
       //isOpenDetaile
     },
     search() {
-      let searchKey = this.searchKey;
+      const searchKey = this.searchKey;
+      const modeType = this.modeType;
       this.cuttentIndex = -1;
-      ipcRenderer.invoke("search", searchKey).then((res) => {
+      ipcRenderer.invoke("search", searchKey, modeType).then((res) => {
         this.list = res;
         // store.dispatch("note/setNoteList", res);
       });
@@ -460,6 +499,21 @@ h4 {
 .index_main {
   height: 600px;
   // width: 350px;
+  .search_main {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    .el-dropdown-link {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      .el-icon {
+        margin-left: 4px;
+        margin-top: -1px;
+      }
+    }
+  }
 }
 .top {
   position: absolute;
