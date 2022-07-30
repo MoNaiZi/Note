@@ -6,6 +6,7 @@ This project is an enhanced version of the post it note pad function. Vue is not
 
 ### Update function record
 outline mode
+
 Mind mapping (under development)
 
 ### You are welcome to give suggestions and questions, (๑ • ̀ ㅂ• ́)و ✧ stars, thank you
@@ -31,7 +32,7 @@ Package yarn build
 </p>
 
 <div style="display:flex">
-<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/大纲模式.gif"/>
+<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/%E5%B9%95%E5%B8%83%E5%A4%A7%E7%BA%B2%E6%95%88%E6%9E%9C%20.gif"/>
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/left_main.gif"/>
 </div>
 <div style="display:flex">
