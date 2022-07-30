@@ -204,21 +204,26 @@ export default {
     },
     hover(event) {
       try {
-        event.currentTarget.childNodes[1].style.display = "inline-block";
+        this.findRow(event, "inline-block");
       } catch (err) {
         // console.log(err);
       }
     },
     mouseout(event) {
       try {
-        event.currentTarget.childNodes[1].style.display = "none";
+        this.findRow(event, "none");
       } catch (err) {
         // console.log(err);
       }
     },
+    findRow(event, str) {
+      let list = Array.from(event.currentTarget.childNodes);
+      let item = list.find((item) => item.className === "row");
+      item.style.display = str;
+    },
     styleFn(node) {
       let num = (node.level - 1) * this.tree.indent;
-      num -= 35;
+      num -= 39;
       let result = num + "px";
       return { left: result };
     },

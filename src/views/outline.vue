@@ -103,7 +103,7 @@ export default {
         dragNode: {},
         targetNode: {},
         targetElement: {},
-        insertionType: 0, //0 向前，1.插为子节点
+        insertionType: 0, //象目标节点插入方向：0.向后插入，1.插为子节点,2.向前插入
       },
     };
   },
@@ -165,6 +165,7 @@ export default {
         this.dragSortObj;
       // console.log("拖动对象", dragNode);
       // console.log("目标对象", targetObj);
+
       let targetObjParentList = targetNode.parent.data;
       let dataParent = dragNode.parent.data;
       if (!Array.isArray(targetObjParentList)) {
@@ -181,17 +182,30 @@ export default {
         (item) => item.id === dragNode.data.id
       );
       // debugger;
+      let targetLevel = targetNode.data.level;
       if (dragNode.data.level === targetNode.data.level) {
         if (insertionType === 1) {
+          dragNode.data.level = targetLevel + 1;
           targetNode.data.child.push(dragNode.data);
           dataParent.splice(dataIndex, 1);
         } else {
-          targetObjParentList.splice(currentIndex, 1, dragNode.data);
-          dataParent.splice(dataIndex, 1, targetNode.data);
+          dragNode.data.level = targetLevel;
+          // if (currentIndex > 0 && insertionType === 2) {
+          //   currentIndex--;
+          // }
+          let removeIndex = targetObjParentList.findIndex(
+            (item) => item.id === dragNode.data.id
+          );
+          targetObjParentList.splice(removeIndex, 1);
+          targetObjParentList.splice(currentIndex, 0, dragNode.data);
+
+          // dataParent.splice(dataIndex, 1, targetNode.data);
         }
       } else {
-        let targetLevel = targetNode.data.level;
         dragNode.data.level = targetLevel;
+        // if (insertionType === 2) {
+        //   // currentIndex += 1;
+        // }
         targetObjParentList.splice(currentIndex, 0, dragNode.data);
         dataParent.splice(dataIndex, 1);
       }
@@ -225,15 +239,22 @@ export default {
           return;
         }
       }
+      // console.log("目标", event.layerY, "开始拖拽", dragElement.layerY);
       for (let item of event.currentTarget.children) {
         if (item.getAttribute("class") === "line") {
           item.style.display = "block";
+          if (dragElement.layerY > event.layerY) {
+            //在前面插入
+            item.style.top = "-2px";
+            this.dragSortObj.insertionType = 2;
+          } else {
+            item.style.top = "21px";
+          }
           if (event.clientX - dragElement.clientX > 30) {
             item.style.marginLeft = "35px";
             this.dragSortObj.insertionType = 1;
           } else {
             item.style.marginLeft = "0px";
-            this.dragSortObj.insertionType = 0;
           }
         }
       }
