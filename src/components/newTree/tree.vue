@@ -22,6 +22,7 @@
       @dragStart="dragStart"
       @dragOver="dragOver"
       @dragEnd="dragEnd"
+      @dragLeave="dragLeave"
       @node-collapse="collapse"
       @more="more"
     >
@@ -206,6 +207,9 @@ export default {
     },
     collapse(nodeData, node, instance) {
       this.$emit("node-collapse", nodeData, node, instance);
+    },
+    dragLeave(event, that) {
+      this.$emit("dragLeave", event, that);
     },
     dragEnd(event, that) {
       this.$emit("dragEnd", event, that);

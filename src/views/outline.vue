@@ -31,6 +31,7 @@
         @node-expand="expand"
         @dragStart="dragStart"
         @dragOver="dragOver"
+        @dragLeave="dragLeave"
         @dragEnd="dragEnd"
       >
       </tree>
@@ -97,6 +98,13 @@ export default {
       HierarchyList: [],
       cursorPosition: -1,
       currentNode: {},
+      dragSortObj: {
+        dragElement: {},
+        dragNode: {},
+        targetNode: {},
+        targetElement: {},
+        insertionType: 0, //象目标节点插入方向：0.向后插入，1.插为子节点,2.向前插入
+      },
     };
   },
   props: {
@@ -151,21 +159,109 @@ export default {
   },
 
   methods: {
-    dragEnd(event, that) {
-      console.log("结束", event, that);
-      console.log(event.clientX);
-      console.log(event.clientY);
+    dragEnd() {
+      // console.log("结束", event, that.node);
+      let { targetNode, dragNode, targetElement, insertionType } =
+        this.dragSortObj;
+      // console.log("拖动对象", dragNode);
+      // console.log("目标对象", targetObj);
+
+      let targetObjParentList = targetNode.parent.data;
+      let dataParent = dragNode.parent.data;
+      if (!Array.isArray(targetObjParentList)) {
+        if (targetObjParentList.id === dragNode.data.id) return;
+        targetObjParentList = targetObjParentList.child;
+      }
+      if (!Array.isArray(dataParent)) {
+        dataParent = dataParent.child;
+      }
+      let currentIndex = targetObjParentList.findIndex(
+        (item) => item.id === targetNode.data.id
+      );
+      let dataIndex = dataParent.findIndex(
+        (item) => item.id === dragNode.data.id
+      );
+      // debugger;
+      let targetLevel = targetNode.data.level;
+      if (dragNode.data.level === targetNode.data.level) {
+        if (insertionType === 1) {
+          dragNode.data.level = targetLevel + 1;
+          targetNode.data.child.push(dragNode.data);
+          dataParent.splice(dataIndex, 1);
+        } else {
+          dragNode.data.level = targetLevel;
+          // if (currentIndex > 0 && insertionType === 2) {
+          //   currentIndex--;
+          // }
+          let removeIndex = targetObjParentList.findIndex(
+            (item) => item.id === dragNode.data.id
+          );
+          targetObjParentList.splice(removeIndex, 1);
+          targetObjParentList.splice(currentIndex, 0, dragNode.data);
+
+          // dataParent.splice(dataIndex, 1, targetNode.data);
+        }
+      } else {
+        dragNode.data.level = targetLevel;
+        // if (insertionType === 2) {
+        //   // currentIndex += 1;
+        // }
+        targetObjParentList.splice(currentIndex, 0, dragNode.data);
+        dataParent.splice(dataIndex, 1);
+      }
+      this.treeData = JSON.parse(JSON.stringify(this.treeData));
+      this.updateTree();
+      for (let item of targetElement.children) {
+        if (item.getAttribute("class") === "line") {
+          item.style.display = "none";
+          item.style.marginLeft = "0px";
+        }
+      }
+    },
+    dragLeave(event) {
+      for (let item of event.currentTarget.children) {
+        if (item.getAttribute("class") === "line") {
+          item.style.display = "none";
+          item.style.marginLeft = "0px";
+        }
+      }
     },
     dragOver(event, that) {
-      console.log("拖拽中", event, that);
-      console.log(event.clientX);
-      console.log(event.clientY);
+      const node = that.node;
+      this.dragSortObj.targetNode = node;
+      this.dragSortObj.targetElement = event.currentTarget;
+
+      const { dragElement, dragNode } = this.dragSortObj;
+      if (!Array.isArray(node.parent.data) && dragNode) {
+        console.log(node.parent.data.id === dragNode.data.id);
+        if (node.parent.data.id === dragNode.data.id) {
+          event.dataTransfer.effectAllowed = "none";
+          return;
+        }
+      }
+      // console.log("目标", event.layerY, "开始拖拽", dragElement.layerY);
+      for (let item of event.currentTarget.children) {
+        if (item.getAttribute("class") === "line") {
+          item.style.display = "block";
+          if (dragElement.layerY > event.layerY) {
+            //在前面插入
+            item.style.top = "-2px";
+            this.dragSortObj.insertionType = 2;
+          } else {
+            item.style.top = "21px";
+          }
+          if (event.clientX - dragElement.clientX > 30) {
+            item.style.marginLeft = "35px";
+            this.dragSortObj.insertionType = 1;
+          } else {
+            item.style.marginLeft = "0px";
+          }
+        }
+      }
     },
     dragStart(event, that) {
-      console.log("拖拽", event, that);
-      console.log(event.clientX);
-      console.log(event.clientY);
-      event.dataTransfer.effectAllowed = "move";
+      this.dragSortObj.dragElement = event;
+      this.dragSortObj.dragNode = that.node;
     },
     async init() {
       let winId = getQueryByName("winId");
@@ -458,9 +554,12 @@ export default {
             parentChild.splice(index, 1);
             let childObj = {};
             if (index > 0) {
+              // console.log("childObj", childObj, index);
               childObj = parentChild[index - 1];
+              childObj.child.splice(index, 0, newObj);
             }
-            childObj.child.splice(index, 0, newObj);
+
+            // debugger;
           } else if (shiftKey) {
             index = parentChild.findIndex((item) => item.id === data.id);
             parentChild.splice(index, 1);
@@ -605,28 +704,31 @@ export default {
       }
       return result;
     },
+
     renderContent(h, { node, data }) {
       // console.log("node", node, "data", data, _self);
       data = data || {};
       const nodeStyle = this.nodeStyle(data);
       return (
-        <div class="ly-tree-node" onClick={() => (this.showMenu = false)}>
-          <li
-            onClick={() => this.toChild(data)}
-            onMouseover={() => this.mouseover(node)}
-            onMouseout={() => this.mouseout(node)}
-            style={{
-              background: node.isLeaf || node.expanded ? "#fff" : "#cfcfcf",
-            }}
-          ></li>
-          <div
-            id={data.id}
-            onInput={() => this.getName(data)}
-            style={nodeStyle}
-            contenteditable="true"
-            onKeydown={() => this.shortcutKey(node, data)}
-          >
-            {data.name}
+        <div onClick={() => (this.showMenu = false)} class="node_main">
+          <div class="ly-tree-node">
+            <li
+              onClick={() => this.toChild(data)}
+              onMouseover={() => this.mouseover(node)}
+              onMouseout={() => this.mouseout(node)}
+              style={{
+                background: node.isLeaf || node.expanded ? "#fff" : "#cfcfcf",
+              }}
+            ></li>
+            <div
+              id={data.id}
+              onInput={() => this.getName(data)}
+              style={nodeStyle}
+              contenteditable="true"
+              onKeydown={() => this.shortcutKey(node, data)}
+            >
+              {data.name}
+            </div>
           </div>
         </div>
       );

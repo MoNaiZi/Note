@@ -22,6 +22,7 @@
       :draggable="tree.draggable"
       @dragstart.stop="handleDragStart"
       @dragover.stop="handleDragOver"
+      @dragleave.stop="handleDragLeave"
       @dragend.stop="handleDragEnd"
       @drop.stop="handleDrop"
       class="el-tree-node__content"
@@ -39,16 +40,6 @@
         <el-icon @click.stop="more(node)">
           <MoreFilled />
         </el-icon>
-
-        <!-- <span
-          @click.stop="handleExpandIconClick"
-          :class="[
-            { 'is-leaf': node.isLeaf, expanded: !node.isLeaf && expanded },
-            'el-tree-node__expand-icon',
-            tree.iconClass ? tree.iconClass : 'el-icon-caret-right',
-          ]"
-        >
-        </span> -->
         <el-icon
           @click.stop="handleExpandIconClick"
           :class="[
@@ -63,16 +54,7 @@
           <component :is="'CaretRight'"></component>
         </el-icon>
       </div>
-
-      <!-- <el-checkbox
-        v-if="showCheckbox"
-        v-model="node.checked"
-        :indeterminate="node.indeterminate"
-        :disabled="!!node.disabled"
-        @click.stop
-        @change="handleCheckChange"
-      >
-      </el-checkbox> -->
+      <div class="line" :id="`line_${node.data.id}}`"></div>
       <span
         v-if="node.loading"
         class="el-tree-node__loading-icon el-icon-loading"
@@ -100,6 +82,7 @@
         @dragStart="dragStart"
         @dragOver="dragOver"
         @dragEnd="dragEnd"
+        @dragLeave="dragLeave"
         @node-collapse="collapse"
         @more="more"
       >
@@ -207,6 +190,9 @@ export default {
     more(node) {
       this.$emit("more", node);
     },
+    dragLeave(event, that) {
+      this.$emit("dragLeave", event, that);
+    },
     dragStart(event, that) {
       this.$emit("dragStart", event, that);
     },
@@ -218,21 +204,26 @@ export default {
     },
     hover(event) {
       try {
-        event.currentTarget.childNodes[1].style.display = "inline-block";
+        this.findRow(event, "inline-block");
       } catch (err) {
         // console.log(err);
       }
     },
     mouseout(event) {
       try {
-        event.currentTarget.childNodes[1].style.display = "none";
+        this.findRow(event, "none");
       } catch (err) {
         // console.log(err);
       }
     },
+    findRow(event, str) {
+      let list = Array.from(event.currentTarget.childNodes);
+      let item = list.find((item) => item.className === "row");
+      item.style.display = str;
+    },
     styleFn(node) {
       let num = (node.level - 1) * this.tree.indent;
-      num -= 35;
+      num -= 39;
       let result = num + "px";
       return { left: result };
     },
@@ -322,6 +313,7 @@ export default {
 
     handleDragStart(event) {
       if (!this.tree.draggable) return;
+      // console.log("开始拖动", event, this.node.data);
       // this.tree.$emit("tree-node-drag-start", event, this);
       // const parent = this.$parent;
       // const tree = parent.tree;
@@ -331,8 +323,14 @@ export default {
 
     handleDragOver(event) {
       if (!this.tree.draggable) return;
+      // console.log("拖动中", event, this.node);
       this.$emit("dragOver", event, this);
       event.preventDefault();
+    },
+    handleDragLeave(event) {
+      if (!this.tree.draggable) return;
+      // console.log("拖动中", event, this.node);
+      this.$emit("dragLeave", event, this);
     },
 
     handleDrop(event) {
@@ -341,6 +339,7 @@ export default {
 
     handleDragEnd(event) {
       if (!this.tree.draggable) return;
+      // console.log("拖动结束", event, this.node);
       this.$emit("dragEnd", event, this);
     },
   },
