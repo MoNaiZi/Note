@@ -58,6 +58,7 @@ import { getQueryByName } from "@/utils";
 // import mitt from "mitt";
 
 // const mittExample = mitt();
+let timeout;
 export default {
   components: {
     Tree,
@@ -146,19 +147,42 @@ export default {
     });
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
+      const that = this;
       if (e.key === "s" && keyCode === 83) {
-        console.log("保存");
-        this.saveTree("save");
-        this.$message({
-          message: "保存成功",
-          type: "success",
-          duration: 1000,
-        });
+        const fun = function () {
+          that.saveTree("save");
+          that.$message({
+            message: "保存成功",
+            type: "success",
+            duration: 1000,
+          });
+        };
+
+        that.debounce(fun, 500, true)();
       }
     });
   },
 
   methods: {
+    debounce(func, wait, immediate) {
+      return () => {
+        let context = this;
+        let args = arguments;
+
+        if (timeout) clearTimeout(timeout);
+        if (immediate) {
+          let callNow = !timeout;
+          timeout = setTimeout(function () {
+            timeout = null;
+          }, wait);
+          if (callNow) func.apply(context, args);
+        } else {
+          timeout = setTimeout(function () {
+            func.apply(context, args);
+          }, wait);
+        }
+      };
+    },
     dragEnd() {
       // console.log("结束", event, that.node);
       let { targetNode, dragNode, targetElement, insertionType } =
@@ -426,9 +450,10 @@ export default {
     getName(data) {
       // console.log("event", event.currentTarget.selectionStart);
       let value = event.currentTarget.innerText;
+      // console.log("value", value);
       data.name = value;
       // console.log("data", data);
-      event.currentTarget.innerText = value;
+      // event.currentTarget.innerText = value;
       this.updateTree();
       this.$nextTick(() => {
         this.customFocus(event.currentTarget.childNodes[0], value.length);
@@ -488,6 +513,7 @@ export default {
         if (["Enter", "Tab", "ArrowUp", "ArrowDown"].includes(keyText)) {
           event.preventDefault();
         }
+
         if (keyText === "Backspace") {
           if (data.name.length) return;
         }
@@ -512,7 +538,7 @@ export default {
         }
         let index = parentChild.findIndex((item) => item.id === data.id);
         let expandedList = this.expandedList;
-
+        // debugger;
         if (keyText === "Enter") {
           if (data.level === 1) newObj.level = 1;
 
@@ -558,8 +584,6 @@ export default {
               childObj = parentChild[index - 1];
               childObj.child.splice(index, 0, newObj);
             }
-
-            // debugger;
           } else if (shiftKey) {
             index = parentChild.findIndex((item) => item.id === data.id);
             parentChild.splice(index, 1);
@@ -589,6 +613,9 @@ export default {
             this.treeData.splice(treeDataIndex, 1);
             if (treeDataIndex > 0) {
               newObj = this.treeData[treeDataIndex - 1];
+            }
+            if (!this.treeData.length) {
+              this.treeData.push(newObj);
             }
           } else {
             parentChild.splice(index, 1);
