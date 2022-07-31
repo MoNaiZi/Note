@@ -454,9 +454,12 @@ export default {
       if (this.isCNInput) return;
       this.inputNodeName(event, data);
     },
-    compositionstart(data) {
+    compositionstart() {
       this.isCNInput = true;
-      console.log("中文拼写", event);
+    },
+    compositionend(data) {
+      this.isCNInput = false;
+      this.cursorPosition = event.currentTarget.innerText.length;
       this.inputNodeName(event, data);
     },
     inputNodeName(e, data) {
@@ -760,6 +763,7 @@ export default {
             <div
               id={data.id}
               onCompositionstart={() => this.compositionstart(data)}
+              onCompositionend={() => this.compositionend(data)}
               onInput={() => this.getName(data)}
               style={nodeStyle}
               contenteditable="true"
