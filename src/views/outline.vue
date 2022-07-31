@@ -55,6 +55,7 @@ import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 const dayjs = require("dayjs");
 import { getQueryByName } from "@/utils";
+
 // import mitt from "mitt";
 
 // const mittExample = mitt();
@@ -106,6 +107,7 @@ export default {
         targetElement: {},
         insertionType: 0, //象目标节点插入方向：0.向后插入，1.插为子节点,2.向前插入
       },
+      isCNInput: false,
     };
   },
   props: {
@@ -430,6 +432,7 @@ export default {
     },
     customFocus(node, len) {
       console.log("node", node, len);
+      console.log("光标", this.cursorPosition);
       if (typeof node === "undefined") return;
       let range = document.createRange();
       let sel = window.getSelection();
@@ -441,22 +444,28 @@ export default {
           len = this.cursorPosition - 1;
         }
       }
-      // console.log("光标位置", len);
+      console.log("光标位置", len);
       range.setStart(node, len);
       range.collapse(true);
       sel.removeAllRanges();
       sel.addRange(range);
     },
     getName(data) {
-      // console.log("event", event.currentTarget.selectionStart);
-      let value = event.currentTarget.innerText;
-      // console.log("value", value);
+      if (this.isCNInput) return;
+      this.inputNodeName(event, data);
+    },
+    compositionstart(data) {
+      this.isCNInput = true;
+      console.log("中文拼写", event);
+      this.inputNodeName(event, data);
+    },
+    inputNodeName(e, data) {
+      let value = e.currentTarget.innerText;
       data.name = value;
-      // console.log("data", data);
-      // event.currentTarget.innerText = value;
+      e.currentTarget.innerText = value;
       this.updateTree();
       this.$nextTick(() => {
-        this.customFocus(event.currentTarget.childNodes[0], value.length);
+        this.customFocus(e.currentTarget.childNodes[0], value.length);
       });
     },
     goBack(data) {
@@ -505,8 +514,9 @@ export default {
     },
     shortcutKey(node, data) {
       const keyText = event.key;
-      // console.log(event);
+
       const cursor = this.getCaretPosition(event.currentTarget);
+
       if (
         ["Enter", "Tab", "Backspace", "ArrowUp", "ArrowDown"].includes(keyText)
       ) {
@@ -749,6 +759,7 @@ export default {
             ></li>
             <div
               id={data.id}
+              onCompositionstart={() => this.compositionstart(data)}
               onInput={() => this.getName(data)}
               style={nodeStyle}
               contenteditable="true"
