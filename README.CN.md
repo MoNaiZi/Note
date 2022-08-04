@@ -43,4 +43,5 @@ lowdb
   <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
 </div>
 
-
+### 感谢支持
+[![Stargazers repo roster for @MoNaiZi/Note](https://reporoster.com/stars/MoNaiZi/Note)](https://github.com/MoNaiZi/Note/stargazers)
