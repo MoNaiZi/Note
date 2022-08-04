@@ -40,3 +40,6 @@ Package yarn build
 <img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
 </div>
 
+### Thank you for your support
+[![Stargazers repo roster for @MoNaiZi/Note](https://reporoster.com/stars/MoNaiZi/Note)](https://github.com/MoNaiZi/Note/stargazers)
+
