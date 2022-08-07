@@ -213,12 +213,6 @@ export default {
       .x((d) => d.y)
       .y((d) => d.x);
 
-    function zoomed(e) {
-      let g = d3.select("svg g");
-      console.log(g);
-      g.attr("transform", e.transform);
-    }
-
     const createChart = (data) => {
       const root = d3.hierarchy(data);
 
@@ -239,7 +233,10 @@ export default {
           d3
             .zoom()
             .scaleExtent([1 / 2, 8])
-            .on("zoom", zoomed)
+            .on("zoom", (e) => {
+              let g = d3.select("svg g");
+              g.attr("transform", e.transform);
+            })
         );
       let gMain = svg.append("g");
       that.svg = svg;
