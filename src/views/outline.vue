@@ -1,41 +1,48 @@
 <template>
   <div>
-    <div class="divider"></div>
-    <div class="header">
-      <el-breadcrumb separator=">">
-        <el-breadcrumb-item
-          ><span v-show="header.title" class="item" @click="goBack">{{
-            header.title
-          }}</span></el-breadcrumb-item
+    <template v-if="modeType === 1">
+      <div class="divider"></div>
+      <div class="header">
+        <el-breadcrumb separator=">">
+          <el-breadcrumb-item
+            ><span v-show="header.title" class="item" @click="goBack">{{
+              header.title
+            }}</span></el-breadcrumb-item
+          >
+          <el-breadcrumb-item
+            v-for="(item, index) in HierarchyList"
+            :key="index"
+            ><span class="item" @click="goBack(item)">{{
+              item.name
+            }}</span></el-breadcrumb-item
+          >
+        </el-breadcrumb>
+      </div>
+      <!-- <div class="divider"></div> -->
+      <div class="ly-tree-container">
+        <tree
+          node-key="id"
+          :draggable="true"
+          :treeData="treeData"
+          :props="defaultProps"
+          :default-expanded-keys="expandedList"
+          :expand-on-click-node="false"
+          :render-content="renderContent"
+          @more="more"
+          @node-drag-start="handleDragStart"
+          @node-collapse="collapse"
+          @node-expand="expand"
+          @dragStart="dragStart"
+          @dragOver="dragOver"
+          @dragLeave="dragLeave"
+          @dragEnd="dragEnd"
         >
-        <el-breadcrumb-item v-for="(item, index) in HierarchyList" :key="index"
-          ><span class="item" @click="goBack(item)">{{
-            item.name
-          }}</span></el-breadcrumb-item
-        >
-      </el-breadcrumb>
-    </div>
-    <!-- <div class="divider"></div> -->
-    <div class="ly-tree-container">
-      <tree
-        node-key="id"
-        :draggable="true"
-        :treeData="treeData"
-        :props="defaultProps"
-        :default-expanded-keys="expandedList"
-        :expand-on-click-node="false"
-        :render-content="renderContent"
-        @more="more"
-        @node-drag-start="handleDragStart"
-        @node-collapse="collapse"
-        @node-expand="expand"
-        @dragStart="dragStart"
-        @dragOver="dragOver"
-        @dragLeave="dragLeave"
-        @dragEnd="dragEnd"
-      >
-      </tree>
-    </div>
+        </tree>
+      </div>
+    </template>
+    <template v-if="modeType === 2">
+      <mindMap :treeData="treeData"></mindMap>
+    </template>
   </div>
 
   <contextMenu
@@ -50,6 +57,7 @@
 <script>
 import Tree from "@/components/newTree/tree.vue";
 import contextMenu from "@/components/context_menu.vue";
+import mindMap from "@/components/mindMap/index.vue";
 import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
@@ -62,6 +70,7 @@ export default {
   components: {
     Tree,
     contextMenu,
+    mindMap,
   },
   computed: {
     ...mapState("header", {
@@ -71,6 +80,7 @@ export default {
   },
   data() {
     return {
+      modeType: 2, //0.文本，1.大纲，2.思维导图
       X: 0,
       Y: 0,
       showMenu: false,

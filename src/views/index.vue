@@ -270,7 +270,7 @@ export default defineComponent({
       //建议使用对话框 API 让用户确认关闭应用程序.
       // this.close();
       ipcRenderer.send("closeWindow");
-      e.returnValue = false;
+      // e.returnValue = false;
     };
 
     const that = this;

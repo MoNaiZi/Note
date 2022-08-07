@@ -79,7 +79,7 @@ export default defineComponent({
   text-align: center;
   color: #2c3e50;
   border-radius: 10px;
-  height: 97vh;
+  height: 98vh;
   .app_wrap {
     height: 100%;
   }
