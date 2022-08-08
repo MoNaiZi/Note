@@ -1,5 +1,8 @@
 <template>
   <div>
+    <template v-if="modeType === 2">
+      <mindMap :treeData="treeData"></mindMap>
+    </template>
     <template v-if="modeType === 1">
       <div class="divider"></div>
       <div class="header">
@@ -40,9 +43,6 @@
         </tree>
       </div>
     </template>
-    <template v-if="modeType === 2">
-      <mindMap :treeData="treeData"></mindMap>
-    </template>
   </div>
 
   <contextMenu
@@ -56,16 +56,18 @@
 
 <script>
 import Tree from "@/components/newTree/tree.vue";
-import contextMenu from "@/components/context_menu.vue";
 import mindMap from "@/components/mindMap/index.vue";
+import contextMenu from "@/components/context_menu.vue";
 import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 const dayjs = require("dayjs");
 import { getQueryByName } from "@/utils";
+
 // import mitt from "mitt";
 
 // const mittExample = mitt();
+let timeout;
 export default {
   components: {
     Tree,
@@ -102,7 +104,7 @@ export default {
       expandedList: [],
       treeData: [],
       defaultProps: {
-        children: "child",
+        children: "children",
         label: "name",
       },
       HierarchyList: [],
@@ -115,6 +117,7 @@ export default {
         targetElement: {},
         insertionType: 0, //象目标节点插入方向：0.向后插入，1.插为子节点,2.向前插入
       },
+      isCNInput: false,
     };
   },
   props: {
@@ -156,19 +159,42 @@ export default {
     });
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
+      const that = this;
       if (e.key === "s" && keyCode === 83) {
-        console.log("保存");
-        this.saveTree("save");
-        this.$message({
-          message: "保存成功",
-          type: "success",
-          duration: 1000,
-        });
+        const fun = function () {
+          that.saveTree("save");
+          that.$message({
+            message: "保存成功",
+            type: "success",
+            duration: 1000,
+          });
+        };
+
+        that.debounce(fun, 500, true)();
       }
     });
   },
 
   methods: {
+    debounce(func, wait, immediate) {
+      return () => {
+        let context = this;
+        let args = arguments;
+
+        if (timeout) clearTimeout(timeout);
+        if (immediate) {
+          let callNow = !timeout;
+          timeout = setTimeout(function () {
+            timeout = null;
+          }, wait);
+          if (callNow) func.apply(context, args);
+        } else {
+          timeout = setTimeout(function () {
+            func.apply(context, args);
+          }, wait);
+        }
+      };
+    },
     dragEnd() {
       // console.log("结束", event, that.node);
       let { targetNode, dragNode, targetElement, insertionType } =
@@ -180,10 +206,10 @@ export default {
       let dataParent = dragNode.parent.data;
       if (!Array.isArray(targetObjParentList)) {
         if (targetObjParentList.id === dragNode.data.id) return;
-        targetObjParentList = targetObjParentList.child;
+        targetObjParentList = targetObjParentList.children;
       }
       if (!Array.isArray(dataParent)) {
-        dataParent = dataParent.child;
+        dataParent = dataParent.children;
       }
       let currentIndex = targetObjParentList.findIndex(
         (item) => item.id === targetNode.data.id
@@ -196,7 +222,7 @@ export default {
       if (dragNode.data.level === targetNode.data.level) {
         if (insertionType === 1) {
           dragNode.data.level = targetLevel + 1;
-          targetNode.data.child.push(dragNode.data);
+          targetNode.data.children.push(dragNode.data);
           dataParent.splice(dataIndex, 1);
         } else {
           dragNode.data.level = targetLevel;
@@ -295,7 +321,7 @@ export default {
           id,
           name: "",
           level: 1,
-          child: [],
+          children: [],
         });
         this.refresh();
         this.$nextTick(() => {
@@ -348,7 +374,7 @@ export default {
           break;
         case 2:
           {
-            let parentChild = currentNode.parent.data.child;
+            let parentChild = currentNode.parent.data.children;
             const index = parentChild.findIndex(
               (item) => item.id === currentNode.data.id
             );
@@ -393,14 +419,14 @@ export default {
           if (array.length) {
             for (let item of array) {
               idList.push(item.id);
-              if (item.child.length) {
-                fn(item.child);
+              if (item.children.length) {
+                fn(item.children);
               }
             }
           }
           return;
         };
-        fn(data.child);
+        fn(data.children);
         idList.forEach((id) => {
           let i = this.expandedList.findIndex((item) => item === id);
           this.expandedList.splice(i, 1);
@@ -416,6 +442,7 @@ export default {
     },
     customFocus(node, len) {
       console.log("node", node, len);
+      console.log("光标", this.cursorPosition);
       if (typeof node === "undefined") return;
       let range = document.createRange();
       let sel = window.getSelection();
@@ -427,25 +454,35 @@ export default {
           len = this.cursorPosition - 1;
         }
       }
-      // console.log("光标位置", len);
+      console.log("光标位置", len);
       range.setStart(node, len);
       range.collapse(true);
       sel.removeAllRanges();
       sel.addRange(range);
     },
     getName(data) {
-      // console.log("event", event.currentTarget.selectionStart);
-      let value = event.currentTarget.innerText;
+      if (this.isCNInput) return;
+      this.inputNodeName(event, data);
+    },
+    compositionstart() {
+      this.isCNInput = true;
+    },
+    compositionend(data) {
+      this.isCNInput = false;
+      this.cursorPosition = event.currentTarget.innerText.length;
+      this.inputNodeName(event, data);
+    },
+    inputNodeName(e, data) {
+      let value = e.currentTarget.innerText;
       data.name = value;
-      // console.log("data", data);
-      event.currentTarget.innerText = value;
+      e.currentTarget.innerText = value;
       this.updateTree();
       this.$nextTick(() => {
-        this.customFocus(event.currentTarget.childNodes[0], value.length);
+        this.customFocus(e.currentTarget.childNodes[0], value.length);
       });
     },
     goBack(data) {
-      if (!data.child) {
+      if (!data.children) {
         this.refresh();
         this.HierarchyList = [];
         return;
@@ -454,23 +491,23 @@ export default {
       if (index >= 0) {
         this.HierarchyList = this.HierarchyList.slice(0, index + 1);
       }
-      this.treeData = data.child;
+      this.treeData = data.children;
     },
     toChild(data) {
       let index = this.HierarchyList.findIndex((item) => item.id === data.id);
       if (index === -1) {
         this.HierarchyList.push(data);
-        let child = data.child;
+        let children = data.children;
 
-        if (!child.length) {
-          child = [
+        if (!children.length) {
+          children = [
             {
-              child: [],
+              children: [],
               name: "",
             },
           ];
         }
-        this.treeData = child;
+        this.treeData = children;
       }
     },
     mouseover(node) {
@@ -490,14 +527,16 @@ export default {
     },
     shortcutKey(node, data) {
       const keyText = event.key;
-      // console.log(event);
+
       const cursor = this.getCaretPosition(event.currentTarget);
+
       if (
         ["Enter", "Tab", "Backspace", "ArrowUp", "ArrowDown"].includes(keyText)
       ) {
         if (["Enter", "Tab", "ArrowUp", "ArrowDown"].includes(keyText)) {
           event.preventDefault();
         }
+
         if (keyText === "Backspace") {
           if (data.name.length) return;
         }
@@ -509,20 +548,20 @@ export default {
         let newObj = {
           id: this.$createdId(),
           level: parent.level + 1,
-          child: [],
+          children: [],
           name: "",
         };
         if (data && keyText != "Enter") {
           newObj = JSON.parse(JSON.stringify(data));
         }
         // console.log("parentData ", parentData);
-        let parentChild = parentData.child;
+        let parentChild = parentData.children;
         if (!parentChild && Array.isArray(parentData)) {
           parentChild = parentData;
         }
         let index = parentChild.findIndex((item) => item.id === data.id);
         let expandedList = this.expandedList;
-
+        // debugger;
         if (keyText === "Enter") {
           if (data.level === 1) newObj.level = 1;
 
@@ -544,11 +583,11 @@ export default {
               }
               parentChild.splice(index, 0, newObj);
             } else {
-              index = data.child.findIndex((item) => item.id === data.id);
+              index = data.children.findIndex((item) => item.id === data.id);
               if (index >= 0) {
-                data.child.splice(index, 0, newObj);
+                data.children.splice(index, 0, newObj);
               } else {
-                data.child.unshift(newObj);
+                data.children.unshift(newObj);
               }
             }
           }
@@ -566,16 +605,14 @@ export default {
             if (index > 0) {
               // console.log("childObj", childObj, index);
               childObj = parentChild[index - 1];
-              childObj.child.splice(index, 0, newObj);
+              childObj.children.splice(index, 0, newObj);
             }
-
-            // debugger;
           } else if (shiftKey) {
             index = parentChild.findIndex((item) => item.id === data.id);
             parentChild.splice(index, 1);
             newObj.level--;
             if (parent.parent && !Array.isArray(parent.parent.data)) {
-              parent.parent.data.child.push(newObj);
+              parent.parent.data.children.push(newObj);
             } else if (parent && parent.data) {
               const treeDataIndex = this.treeData.findIndex(
                 (item) => item.id === data.id
@@ -588,7 +625,7 @@ export default {
         } else if (
           keyText === "Backspace" &&
           !data.name.length &&
-          !data.child.length
+          !data.children.length
         ) {
           event.preventDefault();
           // debugger;
@@ -599,6 +636,9 @@ export default {
             this.treeData.splice(treeDataIndex, 1);
             if (treeDataIndex > 0) {
               newObj = this.treeData[treeDataIndex - 1];
+            }
+            if (!this.treeData.length) {
+              this.treeData.push(newObj);
             }
           } else {
             parentChild.splice(index, 1);
@@ -631,8 +671,8 @@ export default {
             if (index >= 0 && parentChild.length - 1 > index) {
               newObj = parentChild[index + 1];
             } else {
-              if (newObj.child && newObj.child.length) {
-                newObj = newObj.child[0];
+              if (newObj.children && newObj.children.length) {
+                newObj = newObj.children[0];
               }
             }
           }
@@ -732,6 +772,8 @@ export default {
             ></li>
             <div
               id={data.id}
+              onCompositionstart={() => this.compositionstart(data)}
+              onCompositionend={() => this.compositionend(data)}
               onInput={() => this.getName(data)}
               style={nodeStyle}
               contenteditable="true"
