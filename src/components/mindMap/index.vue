@@ -122,30 +122,21 @@ export default {
     init() {
       const that = this;
       const wrap = document.getElementById("mind_map_wrap");
-      const width = 1200;
+      const width = 400;
       const margin = { top: 40, right: 40, bottom: 40, left: 40 };
       const dx = 40;
-      const dy = width / 6;
+      const dy = 50;
 
       const tree = d3.tree().nodeSize([dx, dy]);
-
-      const diagonal = d3
-        .linkHorizontal()
-        .x((d) => d.y)
-        .y((d) => d.x);
 
       const createChart = (data) => {
         const root = d3.hierarchy(data, function (d) {
           return d.children;
         });
 
-        console.log("root", root);
-        // debugger;
         root.x0 = dy / 2;
         root.y0 = 0;
         root.descendants().forEach((d, i) => {
-          console.log("d", d);
-          // debugger;
           d.id = i;
           d._children = d.children;
           // if (!d._child && d.data) d._child = d.data.children;
@@ -176,7 +167,6 @@ export default {
           .attr("stroke", "#999")
           .attr("stroke-opacity", 1.0)
           .attr("stroke-width", 1.5);
-
         const gNode = gMain
           .append("g")
           .attr("cursor", "pointer")
@@ -185,7 +175,6 @@ export default {
         function update(source) {
           const duration = d3.event && d3.event.altKey ? 2500 : 250;
           const nodes = root.descendants().reverse();
-          const links = root.links();
 
           // Compute the new tree layout.
           tree(root);
@@ -208,11 +197,9 @@ export default {
               window.ResizeObserver ? null : () => () => svg.dispatch("toggle")
             );
 
-          // Update the nodes…
           const node = gNode.selectAll("g").data(nodes, (d) => d.id);
 
-          // Enter any new nodes at the parent's previous position.
-          const nodeEnter = node
+          const contentG = node
             .enter()
             .append("g")
             .attr("transform", () => `translate(${source.y0},${source.x0})`)
@@ -229,9 +216,9 @@ export default {
           const desat = (c) => d3.hsl(c.h, c.s, c.l + 0.0);
 
           // The circle
-          nodeEnter
+          contentG
             .append("circle")
-            .attr("r", dx / 3)
+            .attr("r", 5)
             .attr("fill", (d) => desat(d3.hsl(d.data["background-color"])))
             .attr("fill-opacity", 1)
             .attr("stroke", (d) => d.data["background-color"])
@@ -242,7 +229,7 @@ export default {
               d.data["data-target"] ? "modal" : null
             );
           // Icon for QA text
-          nodeEnter
+          contentG
             .filter((d) => d.data["data-target"])
             .append("text")
             .attr("x", -6)
@@ -256,23 +243,30 @@ export default {
             .text(pageIcon);
           // Transition nodes to their new position.
           node
-            .merge(nodeEnter)
+            .merge(contentG)
             .transition(transition)
             .attr("transform", (d) => `translate(${d.y},${d.x})`)
             .attr("fill-opacity", 1)
             .attr("stroke-opacity", 1);
 
           // Link and text of each node
-          const labels = nodeEnter
+          const labels = contentG
             .append("a")
-            .attr("href", (d) => d.data.href)
+            .attr("href", (d) => {
+              return d.data.href;
+            })
             .append("text")
             .attr("dy", "0.31em")
-            .attr("y", (d) => (d._child ? "-2em" : 0))
+            .attr("y", () => {
+              return -10;
+            })
             .attr("text-anchor", (d) => (d._child ? "middle" : "start"))
             .html((d) => d.data.name)
-            .attr("x", (d) => (d._child ? 0 : dx / 3 + 4));
-          window.setTimeout(() => labels.call(wrapText, 300), 0);
+            .attr("x", (d) => {
+              console.log(d);
+              return -20;
+            });
+          window.setTimeout(() => labels.call(that.wrapText, 300), 0);
 
           // Transition exiting nodes to the parent's new position.
           node
@@ -282,33 +276,8 @@ export default {
             .attr("transform", () => `translate(${source.y},${source.x})`)
             .attr("fill-opacity", 0)
             .attr("stroke-opacity", 0);
+          that.drawLine(root, gLink, source, transition);
 
-          // Update the links…
-          const link = gLink.selectAll("path").data(links, (d) => d.target.id);
-
-          // Enter any new links at the parent's previous position.
-          const linkEnter = link
-            .enter()
-            .append("path")
-            .attr("d", () => {
-              const o = { x: source.x0, y: source.y0 };
-              return diagonal({ source: o, target: o });
-            });
-
-          // Transition links to their new position.
-          link.merge(linkEnter).transition(transition).attr("d", diagonal);
-
-          // Transition exiting nodes to the parent's new position.
-          link
-            .exit()
-            .transition(transition)
-            .remove()
-            .attr("d", () => {
-              const o = { x: source.x, y: source.y };
-              return diagonal({ source: o, target: o });
-            });
-
-          // Stash the old positions for transition.
           root.eachBefore((d) => {
             d.x0 = d.x;
             d.y0 = d.y;
@@ -320,49 +289,82 @@ export default {
         return svg.node();
       };
 
-      const wrapText = function (text, width) {
-        text.each(function () {
-          var text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, // em
-            y = text.attr("y"),
-            dy = parseFloat(text.attr("dy")),
-            tspan = text
-              .text(null)
-              .append("tspan")
-              .attr("x", this.getAttribute("x"))
-              .attr("y", y)
-              .attr("dy", dy + "em");
-          console.log(words);
-          while ((word = words.pop())) {
-            line.push(word);
-            tspan.text(line.join(" "));
-            console.log(tspan.node().getComputedTextLength());
-            if (tspan.node().getComputedTextLength() > width) {
-              line.pop();
-              tspan.text(line.join(" "));
-              line = [word];
-              tspan = text
-                .append("tspan")
-                .attr("x", this.getAttribute("x"))
-                .attr("y", y)
-                .attr("dy", ++lineNumber * lineHeight + dy + "em")
-                .text(word);
-            }
-          }
-        });
-      };
       const treeData = this.tree;
 
       const dachart = createChart(treeData);
       console.log("treeData", treeData);
       console.log(mindData);
-      //var svg = d3.select("#cy").append("svg")
 
       wrap.append(dachart);
+    },
+
+    drawLine(root, gLink, source, transition) {
+      const links = root.links();
+      console.log("links", links);
+      const link = gLink.selectAll("path").data(links, (d) => d.target.id);
+      const diagonal = d3
+        .linkHorizontal()
+        .x((d) => {
+          console.log("d", d);
+          return d.y;
+        })
+        .y((d) => d.x);
+
+      const linkEnter = link
+        .enter()
+        .append("path")
+        .attr("d", () => {
+          const o = { x: source.x0, y: source.y0 };
+          let result = diagonal({ source: o, target: o });
+
+          return result;
+        });
+
+      link.merge(linkEnter).transition(transition).attr("d", diagonal);
+
+      link
+        .exit()
+        .transition(transition)
+        .remove()
+        .attr("d", () => {
+          const o = { x: source.x, y: source.y };
+          return diagonal({ source: o, target: o });
+        });
+    },
+    wrapText(text, width) {
+      text.each(function () {
+        var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // em
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text
+            .text(null)
+            .append("tspan")
+            .attr("x", this.getAttribute("x"))
+            .attr("y", y)
+            .attr("dy", dy + "em");
+
+        while ((word = words.pop())) {
+          line.push(word);
+          tspan.text(line.join(" "));
+
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text
+              .append("tspan")
+              .attr("x", this.getAttribute("x"))
+              .attr("y", y)
+              .attr("dy", ++lineNumber * lineHeight + dy + "em")
+              .text(word);
+          }
+        }
+      });
     },
   },
 };

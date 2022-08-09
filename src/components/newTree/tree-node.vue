@@ -19,7 +19,7 @@
     ref="node"
   >
     <div
-      :draggable="tree.draggable"
+      draggable="false"
       @dragstart.stop="handleDragStart"
       @dragover.stop="handleDragOver"
       @dragleave.stop="handleDragLeave"
@@ -41,6 +41,7 @@
           <MoreFilled />
         </el-icon>
         <el-icon
+          :size="16"
           @click.stop="handleExpandIconClick"
           :class="[
             {
@@ -178,15 +179,17 @@ export default {
       this.handleSelectChange(val, this.node.indeterminate);
     },
 
-    "node.expanded"(val) {
-      this.$nextTick(() => (this.expanded = val));
-      if (val) {
-        this.childNodeRendered = true;
-      }
+    "node.data.isExpand"(val) {
+      this.initExpanded(val);
     },
   },
 
   methods: {
+    initExpanded(bool) {
+      bool === true ? true : false;
+      this.expanded = bool;
+      this.childNodeRendered = bool;
+    },
     more(node) {
       this.$emit("more", node);
     },
@@ -282,8 +285,9 @@ export default {
       this.$emit("node-collapse", nodeData, node, instance);
     },
     handleExpandIconClick() {
-      // console.log("node-expand", this.expanded);
-      if (this.node.isLeaf) return;
+      // console.log("node-expand", this.node.isLeaf);
+      // if (this.node.isLeaf) return;
+
       if (this.expanded) {
         this.$emit("node-collapse", this.node.data, this.node, this);
         this.node.collapse();
@@ -313,7 +317,6 @@ export default {
 
     handleDragStart(event) {
       if (!this.tree.draggable) return;
-      // console.log("开始拖动", event, this.node.data);
       // this.tree.$emit("tree-node-drag-start", event, this);
       // const parent = this.$parent;
       // const tree = parent.tree;
@@ -323,12 +326,14 @@ export default {
 
     handleDragOver(event) {
       if (!this.tree.draggable) return;
+
       // console.log("拖动中", event, this.node);
       this.$emit("dragOver", event, this);
       event.preventDefault();
     },
     handleDragLeave(event) {
       if (!this.tree.draggable) return;
+
       // console.log("拖动中", event, this.node);
       this.$emit("dragLeave", event, this);
     },
@@ -339,6 +344,7 @@ export default {
 
     handleDragEnd(event) {
       if (!this.tree.draggable) return;
+
       // console.log("拖动结束", event, this.node);
       this.$emit("dragEnd", event, this);
     },
@@ -361,15 +367,10 @@ export default {
 
     const props = tree.props || {};
     const childrenKey = props["children"] || "children";
-
+    this.initExpanded(this.node.data.isExpand);
     this.$watch(`node.data.${childrenKey}`, () => {
       this.node.updateChildren();
     });
-
-    if (this.node.expanded) {
-      this.expanded = true;
-      this.childNodeRendered = true;
-    }
 
     if (this.tree.accordion) {
       mittExample.on("tree-node-expand", (node) => {
@@ -387,10 +388,14 @@ export default {
   display: none;
   position: absolute;
   left: -22px;
-  top: 0px;
+  top: 2px;
   z-index: 10;
   width: 45px;
   ::v-deep i:first-child {
+    position: relative;
+    top: 2px;
+  }
+  .no-left {
     position: relative;
     top: 2px;
   }

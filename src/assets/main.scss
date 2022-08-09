@@ -232,7 +232,7 @@ body {
 
 .ly-tree-container {
     width: 90%;
-    padding: 0px 20px 20px 45px;
+    padding: 0px 20px 20px 38px;
     white-space: normal !important;
     word-wrap: break-word !important;
 
@@ -296,6 +296,8 @@ body {
             height: 20px;
             z-index: 99;
             line-height: 22px;
+            position: relative;
+            top: 2px;
         }
 
         li::before {
@@ -359,16 +361,15 @@ body {
             top: 0;
             width: 1px;
             margin-left: -9px;
-            margin-top: -18px;
         }
 
-        &::after {
-            border-top: 3px solid #e6e6e6;
-            height: 20px;
-            top: 14px;
-            width: 10px;
-            margin-left: -5px;
-        }
+        // &::after {
+        //     border-top: 3px solid #e6e6e6;
+        //     height: 20px;
+        //     top: 14px;
+        //     width: 10px;
+        //     margin-left: -5px;
+        // }
     }
 
     .el-tree .el-tree-node {
