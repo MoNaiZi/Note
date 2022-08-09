@@ -32,12 +32,12 @@ Package yarn build
 </p>
 
 <div style="display:flex">
-<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/%E5%B9%95%E5%B8%83%E5%A4%A7%E7%BA%B2%E6%95%88%E6%9E%9C%20.gif"/>
-<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/left_main.gif"/>
+<img style="width:500px;" src="https://s1.imagehub.cc/images/2022/08/09/f1b8d93aee3a31a1f468cd70d56e2e24.gif"/>
+<img style="width:500px;" src="https://s1.imagehub.cc/images/2022/08/09/left_main.gif"/>
 </div>
 <div style="display:flex">
-<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/定时提醒功能.gif"/>
-<img style="width:500px;" src="https://github.com/MoNaiZi/Note/blob/master/public/img/黑夜模式.gif"/>
+<img style="width:500px;" src="https://s1.imagehub.cc/images/2022/08/09/bec63f9edb6e76782195dbdc91489de4.gif"/>
+<img style="width:500px;" src="https://s1.imagehub.cc/images/2022/08/09/ec2f8bad61b2565b71d5a8c9e439e67d.gif"/>
 </div>
 
 ### Thank you for your support
