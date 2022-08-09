@@ -63,7 +63,6 @@ import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 const dayjs = require("dayjs");
 import { getQueryByName } from "@/utils";
-
 // import mitt from "mitt";
 
 // const mittExample = mitt();
