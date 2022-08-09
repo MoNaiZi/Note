@@ -55,7 +55,7 @@ import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 const dayjs = require("dayjs");
 import { getQueryByName } from "@/utils";
-
+// import { withModifiers } from "vue";
 // import mitt from "mitt";
 
 // const mittExample = mitt();
@@ -94,7 +94,7 @@ export default {
       expandedList: [],
       treeData: [],
       defaultProps: {
-        children: "child",
+        children: "children",
         label: "name",
       },
       HierarchyList: [],
@@ -185,7 +185,7 @@ export default {
         }
       };
     },
-    dragEnd() {
+    dragEnd(event) {
       // console.log("结束", event, that.node);
       let { targetNode, dragNode, targetElement, insertionType } =
         this.dragSortObj;
@@ -196,10 +196,10 @@ export default {
       let dataParent = dragNode.parent.data;
       if (!Array.isArray(targetObjParentList)) {
         if (targetObjParentList.id === dragNode.data.id) return;
-        targetObjParentList = targetObjParentList.child;
+        targetObjParentList = targetObjParentList.children;
       }
       if (!Array.isArray(dataParent)) {
-        dataParent = dataParent.child;
+        dataParent = dataParent.children;
       }
       let currentIndex = targetObjParentList.findIndex(
         (item) => item.id === targetNode.data.id
@@ -207,12 +207,26 @@ export default {
       let dataIndex = dataParent.findIndex(
         (item) => item.id === dragNode.data.id
       );
-      // debugger;
+
       let targetLevel = targetNode.data.level;
+      if (
+        dragNode.data.level === targetNode.data.level &&
+        dragNode.data.id === targetNode.data.id
+      ) {
+        event.dataTransfer.effectAllowed = "none";
+        for (let item of targetElement.children) {
+          if (item.getAttribute("class") === "line") {
+            item.style.display = "none";
+            item.style.marginLeft = "0px";
+          }
+        }
+        return;
+      }
+      // debugger;
       if (dragNode.data.level === targetNode.data.level) {
         if (insertionType === 1) {
           dragNode.data.level = targetLevel + 1;
-          targetNode.data.child.push(dragNode.data);
+          targetNode.data.children.push(dragNode.data);
           dataParent.splice(dataIndex, 1);
         } else {
           dragNode.data.level = targetLevel;
@@ -311,7 +325,7 @@ export default {
           id,
           name: "",
           level: 1,
-          child: [],
+          children: [],
         });
         this.refresh();
         this.$nextTick(() => {
@@ -364,7 +378,7 @@ export default {
           break;
         case 2:
           {
-            let parentChild = currentNode.parent.data.child;
+            let parentChild = currentNode.parent.data.children;
             const index = parentChild.findIndex(
               (item) => item.id === currentNode.data.id
             );
@@ -409,14 +423,14 @@ export default {
           if (array.length) {
             for (let item of array) {
               idList.push(item.id);
-              if (item.child.length) {
-                fn(item.child);
+              if (item.children.length) {
+                fn(item.children);
               }
             }
           }
           return;
         };
-        fn(data.child);
+        fn(data.children);
         idList.forEach((id) => {
           let i = this.expandedList.findIndex((item) => item === id);
           this.expandedList.splice(i, 1);
@@ -472,7 +486,7 @@ export default {
       });
     },
     goBack(data) {
-      if (!data.child) {
+      if (!data.children) {
         this.refresh();
         this.HierarchyList = [];
         return;
@@ -481,23 +495,23 @@ export default {
       if (index >= 0) {
         this.HierarchyList = this.HierarchyList.slice(0, index + 1);
       }
-      this.treeData = data.child;
+      this.treeData = data.children;
     },
     toChild(data) {
       let index = this.HierarchyList.findIndex((item) => item.id === data.id);
       if (index === -1) {
         this.HierarchyList.push(data);
-        let child = data.child;
+        let children = data.children;
 
-        if (!child.length) {
-          child = [
+        if (!children.length) {
+          children = [
             {
-              child: [],
+              children: [],
               name: "",
             },
           ];
         }
-        this.treeData = child;
+        this.treeData = children;
       }
     },
     mouseover(node) {
@@ -538,14 +552,14 @@ export default {
         let newObj = {
           id: this.$createdId(),
           level: parent.level + 1,
-          child: [],
+          children: [],
           name: "",
         };
         if (data && keyText != "Enter") {
           newObj = JSON.parse(JSON.stringify(data));
         }
         // console.log("parentData ", parentData);
-        let parentChild = parentData.child;
+        let parentChild = parentData.children;
         if (!parentChild && Array.isArray(parentData)) {
           parentChild = parentData;
         }
@@ -573,11 +587,11 @@ export default {
               }
               parentChild.splice(index, 0, newObj);
             } else {
-              index = data.child.findIndex((item) => item.id === data.id);
+              index = data.children.findIndex((item) => item.id === data.id);
               if (index >= 0) {
-                data.child.splice(index, 0, newObj);
+                data.children.splice(index, 0, newObj);
               } else {
-                data.child.unshift(newObj);
+                data.children.unshift(newObj);
               }
             }
           }
@@ -595,14 +609,14 @@ export default {
             if (index > 0) {
               // console.log("childObj", childObj, index);
               childObj = parentChild[index - 1];
-              childObj.child.splice(index, 0, newObj);
+              childObj.children.splice(index, 0, newObj);
             }
           } else if (shiftKey) {
             index = parentChild.findIndex((item) => item.id === data.id);
             parentChild.splice(index, 1);
             newObj.level--;
             if (parent.parent && !Array.isArray(parent.parent.data)) {
-              parent.parent.data.child.push(newObj);
+              parent.parent.data.children.push(newObj);
             } else if (parent && parent.data) {
               const treeDataIndex = this.treeData.findIndex(
                 (item) => item.id === data.id
@@ -615,7 +629,7 @@ export default {
         } else if (
           keyText === "Backspace" &&
           !data.name.length &&
-          !data.child.length
+          !data.children.length
         ) {
           event.preventDefault();
           // debugger;
@@ -661,8 +675,8 @@ export default {
             if (index >= 0 && parentChild.length - 1 > index) {
               newObj = parentChild[index + 1];
             } else {
-              if (newObj.child && newObj.child.length) {
-                newObj = newObj.child[0];
+              if (newObj.children && newObj.children.length) {
+                newObj = newObj.children[0];
               }
             }
           }
@@ -748,11 +762,14 @@ export default {
     renderContent(h, { node, data }) {
       // console.log("node", node, "data", data, _self);
       data = data || {};
+      // const handleDragStart = this.handleDragStart;
       const nodeStyle = this.nodeStyle(data);
       return (
         <div onClick={() => (this.showMenu = false)} class="node_main">
           <div class="ly-tree-node">
             <li
+              draggable="true"
+              id="line_menu"
               onClick={() => this.toChild(data)}
               onMouseover={() => this.mouseover(node)}
               onMouseout={() => this.mouseout(node)}

@@ -19,7 +19,7 @@
     ref="node"
   >
     <div
-      :draggable="tree.draggable"
+      draggable="false"
       @dragstart.stop="handleDragStart"
       @dragover.stop="handleDragOver"
       @dragleave.stop="handleDragLeave"
@@ -313,7 +313,6 @@ export default {
 
     handleDragStart(event) {
       if (!this.tree.draggable) return;
-      // console.log("开始拖动", event, this.node.data);
       // this.tree.$emit("tree-node-drag-start", event, this);
       // const parent = this.$parent;
       // const tree = parent.tree;
@@ -323,12 +322,14 @@ export default {
 
     handleDragOver(event) {
       if (!this.tree.draggable) return;
+
       // console.log("拖动中", event, this.node);
       this.$emit("dragOver", event, this);
       event.preventDefault();
     },
     handleDragLeave(event) {
       if (!this.tree.draggable) return;
+
       // console.log("拖动中", event, this.node);
       this.$emit("dragLeave", event, this);
     },
@@ -339,6 +340,7 @@ export default {
 
     handleDragEnd(event) {
       if (!this.tree.draggable) return;
+
       // console.log("拖动结束", event, this.node);
       this.$emit("dragEnd", event, this);
     },

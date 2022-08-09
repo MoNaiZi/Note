@@ -296,6 +296,8 @@ body {
             height: 20px;
             z-index: 99;
             line-height: 22px;
+            position: relative;
+            top: 2px;
         }
 
         li::before {
