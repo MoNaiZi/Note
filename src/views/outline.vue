@@ -384,7 +384,7 @@ export default {
             );
             parentChild.splice(index, 1);
           }
-
+          this.treeData = JSON.parse(JSON.stringify(this.treeData));
           break;
         default:
           break;
