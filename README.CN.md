@@ -30,7 +30,7 @@ lowdb
 </p>
 
 <div style="display:flex">
-  <h4>大纲模式</h4>
+  <a href="https://s1.imagehub.cc/images/2022/08/09/f1b8d93aee3a31a1f468cd70d56e2e24.gif"><h4>大纲模式</h4></a>
   <img style="width:500px;" src="https://s1.imagehub.cc/images/2022/08/09/f1b8d93aee3a31a1f468cd70d56e2e24.gif"/>
   <h4>定时提醒功能</h4>
   <img style="width:500px;" src="https://s1.imagehub.cc/images/2022/08/09/bec63f9edb6e76782195dbdc91489de4.gif"/>
