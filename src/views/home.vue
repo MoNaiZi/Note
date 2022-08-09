@@ -56,7 +56,6 @@ interface CurrentItem {
   title: string | undefined;
   modeType: number | undefined;
   tree: object | undefined | null;
-  expandedList: [] | undefined | null;
 }
 export default defineComponent({
   components: {
@@ -106,9 +105,8 @@ export default defineComponent({
   },
   mounted() {},
   methods: {
-    onChangeTree(tree: any, expandedList: any) {
+    onChangeTree(tree: any) {
       this.currentItem.tree = tree;
-      this.currentItem.expandedList = expandedList;
     },
     onChange({ html }: { html: string; _id: string }) {
       this.currentItem.html = html;
@@ -129,7 +127,6 @@ export default defineComponent({
             title: "",
             modeType: undefined,
             tree: undefined,
-            expandedList: undefined,
           };
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
@@ -158,7 +155,6 @@ export default defineComponent({
             title: "",
             modeType: undefined,
             tree: undefined,
-            expandedList: undefined,
           };
           this.upCurrentItem = JSON.parse(JSON.stringify(this.currentItem));
         });
