@@ -389,7 +389,7 @@ export default {
   display: none;
   position: absolute;
   left: -22px;
-  top: 0px;
+  top: 2px;
   z-index: 10;
   width: 45px;
   ::v-deep i:first-child {
