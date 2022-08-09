@@ -101,7 +101,7 @@ export default {
         },
       ],
       tree: [],
-      expandedList: [],
+
       treeData: [],
       defaultProps: {
         children: "children",
@@ -195,7 +195,7 @@ export default {
         }
       };
     },
-    dragEnd() {
+    dragEnd(event) {
       // console.log("结束", event, that.node);
       let { targetNode, dragNode, targetElement, insertionType } =
         this.dragSortObj;
@@ -217,8 +217,22 @@ export default {
       let dataIndex = dataParent.findIndex(
         (item) => item.id === dragNode.data.id
       );
-      // debugger;
+
       let targetLevel = targetNode.data.level;
+      if (
+        dragNode.data.level === targetNode.data.level &&
+        dragNode.data.id === targetNode.data.id
+      ) {
+        event.dataTransfer.effectAllowed = "none";
+        for (let item of targetElement.children) {
+          if (item.getAttribute("class") === "line") {
+            item.style.display = "none";
+            item.style.marginLeft = "0px";
+          }
+        }
+        return;
+      }
+      // debugger;
       if (dragNode.data.level === targetNode.data.level) {
         if (insertionType === 1) {
           dragNode.data.level = targetLevel + 1;
@@ -309,7 +323,7 @@ export default {
         if (JSON.stringify(note) === "{}") {
           note = await ipcRenderer.invoke("getNote", winId);
         }
-        this.expandedList = JSON.parse(JSON.stringify(note.expandedList || []));
+
         this.tree = JSON.parse(JSON.stringify(note.tree || []));
         if (note.title) {
           store.dispatch("header/setIsEditedTitle", false);
@@ -333,16 +347,16 @@ export default {
         this.refresh();
       }
       delete note.tree;
-      delete note.expandedList;
+
       store.dispatch("header/setNote", note || {});
     },
     saveTree(typeText) {
       let { timing } = this.header;
       const note = this.header;
       const tree = this.tree;
-      const expandedList = this.expandedList;
+
       // // const text = this.editor.getText();
-      let tempOjb = { tree, expandedList, ...note };
+      let tempOjb = { tree, ...note };
       tempOjb.title = tempOjb.title || "无标题";
       tempOjb.modeType = 1;
       if (timing) {
@@ -380,7 +394,7 @@ export default {
             );
             parentChild.splice(index, 1);
           }
-
+          this.treeData = JSON.parse(JSON.stringify(this.treeData));
           break;
         default:
           break;
@@ -408,30 +422,7 @@ export default {
       this.findNodeId(data, true);
     },
     findNodeId(data, bool) {
-      // console.log("idList", idList);
-      // if (!idList.length) return;
-      // console.log("node", node);
-      if (bool) {
-        this.expandedList.push(data.id);
-      } else {
-        let idList = [];
-        const fn = function (array) {
-          if (array.length) {
-            for (let item of array) {
-              idList.push(item.id);
-              if (item.children.length) {
-                fn(item.children);
-              }
-            }
-          }
-          return;
-        };
-        fn(data.children);
-        idList.forEach((id) => {
-          let i = this.expandedList.findIndex((item) => item === id);
-          this.expandedList.splice(i, 1);
-        });
-      }
+      data.isExpand = bool;
       this.updateTree();
     },
     handleDragStart(node) {
@@ -523,7 +514,7 @@ export default {
     updateTree() {
       let tree = JSON.parse(JSON.stringify(this.treeData));
       this.tree = tree;
-      this.$emit("onChangeTree", tree, this.expandedList);
+      this.$emit("onChangeTree", tree);
     },
     shortcutKey(node, data) {
       const keyText = event.key;
@@ -560,7 +551,6 @@ export default {
           parentChild = parentData;
         }
         let index = parentChild.findIndex((item) => item.id === data.id);
-        let expandedList = this.expandedList;
         // debugger;
         if (keyText === "Enter") {
           if (data.level === 1) newObj.level = 1;
@@ -591,7 +581,6 @@ export default {
               }
             }
           }
-          expandedList.push(newObj.id);
         } else if (keyText === "Tab") {
           const shiftKey = event.shiftKey;
           if (parent.childNodes.length > 1 && !shiftKey) {
@@ -650,13 +639,6 @@ export default {
             }
           }
           this.cursorPosition = newObj.name.length;
-          // debugger;
-          let expandedIndex = expandedList.findIndex(
-            (item) => item === data.id
-          );
-          if (expandedIndex >= 0) {
-            expandedList.splice(expandedIndex, 1);
-          }
         } else if (["ArrowUp", "ArrowDown"].includes(keyText)) {
           event.stopImmediatePropagation();
           // debugger;
@@ -758,11 +740,14 @@ export default {
     renderContent(h, { node, data }) {
       // console.log("node", node, "data", data, _self);
       data = data || {};
+      // const handleDragStart = this.handleDragStart;
       const nodeStyle = this.nodeStyle(data);
       return (
         <div onClick={() => (this.showMenu = false)} class="node_main">
           <div class="ly-tree-node">
             <li
+              draggable="true"
+              id="line_menu"
               onClick={() => this.toChild(data)}
               onMouseover={() => this.mouseover(node)}
               onMouseout={() => this.mouseout(node)}
