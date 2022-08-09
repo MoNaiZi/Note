@@ -41,6 +41,7 @@
           <MoreFilled />
         </el-icon>
         <el-icon
+          :size="16"
           @click.stop="handleExpandIconClick"
           :class="[
             {
@@ -393,6 +394,10 @@ export default {
   z-index: 10;
   width: 45px;
   ::v-deep i:first-child {
+    position: relative;
+    top: 2px;
+  }
+  .no-left {
     position: relative;
     top: 2px;
   }
