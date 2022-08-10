@@ -255,6 +255,8 @@ export default {
         }
         return;
       }
+
+      this.handlerOperationRecord(event);
       // debugger;
       if (dragNode.data.level === targetNode.data.level) {
         if (insertionType === 1) {
@@ -290,6 +292,11 @@ export default {
           item.style.marginLeft = "0px";
         }
       }
+      this.$nextTick(() => {
+        let div = document.querySelector(`#${dragNode.data.id}`);
+        this.cursorPosition = div.innerText.length;
+        this.customFocus(div.childNodes[0], div.innerText.length);
+      });
     },
     dragLeave(event) {
       for (let item of event.currentTarget.children) {
