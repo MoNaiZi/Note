@@ -44,6 +44,11 @@
       </div>
     </template>
   </div>
+  <template v-if="!treeData.length">
+    <el-empty>
+      <el-button plain @click="newNode">添加节点</el-button>
+    </el-empty>
+  </template>
 
   <contextMenu
     :X="X"
@@ -100,7 +105,6 @@ export default {
         },
       ],
       tree: [],
-
       treeData: [],
       defaultProps: {
         children: "children",
@@ -117,6 +121,8 @@ export default {
         insertionType: 0, //象目标节点插入方向：0.向后插入，1.插为子节点,2.向前插入
       },
       isCNInput: false,
+      operationRecord: [],
+      keyId: this.$createdId(),
     };
   },
   props: {
@@ -148,6 +154,17 @@ export default {
         this.saveTree();
       },
     },
+    tree: {
+      deep: true,
+      handler(newValue, oldValue) {
+        console.log("newValue", newValue);
+        console.log("oldValue", oldValue);
+        console.log("keyId", this.keyId);
+        // if (oldValue.length) {
+
+        // }
+      },
+    },
   },
   async created() {
     store.dispatch("header/setPageTypeText", this.setPageTypeText);
@@ -159,6 +176,7 @@ export default {
     window.addEventListener("keydown", (e) => {
       let keyCode = e.keyCode;
       const that = this;
+
       if (e.key === "s" && keyCode === 83) {
         const fun = function () {
           that.saveTree("save");
@@ -175,6 +193,42 @@ export default {
   },
 
   methods: {
+    newNode() {
+      let newObj = {
+        id: this.$createdId(),
+        level: 1,
+        children: [],
+        name: "",
+      };
+      this.treeData.push(newObj);
+      this.updateTree();
+      this.dynamicIdSetFocus(newObj.id);
+    },
+    dynamicIdSetFocus(id = "") {
+      this.$nextTick(() => {
+        let div = document.querySelector(`#${id}`);
+        if (div) {
+          this.cursorPosition = div.innerText.length;
+          this.customFocus(div.childNodes[0], div.innerText.length);
+        }
+      });
+    },
+    handlerOperationRecord(event = {}) {
+      // console.log("event", event);
+      if (event.ctrlKey && event.key === "z") {
+        event.preventDefault();
+        const operationRecord = this.operationRecord;
+        if (operationRecord.length) {
+          const item = operationRecord.pop();
+          this.treeData = JSON.parse(JSON.stringify(item));
+          this.updateTree();
+          this.keyId = this.$createdId();
+          this.dynamicIdSetFocus(item[0].id);
+        }
+      } else {
+        this.operationRecord.push(JSON.parse(JSON.stringify(this.treeData)));
+      }
+    },
     debounce(func, wait, immediate) {
       return () => {
         let context = this;
@@ -231,6 +285,8 @@ export default {
         }
         return;
       }
+
+      this.handlerOperationRecord(event);
       // debugger;
       if (dragNode.data.level === targetNode.data.level) {
         if (insertionType === 1) {
@@ -266,6 +322,7 @@ export default {
           item.style.marginLeft = "0px";
         }
       }
+      this.dynamicIdSetFocus(dragNode.data.id);
     },
     dragLeave(event) {
       for (let item of event.currentTarget.children) {
@@ -375,7 +432,9 @@ export default {
       }
     },
     changeMenu(key) {
+      this.handlerOperationRecord(event);
       let currentNode = this.currentNode;
+      let id = currentNode.data.id;
       switch (key) {
         case 0:
           {
@@ -383,22 +442,29 @@ export default {
               ? false
               : true;
           }
-
           break;
         case 2:
           {
             let parentChild = currentNode.parent.data.children;
+            if (currentNode.level === 1) {
+              parentChild = this.treeData;
+            }
             const index = parentChild.findIndex(
               (item) => item.id === currentNode.data.id
             );
             parentChild.splice(index, 1);
           }
           this.treeData = JSON.parse(JSON.stringify(this.treeData));
+          if (this.treeData[0]) {
+            id = this.treeData[0].id;
+          }
+
           break;
         default:
           break;
       }
       this.updateTree();
+      this.dynamicIdSetFocus(id);
       this.showMenu = false;
     },
     more(node) {
@@ -452,6 +518,7 @@ export default {
     },
     getName(data) {
       if (this.isCNInput) return;
+      this.handlerOperationRecord(event);
       this.inputNodeName(event, data);
     },
     compositionstart() {
@@ -463,6 +530,7 @@ export default {
       this.inputNodeName(event, data);
     },
     inputNodeName(e, data) {
+      // this.operationRecord.push(JSON.parse(JSON.stringify(this.treeData)));
       let value = e.currentTarget.innerText;
       data.name = value;
       e.currentTarget.innerText = value;
@@ -519,10 +587,14 @@ export default {
       const keyText = event.key;
 
       const cursor = this.getCaretPosition(event.currentTarget);
-
+      if (event.ctrlKey && keyText === "z") {
+        this.handlerOperationRecord(event);
+        return;
+      }
       if (
         ["Enter", "Tab", "Backspace", "ArrowUp", "ArrowDown"].includes(keyText)
       ) {
+        this.handlerOperationRecord(event);
         if (["Enter", "Tab", "ArrowUp", "ArrowDown"].includes(keyText)) {
           event.preventDefault();
         }
@@ -531,8 +603,6 @@ export default {
           if (data.name.length) return;
         }
         const parent = node.parent;
-        const expanded = node.expanded;
-        // console.log("node", node);
 
         let parentData = parent.data;
         let newObj = {
@@ -554,7 +624,7 @@ export default {
         if (keyText === "Enter") {
           if (data.level === 1) newObj.level = 1;
 
-          if (data.level === 1 && (!cursor || !expanded)) {
+          if (data.level === 1 && (!cursor || !data.isExpand)) {
             let insertIndex = this.treeData.findIndex(
               (item) => item.id === data.id
             );
@@ -564,9 +634,10 @@ export default {
             } else if (insertIndex > 0) {
               // insertIndex--;
             }
+
             this.treeData.splice(insertIndex, 0, newObj);
           } else {
-            if (!node.childNodes.length) {
+            if (!node.childNodes.length || !data.isExpand) {
               if (cursor) {
                 index++;
               }
