@@ -629,13 +629,12 @@ export default {
 
             this.treeData.splice(insertIndex, 0, newObj);
           } else {
-            if (!node.childNodes.length) {
+            if (!node.childNodes.length || !data.isExpand) {
               if (cursor) {
                 index++;
               }
               parentChild.splice(index, 0, newObj);
             } else {
-              data.isExpand = true;
               index = data.children.findIndex((item) => item.id === data.id);
               if (index >= 0) {
                 data.children.splice(index, 0, newObj);
