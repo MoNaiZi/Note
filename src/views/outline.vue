@@ -16,7 +16,7 @@
       </el-breadcrumb>
     </div>
     <!-- <div class="divider"></div> -->
-    <div class="ly-tree-container">
+    <div class="ly-tree-container" v-if="treeData.length">
       <tree
         :key="keyId"
         node-key="id"
@@ -37,6 +37,11 @@
       </tree>
     </div>
   </div>
+  <template v-if="!treeData.length">
+    <el-empty>
+      <el-button plain @click="newNode">添加节点</el-button>
+    </el-empty>
+  </template>
 
   <contextMenu
     :X="X"
@@ -179,7 +184,27 @@ export default {
   },
 
   methods: {
-    handlerOperationRecord(event) {
+    newNode() {
+      let newObj = {
+        id: this.$createdId(),
+        level: 1,
+        children: [],
+        name: "",
+      };
+      this.treeData.push(newObj);
+      this.updateTree();
+      this.dynamicIdSetFocus(newObj.id);
+    },
+    dynamicIdSetFocus(id = "") {
+      this.$nextTick(() => {
+        let div = document.querySelector(`#${id}`);
+        if (div) {
+          this.cursorPosition = div.innerText.length;
+          this.customFocus(div.childNodes[0], div.innerText.length);
+        }
+      });
+    },
+    handlerOperationRecord(event = {}) {
       // console.log("event", event);
       if (event.ctrlKey && event.key === "z") {
         event.preventDefault();
@@ -189,11 +214,7 @@ export default {
           this.treeData = JSON.parse(JSON.stringify(item));
           this.updateTree();
           this.keyId = this.$createdId();
-          this.$nextTick(() => {
-            let div = document.querySelector(`#${item[0].id}`);
-            this.cursorPosition = div.innerText.length;
-            this.customFocus(div.childNodes[0], div.innerText.length);
-          });
+          this.dynamicIdSetFocus(item[0].id);
         }
       } else {
         this.operationRecord.push(JSON.parse(JSON.stringify(this.treeData)));
@@ -292,11 +313,7 @@ export default {
           item.style.marginLeft = "0px";
         }
       }
-      this.$nextTick(() => {
-        let div = document.querySelector(`#${dragNode.data.id}`);
-        this.cursorPosition = div.innerText.length;
-        this.customFocus(div.childNodes[0], div.innerText.length);
-      });
+      this.dynamicIdSetFocus(dragNode.data.id);
     },
     dragLeave(event) {
       for (let item of event.currentTarget.children) {
@@ -406,7 +423,9 @@ export default {
       }
     },
     changeMenu(key) {
+      this.handlerOperationRecord(event);
       let currentNode = this.currentNode;
+      let id = currentNode.data.id;
       switch (key) {
         case 0:
           {
@@ -414,22 +433,29 @@ export default {
               ? false
               : true;
           }
-
           break;
         case 2:
           {
             let parentChild = currentNode.parent.data.children;
+            if (currentNode.level === 1) {
+              parentChild = this.treeData;
+            }
             const index = parentChild.findIndex(
               (item) => item.id === currentNode.data.id
             );
             parentChild.splice(index, 1);
           }
           this.treeData = JSON.parse(JSON.stringify(this.treeData));
+          if (this.treeData[0]) {
+            id = this.treeData[0].id;
+          }
+
           break;
         default:
           break;
       }
       this.updateTree();
+      this.dynamicIdSetFocus(id);
       this.showMenu = false;
     },
     more(node) {
