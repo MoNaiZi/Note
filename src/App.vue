@@ -16,12 +16,14 @@ import { defineComponent } from "vue";
 const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
 import { store } from "@/store";
+
 export default defineComponent({
   name: "App",
   // components: { Header },
   computed: {
     ...mapState("header", {
       pageTypeText: (state: any) => state.pageTypeText,
+      isZoomInAndOut: (state: any) => state.note.isZoomInAndOut,
     }),
     ...mapState("user", {
       user: (state: any) => state.user,
@@ -43,8 +45,25 @@ export default defineComponent({
       return { dark: user.dark };
     },
   },
+  watch: {
+    isZoomInAndOut: function (val) {
+      this.$nextTick(() => {
+        let app: any = document.querySelector("#app");
+        let wrap: any = document.querySelector(".wrap");
+        let height = "100vh";
+        let margin = "0px";
+        if (val) {
+          height = "97vh";
+          margin = "5px";
+        }
+        app.style.height = height;
+        if (wrap) {
+          wrap.style.margin = margin;
+        }
+      });
+    },
+  },
   created() {
-    console.log("created", this.$router);
     ipcRenderer.on("sendUser", (event, res) => {
       this.setConfig(res.config);
     });

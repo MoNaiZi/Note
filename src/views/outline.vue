@@ -661,9 +661,11 @@ export default {
             }
             parentChild.splice(index, 1);
             let childObj = {};
+
             if (index > 0) {
               // console.log("childObj", childObj, index);
               childObj = parentChild[index - 1];
+              childObj.isExpand = true;
               childObj.children.splice(index, 0, newObj);
             }
           } else if (shiftKey) {

@@ -65,7 +65,8 @@ export default defineComponent({
   },
   methods: {
     handWinSize() {
-      ipcRenderer.send("zoomInAndOut");
+      // ipcRenderer.send("zoomInAndOut");
+      this.$emit("zoomInAndOut");
     },
     handleResize(e: any) {
       if (!this.isDrag) {
