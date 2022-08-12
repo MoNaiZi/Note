@@ -52,7 +52,7 @@ export default defineComponent({
         let wrap: any = document.querySelector(".wrap");
         let height = "100vh";
         let margin = "0px";
-        if (val) {
+        if (!val) {
           height = "97vh";
           margin = "5px";
         }
