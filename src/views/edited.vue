@@ -2,7 +2,7 @@
 <template>
   <!-- <button @click="getValue">getValue</button> -->
   <div class="edited_main">
-    <div style="border: 1px solid #ccc; height: 100%">
+    <div style="height: 100%">
       <Toolbar
         id="toolbar-container"
         ref="Toolbar"

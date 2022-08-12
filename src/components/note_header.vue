@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="">
-      <drag>
+      <drag @zoomInAndOut="zoomInAndOut">
         <div
           :class="[
             'header_main',
@@ -64,7 +64,7 @@
           <div class="right">
             <img
               @click="zoomInAndOut"
-              v-show="pageTypeText === 'edited'"
+              v-show="pageTypeText === 'edited' || pageTypeText === 'outline'"
               :src="
                 note.isZoomInAndOut
                   ? require('@/assets/reduction_window.png')
