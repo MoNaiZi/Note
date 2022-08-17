@@ -1,92 +1,65 @@
 <template>
   <div class="mind_map">
-    <div id="mind_map_wrap" ref="mind_map_wrap"></div>
+    <mindmap
+      class="left-bottom"
+      v-model="tempData"
+      :branch="rangeList['branch'].value"
+      :x-gap="rangeList['x-gap'].value"
+      :y-gap="rangeList['y-gap'].value"
+      :zoom="checkboxList['zoom'].value"
+      :fit-btn="checkboxList['fit-btn'].value"
+      :center-btn="checkboxList['center-btn'].value"
+      :download-btn="checkboxList['download-btn'].value"
+      :drag="checkboxList['drag'].value"
+      :edit="checkboxList['edit'].value"
+      :add-node-btn="checkboxList['add-node-btn'].value"
+      :sharp-corner="checkboxList['sharp-corner'].value"
+      :ctm="checkboxList['contextmenu'].value"
+      :timetravel="checkboxList['timetravel'].value"
+      @update:model-value="onChange"
+      :locale="locale"
+    />
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-const d3 = require("d3");
-const mindData = {
-  id: " root",
-  name: "Matomo",
-  children: [
-    {
-      id: "events",
-      name: "Custom Events",
-      "background-color": "#1abc9c",
-      children: [
-        {
-          id: "reporting",
-          name: "Reporting",
-          "background-color": "#34495e",
-          tag: "MATOMO_REPORTS",
-          children: [
-            {
-              id: "111068",
-              "background-color": "#ffc107",
-              name: 2222,
-            },
-            {
-              id: "111538",
-              "background-color": "#ffc107",
-              name: "2222",
-              "data-target": null,
-            },
-          ],
-        },
-        {
-          id: "searching",
-          name: "Search Pages",
-          "background-color": "#34495e",
-          tag: "MATOMO_SEARCHING",
-          children: [
-            {
-              id: "111069",
-              "background-color": "#28a745",
-              name: "2222",
-              "data-target": null,
-            },
-            {
-              id: "111587",
-              "background-color": "#ffc107",
-              name: "2222",
-              "data-target": null,
-            },
-            {
-              id: "111606",
-              "background-color": "#ffc107",
-              name: "222222",
-              "data-target": null,
-            },
-            {
-              id: "111616",
-              "background-color": "#28a745",
-              name: "222",
-              "data-target": "#qaNotesModal111616",
-            },
-          ],
-        },
-        {
-          id: "other",
-          name: "Other",
-          "background-color": "#34495e",
-          tag: "MATOMO_EVENTS",
-          children: [
-            {
-              id: "111070",
-              "background-color": "#28a745",
-              name: '<i title="View QA Downstream Notes" data-toggle="modal" data-target="#qaNotesModal111070" class="fa fa-file-text-o" style="cursor:pointer; margin-left: 5px;"></i><a target="_blank" href="https://fogbugz.forteresearch.com/f/cases/111070/">Case 111070 - Add customization so Matomo can analyze modal activity </a>',
-              href: "https://fogbugz.forteresearch.com/f/cases/${ c.ixBug }/",
-              "data-target": "#qaNotesModal111070",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+// const d3 = require("d3");
+import Mindmap from "./mind_map";
+import tempData from "./data.json";
 export default {
+  data() {
+    return {
+      locale: "zh",
+      checkboxList: {
+        "center-btn": { value: true },
+        "fit-btn": { value: true },
+        timetravel: { value: true },
+        "download-btn": { value: true },
+        "add-node-btn": { value: true },
+        keyboard: { value: false, disabled: true },
+        zoom: { value: true },
+        drag: { value: true },
+        edit: { value: true },
+        contextmenu: { value: true },
+        "sharp-corner": { value: false },
+        vertical: { value: false, disabled: true },
+      },
+      rangeList: {
+        branch: { value: 4, min: 1, max: 6 },
+        "x-gap": { value: 84, min: 0, max: 100 },
+        "y-gap": { value: 18, min: 0, max: 100 },
+      },
+      tempData,
+      tree: {},
+    };
+  },
+  methods: {
+    onChange() {},
+  },
+  components: {
+    Mindmap,
+  },
   computed: {
     ...mapState("header", {
       header: (state) => state.note,
@@ -103,275 +76,22 @@ export default {
         this.tree = {
           name: that.header.title,
           id: "root",
-          children: val,
+          children: JSON.parse(JSON.stringify(val)),
         };
-        this.init();
       },
     },
-  },
-  data() {
-    return {
-      tree: {},
-    };
-  },
-  created() {
-    this.tree = this.treeData;
-  },
-  mounted() {},
-  methods: {
-    init() {
-      const that = this;
-      const wrap = document.getElementById("mind_map_wrap");
-      const width = 400;
-      const margin = { top: 40, right: 40, bottom: 40, left: 40 };
-      const dx = 40;
-      const dy = 50;
-
-      const tree = d3.tree().nodeSize([dx, dy]);
-
-      const createChart = (data) => {
-        const root = d3.hierarchy(data, function (d) {
-          return d.children;
-        });
-
-        root.x0 = dy / 2;
-        root.y0 = 0;
-        root.descendants().forEach((d, i) => {
-          d.id = i;
-          d._children = d.children;
-          // if (!d._child && d.data) d._child = d.data.children;
-          if (d.depth > 5) d.children = null;
-        });
-        // const { height } = wrap.getBoundingClientRect();
-        let svg = d3
-          .create("svg")
-          .attr("viewBox", [-margin.left, -margin.top, width - margin.left, dx])
-          .style("font", "10px sans-serif")
-          .style("user-select", "none")
-          .style("width", "100%")
-          .style("height", "100%")
-          .call(
-            d3
-              .zoom()
-              .scaleExtent([1 / 2, 8])
-              .on("zoom", (e) => {
-                let g = d3.select("svg g");
-                g.attr("transform", e.transform);
-              })
-          );
-        let gMain = svg.append("g");
-        that.svg = svg;
-        const gLink = gMain
-          .append("g")
-          .attr("fill", "none")
-          .attr("stroke", "#999")
-          .attr("stroke-opacity", 1.0)
-          .attr("stroke-width", 1.5);
-        const gNode = gMain
-          .append("g")
-          .attr("cursor", "pointer")
-          .attr("pointer-events", "all");
-
-        function update(source) {
-          const duration = d3.event && d3.event.altKey ? 2500 : 250;
-          const nodes = root.descendants().reverse();
-
-          // Compute the new tree layout.
-          tree(root);
-
-          let left = root;
-          let right = root;
-          root.eachBefore((node) => {
-            if (node.x < left.x) left = node;
-            if (node.x > right.x) right = node;
-          });
-
-          const height = right.x - left.x + margin.top + margin.bottom;
-
-          const transition = svg
-            .transition()
-            .duration(duration)
-            .attr("viewBox", [-margin.left, left.x - margin.top, width, height])
-            .tween(
-              "resize",
-              window.ResizeObserver ? null : () => () => svg.dispatch("toggle")
-            );
-
-          const node = gNode.selectAll("g").data(nodes, (d) => d.id);
-
-          const contentG = node
-            .enter()
-            .append("g")
-            .attr("transform", () => `translate(${source.y0},${source.x0})`)
-            .attr("fill-opacity", 0)
-            .attr("stroke-opacity", 0)
-            .on("click", (d) => {
-              d.children = d.children ? null : d._child;
-              update(d);
-            });
-
-          // const folderClosed = "\uf07b";
-          const pageIcon = "\uf0f6";
-
-          const desat = (c) => d3.hsl(c.h, c.s, c.l + 0.0);
-
-          // The circle
-          contentG
-            .append("circle")
-            .attr("r", 5)
-            .attr("fill", (d) => desat(d3.hsl(d.data["background-color"])))
-            .attr("fill-opacity", 1)
-            .attr("stroke", (d) => d.data["background-color"])
-            .attr("data-target", (d) =>
-              d.data["data-target"] ? d.data["data-target"] : null
-            )
-            .attr("data-toggle", (d) =>
-              d.data["data-target"] ? "modal" : null
-            );
-          // Icon for QA text
-          contentG
-            .filter((d) => d.data["data-target"])
-            .append("text")
-            .attr("x", -6)
-            .attr("y", 6)
-            .attr("font-family", "FontAwesome")
-            .attr("font-size", function () {
-              return "16px";
-            })
-            .attr("data-target", (d) => d.data["data-target"])
-            .attr("data-toggle", "modal")
-            .text(pageIcon);
-          // Transition nodes to their new position.
-          node
-            .merge(contentG)
-            .transition(transition)
-            .attr("transform", (d) => `translate(${d.y},${d.x})`)
-            .attr("fill-opacity", 1)
-            .attr("stroke-opacity", 1);
-
-          // Link and text of each node
-          const labels = contentG
-            .append("a")
-            .attr("href", (d) => {
-              return d.data.href;
-            })
-            .append("text")
-            .attr("dy", "0.31em")
-            .attr("y", () => {
-              return -10;
-            })
-            .attr("text-anchor", (d) => (d._child ? "middle" : "start"))
-            .html((d) => d.data.name)
-            .attr("x", (d) => {
-              console.log(d);
-              return -20;
-            });
-          window.setTimeout(() => labels.call(that.wrapText, 300), 0);
-
-          // Transition exiting nodes to the parent's new position.
-          node
-            .exit()
-            .transition(transition)
-            .remove()
-            .attr("transform", () => `translate(${source.y},${source.x})`)
-            .attr("fill-opacity", 0)
-            .attr("stroke-opacity", 0);
-          that.drawLine(root, gLink, source, transition);
-
-          root.eachBefore((d) => {
-            d.x0 = d.x;
-            d.y0 = d.y;
-          });
-        }
-
-        update(root);
-
-        return svg.node();
-      };
-
-      const treeData = this.tree;
-
-      const dachart = createChart(treeData);
-      console.log("treeData", treeData);
-      console.log(mindData);
-
-      wrap.append(dachart);
-    },
-
-    drawLine(root, gLink, source, transition) {
-      const links = root.links();
-      console.log("links", links);
-      const link = gLink.selectAll("path").data(links, (d) => d.target.id);
-      const diagonal = d3
-        .linkHorizontal()
-        .x((d) => {
-          console.log("d", d);
-          return d.y;
-        })
-        .y((d) => d.x);
-
-      const linkEnter = link
-        .enter()
-        .append("path")
-        .attr("d", () => {
-          const o = { x: source.x0, y: source.y0 };
-          let result = diagonal({ source: o, target: o });
-
-          return result;
-        });
-
-      link.merge(linkEnter).transition(transition).attr("d", diagonal);
-
-      link
-        .exit()
-        .transition(transition)
-        .remove()
-        .attr("d", () => {
-          const o = { x: source.x, y: source.y };
-          return diagonal({ source: o, target: o });
-        });
-    },
-    wrapText(text, width) {
-      text.each(function () {
-        var text = d3.select(this),
-          words = text.text().split(/\s+/).reverse(),
-          word,
-          line = [],
-          lineNumber = 0,
-          lineHeight = 1.1, // em
-          y = text.attr("y"),
-          dy = parseFloat(text.attr("dy")),
-          tspan = text
-            .text(null)
-            .append("tspan")
-            .attr("x", this.getAttribute("x"))
-            .attr("y", y)
-            .attr("dy", dy + "em");
-
-        while ((word = words.pop())) {
-          line.push(word);
-          tspan.text(line.join(" "));
-
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text
-              .append("tspan")
-              .attr("x", this.getAttribute("x"))
-              .attr("y", y)
-              .attr("dy", ++lineNumber * lineHeight + dy + "em")
-              .text(word);
-          }
-        }
-      });
+    tree: {
+      deep: true,
+      handler(val) {
+        console.log("数据变更", val);
+      },
     },
   },
 };
 </script>
 
 <style scoped>
-#mind_map_wrap {
+.mind_map {
   height: 96vh;
   background: #f2f2f2;
   outline: 0;

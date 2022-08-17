@@ -1,0 +1,200 @@
+$seleColor: rgba($color: blue, $alpha: 0.15);
+
+.container {
+  position: relative;
+  height: 100%;
+
+  svg text {
+    white-space: pre;
+  }
+
+  #svg-wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .asst-svg {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #eeeef3;
+
+  path {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  text {
+    fill: #4B4B4B;
+    cursor: default;
+  }
+
+  foreignObject {
+    background-color: white;
+    border: 1px solid #aaa;
+
+    div {
+      display: inline-block;
+      outline: none;
+      width: max-content;
+      min-width: 22px;
+      padding: 6px;
+      white-space: pre;
+      text-align: left;
+    }
+  }
+
+  .trigger {
+    fill: transparent;
+  }
+
+  &.dragging .add-btn {
+    visibility: hidden;
+  }
+
+  .add-btn {
+    opacity: 0;
+
+    &.hidden {
+      visibility: hidden;
+    }
+
+    rect {
+      stroke-width: 1;
+      stroke: grey;
+      fill: white;
+    }
+
+    path {
+      fill: #8685ff
+    }
+  }
+
+  .expand-btn {
+    visibility: hidden;
+
+    &:hover {
+      rect {
+        fill: white
+      }
+
+      circle {
+        fill: currentColor;
+      }
+    }
+  }
+
+  .text>rect {
+    opacity: 0;
+    fill: $seleColor;
+    stroke-width: 1;
+    stroke: white;
+  }
+
+  // 关于selected
+  .selected>.content>.text>rect {
+    opacity: 1;
+  }
+
+  .root.selected>.content>.text>rect {
+    stroke-width: 3;
+    stroke: $seleColor;
+  }
+
+  // 关于edited
+  .edited>.content>.text {
+    opacity: 0;
+  }
+
+  // outline
+  .outline>.content>.text>rect {
+    opacity: 1;
+    fill: transparent;
+    stroke-width: 3;
+    stroke: $seleColor;
+  }
+
+  .root>.content>.text>rect {
+    opacity: 1;
+    fill: white;
+  }
+
+  .collapse>.content>.expand-btn {
+    visibility: visible;
+  }
+}
+
+.button-list {
+  position: absolute;
+
+  &.right-bottom {
+    bottom: 20px;
+    right: 0;
+  }
+
+  &.right-top {
+    top: 0;
+    right: 0;
+    display: flex;
+  }
+}
+
+.button-list button {
+  position: relative;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  color: #3f51b5;
+
+  &::before {
+    background-color: currentColor;
+    border-radius: inherit;
+    content: "";
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+  }
+
+  &:hover::before {
+    opacity: 0.1;
+  }
+
+  &.disabled {
+    pointer-events: none;
+
+    i {
+      filter: invert(85%) sepia(20%) saturate(0%) hue-rotate(125deg) brightness(86%) contrast(93%);
+    }
+  }
+
+  i {
+    filter: invert(25%) sepia(40%) saturate(5050%) hue-rotate(227deg) brightness(78%) contrast(74%);
+    width: 24px;
+    height: 24px;
+
+    // &.gps { background-image: url(/icons/24px/crosshairs-gps.png) }
+    // &.fit { background-image: url(/icons/24px/fit-to-page-outline.png) }
+    // &.download { background-image: url(/icons/24px/download.png) }
+    // &.prev { background-image: url(/icons/24px/prev.png) }
+    // &.next { background-image: url(/icons/24px/next.png) }
+    // &.close { background-image: url(/icons/24px/close.png) }
+  }
+}
