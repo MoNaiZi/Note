@@ -14,8 +14,8 @@ export const getGClass = (d?: Mdata): string[] => {
     const arr = getSiblingGClass(d)
     if (d) {
         if (d.depth === 0) { arr.push(style.root) }
-        if (d.collapse) {
-            arr.push(style['collapse'])
+        if (!d.isExpand) {
+            arr.push(style['isExpand'])
         } else if (!d.children || d.children.length === 0) {
             arr.push('leaf')
         }
@@ -24,7 +24,7 @@ export const getGClass = (d?: Mdata): string[] => {
 }
 export const getAddBtnClass = (d: Mdata): string[] => {
     const arr = [style['add-btn']]
-    if (d.collapse) {
+    if (!d.isExpand) {
         arr.push(style['hidden'])
     }
     return arr

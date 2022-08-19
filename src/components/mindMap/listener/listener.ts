@@ -48,7 +48,7 @@ export const onSelect = (e: MouseEvent, d: Mdata): void => {
 export function onEdit(this: SVGGElement, _e: MouseEvent, d: Mdata): void {
     const gNode = this.parentNode?.parentNode as SVGGElement
     const { foreign } = selection
-    console.log('editFlag', editFlag, 'foreign', foreign, 'foreignDivEle', foreignDivEle)
+
     if (editFlag && foreign && foreignDivEle.value) {
 
         gNode.classList.add(style.edited)
@@ -88,16 +88,17 @@ export const onEditBlur = (): void => {
 }
 
 export const onContextmenu = (e: MouseEvent): void => {
+
     e.preventDefault()
     if (!wrapperEle.value) { return }
     const relativePos = getRelativePos(wrapperEle.value, e)
     ctm.pos.value = relativePos
     const eventTargets = e.composedPath() as SVGElement[]
-    const gNode = eventTargets.find((et) => et.classList?.contains('node'))
+    const gNode: any = eventTargets.find((et) => et.classList?.contains('node'))
     if (gNode) {
         const { classList } = gNode
         const isRoot = classList.contains(style.root)
-        const collapseFlag = classList.contains(style['collapse'])
+        const collapseFlag = classList.contains(style['isExpand'])
         if (!classList.contains(style.selected)) { selectGNode(gNode as SVGGElement) }
         ctm.deleteItem.value.disabled = isRoot
         ctm.cutItem.value.disabled = isRoot
@@ -105,7 +106,7 @@ export const onContextmenu = (e: MouseEvent): void => {
         ctm.addSiblingItem.value.disabled = isRoot
         ctm.addSiblingBeforeItem.value.disabled = isRoot
         ctm.addParentItem.value.disabled = isRoot
-        ctm.expandItem.value.disabled = !collapseFlag
+        // ctm.expandItem.value.disabled = !collapseFlag
         ctm.collapseItem.value.disabled = collapseFlag || classList.contains('leaf')
         ctm.showViewMenu.value = false
     } else {
@@ -122,7 +123,7 @@ export const onClickMenu = (name: MenuEvent): void => {
         case 'add': addAndEdit(new MouseEvent('click'), getSelectedGData()); break
         case 'delete': del(getSelectedGData().id); break
         case 'delete-one': delOne(getSelectedGData().id); break
-        case 'collapse': collapse(getSelectedGData().id); break
+        case 'isExpand': collapse(getSelectedGData().id); break
         case 'expand': expand(getSelectedGData().id); break
         case 'add-sibling': {
             const seleData = getSelectedGData()
@@ -191,8 +192,8 @@ export function edit(d: Mdata, e = new MouseEvent('click')): void {
     }
 }
 
-export const onClickExpandBtn = (e: MouseEvent, d: Mdata): void => {
-    expand(d.id)
+export const onClickExpandBtn = (e: MouseEvent, d: any): void => {
+    expand(d)
 }
 
 /**

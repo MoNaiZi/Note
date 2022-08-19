@@ -25,6 +25,7 @@ export const attrA = (
     gExpandBtn: SelectionG,
     gAddBtn?: SelectionG
 ): void => {
+
     if (isRoot) {
         attrTrigger(gTrigger, rootTextRectPadding)
         attrTextRect(gTextRect, rootTextRectPadding, rootTextRectRadius)
@@ -69,7 +70,10 @@ export const attrAddBtnRect = (rect: SelectionRect): void => {
     const radius = 4
     const temp0 = -padding - side / 2
     const temp1 = side + padding * 2
-    rect.attr('x', temp0).attr('y', temp0).attr('rx', radius).attr('ry', radius).attr('width', temp1).attr('height', temp1)
+    rect.attr('x', temp0)
+        .attr('y', temp0)
+        .attr('rx', radius)
+        .attr('ry', radius).attr('width', temp1).attr('height', temp1)
 }
 
 export const attrExpandBtnRect = (rect: SelectionRect): void => {
@@ -95,7 +99,13 @@ export const attrTextRect = (rect: SelectionRect, padding: number, radius = 4): 
 export const attrExpandBtn = (g: SelectionG, trp: number): void => {
     g.attr('class', style['expand-btn'])
         .attr('transform', (d) => getExpandBtnTransform(d, trp))
-        .style('color', d => d.color)
+        .style('color', d => d.color).style('visibility', (d: any) => {
+
+            if (d && !d.isExpand && d._children && d._children.length) {
+                return 'visible'
+            }
+            return ''
+        })
 }
 
 export const attrAddBtn = (g: SelectionG, trp: number): void => {

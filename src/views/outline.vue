@@ -1,48 +1,54 @@
 <template>
   <div>
-    <template v-if="modeType === 2">
-      <mindMap :treeData="treeData"></mindMap>
-    </template>
-    <template v-if="modeType === 1">
-      <div class="divider"></div>
-      <div class="header">
-        <el-breadcrumb separator=">">
-          <el-breadcrumb-item
-            ><span v-show="header.title" class="item" @click="goBack">{{
-              header.title
-            }}</span></el-breadcrumb-item
-          >
-          <el-breadcrumb-item
-            v-for="(item, index) in HierarchyList"
-            :key="index"
-            ><span class="item" @click="goBack(item)">{{
-              item.name
-            }}</span></el-breadcrumb-item
-          >
-        </el-breadcrumb>
-      </div>
-      <!-- <div class="divider"></div> -->
-      <div class="ly-tree-container">
-        <tree
-          node-key="id"
-          :draggable="true"
-          :treeData="treeData"
-          :props="defaultProps"
-          :default-expanded-keys="expandedList"
-          :expand-on-click-node="false"
-          :render-content="renderContent"
-          @more="more"
-          @node-drag-start="handleDragStart"
-          @node-collapse="collapse"
-          @node-expand="expand"
-          @dragStart="dragStart"
-          @dragOver="dragOver"
-          @dragLeave="dragLeave"
-          @dragEnd="dragEnd"
-        >
-        </tree>
-      </div>
-    </template>
+    <transition name="main-fade">
+      <template v-if="header.modeType === 2">
+        <mindMap :treeData="treeData" @change="changeMindMap"></mindMap>
+      </template>
+    </transition>
+    <transition name="main-fade">
+      <template v-if="header.modeType === 1">
+        <div>
+          <div class="divider"></div>
+          <div class="header">
+            <el-breadcrumb separator=">">
+              <el-breadcrumb-item
+                ><span v-show="header.title" class="item" @click="goBack">{{
+                  header.title
+                }}</span></el-breadcrumb-item
+              >
+              <el-breadcrumb-item
+                v-for="(item, index) in HierarchyList"
+                :key="index"
+                ><span class="item" @click="goBack(item)">{{
+                  item.name
+                }}</span></el-breadcrumb-item
+              >
+            </el-breadcrumb>
+          </div>
+          <!-- <div class="divider"></div> -->
+          <div class="ly-tree-container">
+            <tree
+              node-key="id"
+              :draggable="true"
+              :treeData="treeData"
+              :props="defaultProps"
+              :default-expanded-keys="expandedList"
+              :expand-on-click-node="false"
+              :render-content="renderContent"
+              @more="more"
+              @node-drag-start="handleDragStart"
+              @node-collapse="collapse"
+              @node-expand="expand"
+              @dragStart="dragStart"
+              @dragOver="dragOver"
+              @dragLeave="dragLeave"
+              @dragEnd="dragEnd"
+            >
+            </tree>
+          </div>
+        </div>
+      </template>
+    </transition>
   </div>
   <template v-if="!treeData.length">
     <el-empty>
@@ -193,6 +199,11 @@ export default {
   },
 
   methods: {
+    changeMindMap(treeList) {
+      const list = JSON.parse(JSON.stringify(treeList));
+      this.tree = list;
+      this.treeData = list;
+    },
     newNode() {
       let newObj = {
         id: this.$createdId(),
@@ -371,7 +382,7 @@ export default {
     },
     async init() {
       let winId = getQueryByName("winId");
-      let note = {};
+      let note = { modeType: 1 };
       if (winId === "undefined") {
         note._id = this.$createdId();
       } else {
@@ -403,7 +414,6 @@ export default {
         this.refresh();
       }
       delete note.tree;
-
       store.dispatch("header/setNote", note || {});
     },
     saveTree(typeText) {
@@ -414,7 +424,7 @@ export default {
       // // const text = this.editor.getText();
       let tempOjb = { tree, ...note };
       tempOjb.title = tempOjb.title || "无标题";
-      tempOjb.modeType = 1;
+
       if (timing) {
         tempOjb.timing = timing;
         tempOjb.timinGtimeStamp = dayjs(timing).valueOf();

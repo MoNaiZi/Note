@@ -53,7 +53,7 @@ export default defineComponent({
         let height = "100vh";
         let margin = "0px";
         if (!val) {
-          height = "97vh";
+          height = "98vh";
           margin = "5px";
         }
         app.style.height = height;

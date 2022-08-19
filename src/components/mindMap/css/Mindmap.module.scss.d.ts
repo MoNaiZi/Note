@@ -19,7 +19,7 @@ declare const style: {
   readonly 'add-btn': string
   readonly 'hidden': string
   readonly 'expand-btn': string
-  readonly 'collapse': string
+  readonly 'isExpand': string
   readonly content: string
   readonly trigger: string
   readonly menu: string

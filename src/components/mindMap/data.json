@@ -1,9 +1,11 @@
 [
     {
         "name": "如何学习D3",
+        "isExpand": true,
         "children": [
             {
                 "name": "预备知识",
+                "isExpand": true,
                 "children": [
                     {
                         "name": "HTML & CSS"
@@ -24,10 +26,9 @@
             },
             {
                 "name": "安装",
-                "collapse": true,
                 "children": [
                     {
-                        "name": "折叠节点"
+                        "name": "打开节点"
                     }
                 ]
             },

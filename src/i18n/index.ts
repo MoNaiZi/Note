@@ -2,7 +2,7 @@ import i18next from 'i18next'
 const zh = {
     translation: {
         contextmenu: {
-            collapse: '折叠节点',
+            isExpand: '打开节点',
             expand: '展开节点',
             delete: '删除节点',
             'delete-one': '删除单个节点',

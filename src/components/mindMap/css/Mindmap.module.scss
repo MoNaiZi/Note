@@ -1,5 +1,9 @@
 $seleColor: rgba($color: blue, $alpha: 0.15);
 
+.btn {
+  cursor: pointer;
+}
+
 .container {
   position: relative;
   height: 100%;
@@ -61,6 +65,7 @@ $seleColor: rgba($color: blue, $alpha: 0.15);
 
   .add-btn {
     opacity: 0;
+    cursor: pointer;
 
     &.hidden {
       visibility: hidden;
@@ -73,7 +78,7 @@ $seleColor: rgba($color: blue, $alpha: 0.15);
     }
 
     path {
-      fill: #8685ff
+      // fill: #8685ff
     }
   }
 
@@ -135,7 +140,7 @@ $seleColor: rgba($color: blue, $alpha: 0.15);
   position: absolute;
 
   &.right-bottom {
-    bottom: 20px;
+    bottom: 40px;
     right: 0;
   }
 
@@ -189,12 +194,5 @@ $seleColor: rgba($color: blue, $alpha: 0.15);
     filter: invert(25%) sepia(40%) saturate(5050%) hue-rotate(227deg) brightness(78%) contrast(74%);
     width: 24px;
     height: 24px;
-
-    // &.gps { background-image: url(/icons/24px/crosshairs-gps.png) }
-    // &.fit { background-image: url(/icons/24px/fit-to-page-outline.png) }
-    // &.download { background-image: url(/icons/24px/download.png) }
-    // &.prev { background-image: url(/icons/24px/prev.png) }
-    // &.next { background-image: url(/icons/24px/next.png) }
-    // &.close { background-image: url(/icons/24px/close.png) }
   }
 }

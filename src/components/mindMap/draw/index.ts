@@ -33,13 +33,24 @@ export const appendAddBtn = (g: SelectionG): d3.Selection<SVGGElement, Mdata, SV
 }
 
 const appendAndBindAddBtn = (g: SelectionG) => {
-    const gAddBtn = appendAddBtn(g)
-    gAddBtn.on('click', addAndEdit)
-    return gAddBtn
+    // const gAddBtn = appendAddBtn(g)
+    // gAddBtn.on('click', addAndEdit)
+    // return gAddBtn
+    const isExpandBtn: any = g.append('g').on('click', onClickExpandBtn)
+    isExpandBtn.attr('width', 24).attr('height', 24).attr('fill', 'none')
+        .attr('stroke-width', 2).attr('stroke', (d: any) => {
+            return '#979797'
+        })
+    isExpandBtn.append('circle').attr('r', 10).attr('fill', '#fff')
+
+    isExpandBtn.append('path').attr('d', 'M-0 -6 L-5 0 L0 5').attr('fill', 'none')
+
+    return isExpandBtn
 }
 
 export const appendExpandBtn = (g: SelectionG): d3.Selection<SVGGElement, Mdata, SVGGElement, IsMdata> => {
     const expandBtn = g.append('g')
+
     attrExpandBtnRect(expandBtn.append('rect'))
     attrExpandBtnCircle(expandBtn.append('circle'), -4)
     attrExpandBtnCircle(expandBtn.append('circle'), 0)

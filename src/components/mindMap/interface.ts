@@ -4,7 +4,7 @@ export interface Data {
     name: string
     children?: Array<Data>
     left?: boolean
-    collapse?: boolean
+    isExpand?: boolean
 }
 
 export interface TreeData {
@@ -16,7 +16,7 @@ export interface TreeData {
     children: TreeData[]
     _children: TreeData[]
     left: boolean,
-    collapse: boolean
+    isExpand: boolean
 }
 
 export interface Mdata {
@@ -26,7 +26,7 @@ export interface Mdata {
     children: Array<Mdata>
     _children: Array<Mdata> // 当折叠时保存children数据
     left: boolean
-    collapse: boolean
+    isExpand: boolean
     id: string // 代表着数据的顺序和嵌套层次
     color: string
     gKey: number

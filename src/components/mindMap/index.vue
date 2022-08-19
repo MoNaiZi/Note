@@ -2,7 +2,7 @@
   <div class="mind_map">
     <mindmap
       class="left-bottom"
-      v-model="tempData"
+      v-model="tree"
       :branch="rangeList['branch'].value"
       :x-gap="rangeList['x-gap'].value"
       :y-gap="rangeList['y-gap'].value"
@@ -51,11 +51,13 @@ export default {
         "y-gap": { value: 18, min: 0, max: 100 },
       },
       tempData,
-      tree: {},
+      tree: this.treeData,
     };
   },
   methods: {
-    onChange() {},
+    onChange() {
+      this.$emit("change", this.tree);
+    },
   },
   components: {
     Mindmap,
@@ -73,17 +75,7 @@ export default {
       deep: true,
       handler(val) {
         const that = this;
-        this.tree = {
-          name: that.header.title,
-          id: "root",
-          children: JSON.parse(JSON.stringify(val)),
-        };
-      },
-    },
-    tree: {
-      deep: true,
-      handler(val) {
-        console.log("数据变更", val);
+        that.tree = JSON.parse(JSON.stringify(val));
       },
     },
   },

@@ -2,7 +2,7 @@ import { computed, ref, Ref } from 'vue'
 import { mmprops, scaleExtent, zoomTransform } from '.'
 
 export type MenuEvent = 'zoomin' | 'zoomout' | 'zoomfit' | 'add' | 'delete' |
-  'selectall' | 'collapse' | 'expand' | 'add-sibling' | 'add-sibling-before' |
+  'selectall' | 'isExpand' | 'expand' | 'add-sibling' | 'add-sibling-before' |
   'add-parent' | 'copy' | 'paste' | 'cut' | 'delete-one'
 export interface MenuItem {
   name: string
@@ -10,8 +10,8 @@ export interface MenuItem {
 }
 export const showViewMenu = ref(true)
 export const pos = ref({ left: 0, top: 0 })
-export const collapseItem: Ref<MenuItem> = ref({ name: 'collapse', disabled: true })
-export const expandItem: Ref<MenuItem> = ref({ name: 'expand', disabled: true })
+export const collapseItem: Ref<MenuItem> = ref({ name: 'isExpand', disabled: true })
+// export const expandItem: Ref<MenuItem> = ref({ name: 'expand', disabled: true })
 export const deleteItem: Ref<MenuItem> = ref({ name: 'delete', disabled: false })
 export const addItem: Ref<MenuItem> = ref({ name: 'add', disabled: false })
 export const addParentItem: Ref<MenuItem> = ref({ name: 'add-parent', disabled: false })
@@ -24,10 +24,10 @@ export const deleteOneItem: Ref<MenuItem> = ref({ name: 'delete-one', disabled: 
 
 
 const nodeMenu = computed<MenuItem[][]>(() => [
-  [ addItem.value, addParentItem.value, addSiblingItem.value, addSiblingBeforeItem.value ],
-  [ cutItem.value, copyItem.value, pasteItem.value, deleteItem.value, deleteOneItem.value ],
-  [ { name: 'selectall', disabled: true } ],
-  [ collapseItem.value, expandItem.value ]
+  [addItem.value, addParentItem.value, addSiblingItem.value, addSiblingBeforeItem.value],
+  [cutItem.value, copyItem.value, pasteItem.value, deleteItem.value, deleteOneItem.value],
+  [{ name: 'selectall', disabled: true }],
+  [collapseItem.value]
 ].filter((item, index) => {
   if (index === 0 || index === 1) {
     return mmprops.value.edit

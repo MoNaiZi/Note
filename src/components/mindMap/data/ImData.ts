@@ -42,7 +42,7 @@ const renewLeft = (d: Mdata) => {
 const separateLeftAndRight = (d: Mdata): { left: Mdata, right: Mdata } => {
     const ld = Object.assign({}, d)
     const rd = Object.assign({}, d)
-    if (d.collapse) {
+    if (!d.isExpand) {
         //
     } else {
         const { children } = d
@@ -113,7 +113,7 @@ class ImData {
     }
 
     private createMdataFromData(rawData: Data, id: string, parent: IsMdata = null): Mdata {
-        const { name, collapse, children: rawChildren } = rawData
+        const { name, isExpand, children: rawChildren } = rawData
         const { width, height } = this.getSize(name)
         const depth = parent ? parent.depth + 1 : 0
         let left = false
@@ -128,11 +128,11 @@ class ImData {
             id, name, rawData, parent, left, color, depth,
             x: 0, y: 0, dx: 0, dy: 0, px: 0, py: 0,
             width, height, children: [], _children: [],
-            collapse: !!collapse,
+            isExpand: !!isExpand,
             gKey: this.gKey += 1,
         }
         if (rawChildren) {
-            if (!data.collapse) {
+            if (data.isExpand) {
                 rawChildren.forEach((c, j) => {
                     data.children.push(this.createMdataFromData(c, `${id}-${j}`, data))
                 })
@@ -240,7 +240,7 @@ class ImData {
             } else {
                 del.left = del.parent.left
             }
-            if (np.collapse) {
+            if (!np.isExpand) {
                 np._children.push(del)
             } else {
                 np.children.push(del)
@@ -283,7 +283,7 @@ class ImData {
     add(id: string, variable: string | Data): IsMdata {
         const p = this.find(id)
         if (p) {
-            if (p.collapse) { this.expand(id) }
+            if (!p.isExpand) { this.expand(id) }
             if (!p.rawData.children) { p.rawData.children = [] }
             if (typeof variable === 'string') {
                 const name = variable
@@ -296,7 +296,7 @@ class ImData {
                     rawData,
                     parent: p,
                     left: p.left,
-                    collapse: false,
+                    isExpand: false,
                     color,
                     gKey: this.gKey += 1,
                     width: size.width,
@@ -328,8 +328,11 @@ class ImData {
         return null
     }
 
-    expand(id: string): IsMdata { return this.eoc(id, false, [renewColor, renewId]) }
-    collapse(id: string): IsMdata { return this.eoc(id, true) }
+    expand(d: any): IsMdata {
+
+        return this.eoc(d.id, !d.isExpand, [renewColor, renewId])
+    }
+    collapse(id: string): IsMdata { return this.eoc(id, false) }
 
     /**
      * 展开或折叠(expand or collapse)
@@ -337,8 +340,8 @@ class ImData {
     eoc(id: string, collapse: boolean, plugins: Processer[] = []): IsMdata {
         const d = this.find(id)
         if (d) {
-            d.collapse = collapse
-            d.rawData.collapse = collapse
+            d.isExpand = collapse
+            d.rawData.isExpand = collapse
                 ;[d._children, d.children] = [d.children, d._children]
             this.renew(...plugins)
         }
@@ -358,9 +361,9 @@ class ImData {
     deleteOne(id: string): void {
         const del = this.find(id)
         if (del && del.parent) {
-            const { parent, children, _children, collapse, rawData } = del
+            const { parent, children, _children, isExpand, rawData } = del
             const index = parseInt(id.split('-').pop() as string, 10)
-            parent.children.splice(index, 1, ...(collapse ? _children : children))
+            parent.children.splice(index, 1, ...(!isExpand ? _children : children))
             parent.rawData.children?.splice(index, 1, ...(rawData.children || []))
             children.forEach(c => {
                 c.parent = parent
@@ -385,7 +388,7 @@ class ImData {
                 children: [],
                 _children: [],
                 color,
-                collapse: false,
+                isExpand: false,
                 rawData: rawSibling,
                 id: `${parent.id}-${start}`,
                 left,
@@ -421,7 +424,7 @@ class ImData {
                 left,
                 name,
                 color,
-                collapse: false,
+                isExpand: false,
                 parent: oldP,
                 id: d.id,
                 depth: d.depth,
@@ -448,7 +451,9 @@ class ImData {
     changeLeft(id: string): IsMdata {
         const d = this.find(id)
         if (d) {
-            d.left = !d.left
+            const left = !d.left
+            d.left = left
+            d.rawData.left = left
             this.renew()
         }
         return d
