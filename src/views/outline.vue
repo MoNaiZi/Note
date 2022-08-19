@@ -2,7 +2,11 @@
   <div>
     <transition name="main-fade">
       <template v-if="header.modeType === 2">
-        <mindMap :treeData="treeData" @change="changeMindMap"></mindMap>
+        <mindMap
+          :treeData="treeData"
+          @change="changeMindMap"
+          :key="mindMapKey"
+        ></mindMap>
       </template>
     </transition>
     <transition name="main-fade">
@@ -92,6 +96,7 @@ export default {
   },
   data() {
     return {
+      mindMapKey: this.$createdId(),
       modeType: 2, //0.文本，1.大纲，2.思维导图
       X: 0,
       Y: 0,
@@ -132,6 +137,10 @@ export default {
     };
   },
   props: {
+    isLeft: {
+      type: Boolean,
+      default: false,
+    },
     currentItem: {
       type: Object,
       default() {
@@ -160,19 +169,18 @@ export default {
         this.saveTree();
       },
     },
-    tree: {
-      deep: true,
-      handler(newValue, oldValue) {
-        console.log("newValue", newValue);
-        console.log("oldValue", oldValue);
-        console.log("keyId", this.keyId);
-        // if (oldValue.length) {
-
-        // }
-      },
-    },
+    // tree: {
+    //   deep: true,
+    //   handler(newValue, oldValue) {},
+    // },
   },
   async created() {
+    if (this.isLeft) {
+      const that = this;
+      this.$nextTick(() => {
+        that.mindMapKey = that.$createdId();
+      });
+    }
     store.dispatch("header/setPageTypeText", this.setPageTypeText);
     await this.init();
 

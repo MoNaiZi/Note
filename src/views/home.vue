@@ -20,6 +20,7 @@
         />
         <outline
           v-else
+          :isLeft="isLeft"
           :currentItem="currentItem"
           :setPageTypeText="'home'"
           @onChangeTree="onChangeTree"

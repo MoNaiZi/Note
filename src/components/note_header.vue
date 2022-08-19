@@ -62,100 +62,107 @@
           </div>
 
           <div class="right">
-            <i
-              style="margin-right: 10px; margin-top: 2px"
-              v-show="['edited', 'outline'].includes(pageTypeText)"
-              @click="switchMode"
+            <template
+              v-if="
+                typeText === 'left' ||
+                ['edited', 'outline'].includes(pageTypeText)
+              "
             >
-              <svg
-                v-if="note.modeType === 1"
-                width="23"
-                height="23"
-                viewBox="0 0 48 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+              <i
+                style="margin-right: 10px; margin-top: 2px"
+                v-show="note.modeType >= 1"
+                @click="switchMode"
               >
-                <path
-                  d="M26 24L42 24"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M26 38H42"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M26 10H42"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M18 24L6 24C6 24 7.65685 24 10 24M18 38C12 36 16 24 10 24M18 10C12 12 16 24 10 24"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <svg
-                v-else
-                width="23"
-                height="23"
-                viewBox="0 0 48 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M26 24L44 24"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M14 24L18 24"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M18 38H44"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M6 38H10"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M18 10H44"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M6 10H10"
-                  stroke="#979797"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </i>
+                <svg
+                  v-if="note.modeType === 1"
+                  width="23"
+                  height="23"
+                  viewBox="0 0 48 48"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M26 24L42 24"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M26 38H42"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M26 10H42"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M18 24L6 24C6 24 7.65685 24 10 24M18 38C12 36 16 24 10 24M18 10C12 12 16 24 10 24"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  v-else
+                  width="23"
+                  height="23"
+                  viewBox="0 0 48 48"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M26 24L44 24"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M14 24L18 24"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M18 38H44"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M6 38H10"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M18 10H44"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M6 10H10"
+                    stroke="#979797"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </i>
+            </template>
             <img
               @click="zoomInAndOut"
               v-show="pageTypeText === 'edited' || pageTypeText === 'outline'"
@@ -178,10 +185,7 @@
               class="iconfont icon-setting"
               @click.stop="toSet"
             ></i>
-            <el-icon
-              v-show="isLeft && note.modeType != 1"
-              @click="showToolBarFn"
-            >
+            <el-icon v-show="isLeft && !note.modeType" @click="showToolBarFn">
               <Edit />
             </el-icon>
             <i class="iconfont icon-close" @click="close"></i>

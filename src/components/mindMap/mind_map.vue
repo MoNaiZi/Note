@@ -11,8 +11,8 @@
     </div>
     <svg ref="asstSvgEle" :class="style['asst-svg']"></svg>
     <div :class="[style['button-list'], style['right-bottom']]">
-      <!-- <button v-if="centerBtn" @click="centerView()"></button> -->
-      <button v-if="fitBtn" @click="fitView()">
+      <!-- <button @click="centerView()"></button> -->
+      <button @click="fitView()">
         <svg
           width="24"
           height="24"
