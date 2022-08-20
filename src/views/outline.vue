@@ -586,14 +586,12 @@ export default {
         this.treeData = children;
       }
     },
-    mouseover(node) {
-      if (node.expanded || !node.childNodes.length) {
-        event.currentTarget.style.background = "#cfcfcf";
-      }
+    mouseover() {
+      event.currentTarget.style.background = "rgb(148 148 148)";
     },
     mouseout(node) {
-      if (node.expanded || !node.childNodes.length) {
-        event.currentTarget.style.background = "#fff";
+      if (node.isLeaf || node.expanded) {
+        event.currentTarget.style.background = "";
       }
     },
     updateTree() {
@@ -837,12 +835,13 @@ export default {
           <div class="ly-tree-node">
             <li
               draggable="true"
-              id="line_menu"
+              class="line_menu"
               onClick={() => this.toChild(data)}
               onMouseover={() => this.mouseover(node)}
               onMouseout={() => this.mouseout(node)}
               style={{
-                background: node.isLeaf || node.expanded ? "#fff" : "#cfcfcf",
+                background:
+                  node.isLeaf || node.expanded ? "" : "rgb(148 148 148)",
               }}
             ></li>
             <div

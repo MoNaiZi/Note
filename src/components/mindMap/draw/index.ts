@@ -63,7 +63,7 @@ const bindEvent = (g: SelectionG, isRoot: boolean) => {
     gExpandBtn.on('click', onClickExpandBtn)
     if (mmprops.value.drag || mmprops.value.edit) {
         const gText: any = g.select<SVGGElement>(`:scope > g.${style.content} > g.${style.text}`)
-        gText.on('mousedown', onSelect)
+        gText.on('click', onSelect)
         if (mmprops.value.drag && !isRoot) { drag(gText) }
 
         if (mmprops.value.edit) { gText.on('dblclick', onEdit) }

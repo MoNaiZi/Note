@@ -84,9 +84,8 @@ export function selectGNode(d: Mdata): void
 export function selectGNode(d: SVGGElement | Mdata): void {
 
     const ele = d instanceof SVGGElement ? d : document.querySelector<SVGGElement>(`g[data-id='${getDataId(d)}']`)
-
+    console.log('ele', ele)
     const oldSele = document.getElementsByClassName(style.selected)[0]
-
     if (ele) {
         if (oldSele) {
             if (oldSele !== ele) {

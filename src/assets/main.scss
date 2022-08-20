@@ -209,6 +209,10 @@ body {
                 box-shadow: 0 0 4px #cbcbcb;
             }
         }
+
+        .line_menu::before {
+            background-color: #fff !important;
+        }
     }
 }
 
@@ -321,11 +325,10 @@ body {
         margin-bottom: 3px;
 
 
-        li {
+        .line_menu {
             list-style: none;
             text-align: center;
             border-radius: 50%;
-            background: #cfcfcf;
             width: 20px;
             height: 20px;
             z-index: 99;
@@ -334,7 +337,7 @@ body {
             top: 2px;
         }
 
-        li::before {
+        .line_menu::before {
             content: "";
             display: inline-block;
             width: 6px;
