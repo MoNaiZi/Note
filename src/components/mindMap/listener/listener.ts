@@ -118,6 +118,7 @@ export const onContextmenu = (e: MouseEvent): void => {
 }
 
 export const onClickMenu = (name: MenuEvent): void => {
+
     switch (name) {
         case 'zoomfit': fitView(); break
         case 'zoomin': scaleView(true); break
@@ -174,6 +175,7 @@ export const onClickMenu = (name: MenuEvent): void => {
  * 添加子节点并进入编辑模式
  */
 export const addAndEdit = (e: MouseEvent, d: Mdata): void => {
+
     const child = add(d.id, '')
     if (child) { edit(child, e) }
 }

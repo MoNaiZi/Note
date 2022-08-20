@@ -185,8 +185,11 @@ class ImData {
         this.renew()
     }
 
-    find(id: string): IsMdata { // 根据id找到数据
-        const array = id.split('-').map(n => ~~n)
+    find(id: string): any { // 根据id找到数据
+        if (!id) return
+        const array = id.split('-').map(n => {
+            return ~~n
+        })
         let data = this.data
         for (let i = 1; i < array.length; i++) {
             const index = array[i]
@@ -283,7 +286,7 @@ class ImData {
     add(id: string, variable: string | Data): IsMdata {
         const p = this.find(id)
         if (p) {
-            if (!p.isExpand) { this.expand(id) }
+            p.rawData.isExpand = true
             if (!p.rawData.children) { p.rawData.children = [] }
             if (typeof variable === 'string') {
                 const name = variable
@@ -296,7 +299,7 @@ class ImData {
                     rawData,
                     parent: p,
                     left: p.left,
-                    isExpand: false,
+                    isExpand: true,
                     color,
                     gKey: this.gKey += 1,
                     width: size.width,
@@ -329,7 +332,6 @@ class ImData {
     }
 
     expand(d: any): IsMdata {
-
         return this.eoc(d.id, !d.isExpand, [renewColor, renewId])
     }
     collapse(id: string): IsMdata { return this.eoc(id, false) }
@@ -365,7 +367,7 @@ class ImData {
             const index = parseInt(id.split('-').pop() as string, 10)
             parent.children.splice(index, 1, ...(!isExpand ? _children : children))
             parent.rawData.children?.splice(index, 1, ...(rawData.children || []))
-            children.forEach(c => {
+            children.forEach((c: { parent: any; depth: number; rawData: { left: any }; left: any }) => {
                 c.parent = parent
                 if (c.depth === 1) { c.rawData.left = c.left }
             })

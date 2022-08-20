@@ -184,6 +184,10 @@ body {
         svg {
             background-color: $darkBg;
 
+            foreignObject {
+                color: #000;
+            }
+
             .root_rect>rect {
                 fill: $darkBg  !important;
             }
