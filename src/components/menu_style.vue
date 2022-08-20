@@ -1,7 +1,8 @@
 2<template>
-  <el-icon color="#fff" class="icon">
-    <BellFilled />
-  </el-icon>
+  <i color="#fff" class="icon">
+    <remind theme="outline" size="24" fill="#fff" @click="showTiming" />
+  </i>
+
   <div class="box">
     <div class="object">
       <div class="outline"></div>
@@ -11,13 +12,20 @@
     </div>
   </div>
 </template>
-
+<script>
+import { Remind } from "@icon-park/vue-next";
+export default {
+  components: {
+    Remind,
+  },
+};
+</script>
 <style scoped>
 .icon {
   position: absolute;
   font-size: 26px;
   z-index: 10;
-  left: 12px;
+  left: 13px;
   top: 10px;
 }
 .box {
