@@ -30,7 +30,7 @@ export default defineComponent({
     }),
     styleFn() {
       let result = { transition: "all 1s" };
-      if (this.pageTypeText === "edited") {
+      if (["edited", "outline"].includes(this.pageTypeText)) {
         result.transition = "";
       }
       return result;

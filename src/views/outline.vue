@@ -590,7 +590,8 @@ export default {
       event.currentTarget.style.background = "rgb(148 148 148)";
     },
     mouseout(node) {
-      if (node.isLeaf || node.expanded) {
+      console.log("node", node);
+      if (node.childNodes && !node.childNodes.length) {
         event.currentTarget.style.background = "";
       }
     },
@@ -841,7 +842,9 @@ export default {
               onMouseout={() => this.mouseout(node)}
               style={{
                 background:
-                  node.isLeaf || node.expanded ? "" : "rgb(148 148 148)",
+                  node.childNodes && !node.childNodes.length
+                    ? ""
+                    : "rgb(148 148 148)",
               }}
             ></li>
             <div
