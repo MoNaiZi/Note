@@ -270,10 +270,13 @@ export function onDragEnd(this: SVGGElement, e: d3.D3DragEvent<SVGGElement, Mdat
         if ((lr || b.y > d.y) && b.y < endY && b.y > upD.y) { upD = b } // 找新哥哥节点
         if ((lr || b.y < d.y) && b.y > endY && b.y < downD.y) { downD = b } // 找新弟弟节点
     })
+    // debugger
+    let left = false
     if (downD.id !== d.id) {
         d.px = 0
         d.py = 0
         moveSibling(d.id, downD.id)
+
     } else if (upD.id !== d.id) {
         d.px = 0
         d.py = 0
@@ -281,9 +284,10 @@ export function onDragEnd(this: SVGGElement, e: d3.D3DragEvent<SVGGElement, Mdat
     } else if (lr) {
         d.px = 0
         d.py = 0
-        changeLeft(d.id)
+        left = true
     } else {
         // 复原
         moveNode(gNode, d, [0, 0], 500)
     }
+    changeLeft(d.id, left)
 }

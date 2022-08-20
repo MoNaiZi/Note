@@ -143,9 +143,14 @@ import {
 } from "./listener";
 import Contextmenu from "./Contextmenu.vue";
 import { afterOperation, mmdata, ImData } from "./data/index";
-
+import { mapState } from "vuex";
 export default defineComponent({
   name: "Mindmap",
+  computed: {
+    ...mapState("user", {
+      user: (state: any) => state.user,
+    }),
+  },
   components: {
     Contextmenu,
   },

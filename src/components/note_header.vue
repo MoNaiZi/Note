@@ -10,15 +10,24 @@
           ]"
         >
           <div class="left">
-            <i v-show="['edited', 'outline'].includes(pageTypeText)">
-              <el-icon @click="minimize">
-                <Minus />
-              </el-icon>
-              <el-icon @click="showTiming">
-                <Bell />
-              </el-icon>
-            </i>
-
+            <template v-if="['edited', 'outline'].includes(pageTypeText)">
+              <i>
+                <minus
+                  theme="outline"
+                  size="20"
+                  fill="#979797"
+                  @click="minimize"
+                />
+              </i>
+              <i>
+                <remind
+                  theme="outline"
+                  size="18"
+                  fill="#979797"
+                  @click="showTiming"
+                />
+              </i>
+            </template>
             <i
               v-show="pageTypeText === 'home' && typeText === ''"
               class="iconfont icon-add"
@@ -68,112 +77,36 @@
                 ['edited', 'outline'].includes(pageTypeText)
               "
             >
-              <i
-                style="margin-right: 10px; margin-top: 2px"
-                v-show="note.modeType >= 1"
-                @click="switchMode"
-              >
-                <svg
+              <i v-show="note.modeType >= 1" @click="switchMode">
+                <mindmap-map
                   v-if="note.modeType === 1"
-                  width="23"
-                  height="23"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M26 24L42 24"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M26 38H42"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M26 10H42"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M18 24L6 24C6 24 7.65685 24 10 24M18 38C12 36 16 24 10 24M18 10C12 12 16 24 10 24"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <svg
-                  v-else
-                  width="23"
-                  height="23"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M26 24L44 24"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M14 24L18 24"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M18 38H44"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M6 38H10"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M18 10H44"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M6 10H10"
-                    stroke="#979797"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                  theme="outline"
+                  size="23"
+                  fill="#979797"
+                />
+                <mindmap-list v-else theme="outline" size="23" fill="#979797" />
               </i>
             </template>
-            <img
+            <i
               @click="zoomInAndOut"
               v-show="pageTypeText === 'edited' || pageTypeText === 'outline'"
-              :src="
-                note.isZoomInAndOut
-                  ? require('@/assets/reduction_window.png')
-                  : require('@/assets/maximize.png')
-              "
-            />
+            >
+              <full-screen-two
+                v-if="note.isZoomInAndOut"
+                theme="outline"
+                size="20"
+                fill="#979797"
+              />
+              <full-screen-one
+                v-else
+                theme="outline"
+                size="20"
+                fill="#979797"
+              />
+            </i>
             <i
               v-show="typeText === ''"
+              style="position: relative; top: -1px"
               :class="[
                 'iconfont',
                 isTopping ? 'icon-thepin-active' : 'icon-thepin',
@@ -182,13 +115,16 @@
             ></i>
             <i
               v-show="pageTypeText === 'home' && typeText === ''"
-              class="iconfont icon-setting"
               @click.stop="toSet"
-            ></i>
+            >
+              <setting-two theme="outline" size="22" fill="#979797" />
+            </i>
             <el-icon v-show="isLeft && !note.modeType" @click="showToolBarFn">
               <Edit />
             </el-icon>
-            <i class="iconfont icon-close" @click="close"></i>
+            <i>
+              <close theme="outline" size="22" fill="#979797" @click="close" />
+            </i>
           </div>
         </div>
       </drag>
@@ -232,10 +168,28 @@ const { ipcRenderer } = require("electron");
 import drag from "@/components/drag.vue";
 import { defineComponent } from "vue";
 import contextMenu from "@/components/context_menu.vue";
+import {
+  Minus,
+  Remind,
+  MindmapMap,
+  MindmapList,
+  Close,
+  FullScreenOne,
+  FullScreenTwo,
+  SettingTwo,
+} from "@icon-park/vue-next";
 export default defineComponent({
   components: {
     drag,
     contextMenu,
+    Minus,
+    Remind,
+    MindmapMap,
+    MindmapList,
+    Close,
+    FullScreenOne,
+    FullScreenTwo,
+    SettingTwo,
   },
   computed: {
     ...mapState("note", {
@@ -411,6 +365,10 @@ export default defineComponent({
       text-align: center;
     }
   }
+  .icon-thepin-active,
+  .icon-thepin {
+    margin-right: 5px !important;
+  }
   .right {
     width: 25%;
   }
@@ -421,7 +379,11 @@ export default defineComponent({
   .left {
     width: 25%;
     line-height: 10px;
-    cursor: pointer;
+    i {
+      cursor: pointer;
+      color: #979797;
+      margin-left: 8px;
+    }
     .el-icon {
       margin-right: 10px;
       cursor: pointer;
@@ -430,7 +392,7 @@ export default defineComponent({
 }
 .home {
   .iconfont {
-    @include iconfont(25px);
+    @include iconfont(28px);
   }
 }
 
@@ -446,7 +408,6 @@ export default defineComponent({
   }
   .left {
     text-align: left;
-    margin-left: 5px;
   }
   .title {
     // @extend .drag;
@@ -460,6 +421,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: end;
+    // padding-right: 6px;
     img {
       width: 19px;
       cursor: pointer;
@@ -467,7 +429,8 @@ export default defineComponent({
     }
     i {
       cursor: pointer;
-      margin-left: 10px;
+      color: #979797;
+      margin-right: 8px;
     }
   }
 }

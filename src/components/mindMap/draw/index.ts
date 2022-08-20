@@ -86,7 +86,14 @@ const appendNode = (enter: d3.Selection<d3.EnterElement, Mdata, SVGGElement, IsM
     const gContent = enterG.append('g').attr('class', style.content)
     const gTrigger = gContent.append('rect')
     // 绘制文本
-    const gText = gContent.append('g').attr('class', style.text)
+    const gText = gContent.append('g').attr('class', (d) => {
+        console.log('d', d)
+        let result = style.text
+        if (d.depth === 0) {
+            result += ' ' + 'root_rect'
+        }
+        return result
+    })
     const gTextRect = gText.append('rect')
     const text = gText.append('text')
     attrText(text)

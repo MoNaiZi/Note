@@ -13,6 +13,7 @@ export const getSiblingGClass = (d?: Mdata): string[] => {
 export const getGClass = (d?: Mdata): string[] => {
     const arr = getSiblingGClass(d)
     if (d) {
+
         if (d.depth === 0) { arr.push(style.root) }
         if (!d.isExpand) {
             arr.push(style['isExpand'])

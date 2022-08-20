@@ -13,6 +13,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@icon-park/vue-next": "^1.4.2",
     "@types/lowdb": "1.0.9",
     "@wangeditor/editor": "^5.1.1",
     "@wangeditor/editor-for-vue": "^5.1.12",

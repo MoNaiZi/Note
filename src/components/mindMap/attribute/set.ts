@@ -41,7 +41,11 @@ export const attrA = (
 
 export const attrG = (g: SelectionG, tran?: Transition): void => {
 
-    const g1: any = g.attr('class', (d) => getGClass(d).join(' ')).attr('data-id', getDataId)
+    const g1: any = g.attr('class', (d) => {
+        const result = getGClass(d).join(' ')
+        console.log('result', result)
+        return result
+    }).attr('data-id', getDataId)
     // g1.transition = d3Transition
     const g2 = tran ? g1.transition(tran) : g1
     g2.attr('transform', getGTransform)

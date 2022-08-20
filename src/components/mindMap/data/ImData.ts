@@ -448,10 +448,9 @@ class ImData {
         return null
     }
 
-    changeLeft(id: string): IsMdata {
+    changeLeft(id: string, left: boolean): IsMdata {
         const d = this.find(id)
         if (d) {
-            const left = !d.left
             d.left = left
             d.rawData.left = left
             this.renew()

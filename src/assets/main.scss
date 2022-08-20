@@ -120,22 +120,25 @@ body {
 
 .dark {
     // background: #393939;
+    $darkBg: #393939;
     height: 100vh;
     width: 100vw;
     --w-e-toolbar-color: #fff; //文字svg颜色
     --w-e-toolbar-active-color: #fff !important; //提示框颜色
     // --el-bg-color: #393939;
-    --w-e-toolbar-bg-color: #393939; //menu背景颜色
+    --w-e-toolbar-bg-color: $darkBg; //menu背景颜色
     --w-e-toolbar-active-bg-color: rgb(150, 150, 150); //hover 的背景颜色
     --w-e-toolbar-active-color: #333;
     --w-e-textarea-slight-bg-color: #333; //表格头部栏
-
+    --el-fill-color-blank: $darkBg; //树组件背景颜色
+    --el-text-color-regular: #fff; //树组件文字颜色
+    --el-fill-color-light: #5b5b5b; //树组件行鼠标停留
     // --w-e-toolbar-disabled-color: red;
     // --w-e-toolbar-border-color: red; //分割线，还有边框颜色
     // --w-e-modal-button-bg-color: red;
 
     @mixin drak {
-        background: #393939 !important;
+        background: $darkBg  !important;
         color: #fff !important;
     }
 
@@ -162,11 +165,11 @@ body {
         @include drak;
 
         .w-e-bar-item .active {
-            background-color: #393939 !important;
+            background-color: $darkBg  !important;
         }
 
         .w-e-bar-item:hover {
-            background-color: #393939 !important;
+            background-color: $darkBg  !important;
         }
     }
 
@@ -175,6 +178,33 @@ body {
     .home,
     .loadMore {
         color: #fff;
+    }
+
+    .mind_map {
+        svg {
+            background-color: $darkBg;
+
+            .root_rect>rect {
+                fill: $darkBg  !important;
+            }
+
+            text {
+                fill: #fff;
+            }
+        }
+    }
+
+    .el-tree-node {
+        .row {
+            .no-left {
+                color: #f2f2f2;
+            }
+
+            .no-left:hover {
+                color: #fff;
+                box-shadow: 0 0 4px #cbcbcb;
+            }
+        }
     }
 }
 

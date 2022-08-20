@@ -164,7 +164,6 @@ ipcMain.on('windowMoving', (event, { mouseX, mouseY, width, height }) => {
 });
 
 
-
 const suspensionWin = function (itemList?: any) {
     const mainWindows = mainProcess.mainWindows()
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -196,10 +195,6 @@ const suspensionWin = function (itemList?: any) {
     win.loadURL(url)
     return win
 }
-
-// ipcMain.on('newMenu', (event, WHObj) => {
-
-// })
 
 
 ipcMain.handle('theme', (event, temp) => {
