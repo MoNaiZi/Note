@@ -22,9 +22,13 @@
           <el-dropdown @command="selectMode">
             <span class="el-dropdown-link">
               {{ modeTypeText }}
-              <el-icon class="el-icon--right">
-                <arrow-down />
-              </el-icon>
+
+              <down
+                class="el-icon--right"
+                theme="outline"
+                size="22"
+                fill="#fff"
+              />
             </span>
             <template #dropdown>
               <el-dropdown-menu>
@@ -38,7 +42,9 @@
       </div>
 
       <div v-show="isScrollTop" class="top">
-        <el-icon @click="toTop"><CaretTop /></el-icon>
+        <i @click="toTop"
+          ><to-top-one theme="outline" size="22" fill="#fff"
+        /></i>
       </div>
       <!-- {{ list.length }} -->
       <div class="list">
@@ -62,14 +68,26 @@
                     {{ fromNowFn(item.timeStamp) }}
                   </el-tooltip>
                 </div> -->
-                <el-icon
+                <i
                   v-show="!isLeft && !item.modeType"
                   class="ArrowDownBold"
                   @click.stop="openDetaile(item)"
                 >
-                  <ArrowDownBold v-show="item.isOpenDetaile" />
-                  <ArrowLeftBold v-show="!item.isOpenDetaile" />
-                </el-icon>
+                  <!-- <ArrowDownBold v-show="item.isOpenDetaile" /> -->
+                  <down
+                    v-show="item.isOpenDetaile"
+                    theme="outline"
+                    size="21"
+                    fill="#fff"
+                  />
+                  <left
+                    v-show="!item.isOpenDetaile"
+                    theme="outline"
+                    size="21"
+                    fill="#fff"
+                  />
+                  <!-- <ArrowLeftBold v-show="!item.isOpenDetaile" /> -->
+                </i>
               </h4>
               <div class="content">
                 <keep-alive>
@@ -100,9 +118,9 @@
           <span @click.stop="getList" v-if="!loadMoreLoading">{{
             loadMore ? `没有更多了(共${list.length}条)` : "加载更多...."
           }}</span>
-          <el-icon v-else class="is-loading" :size="18">
+          <!-- <el-icon v-else class="is-loading" :size="18">
             <Loading />
-          </el-icon>
+          </el-icon> -->
         </div>
         <el-empty
           v-if="!list.length"
@@ -122,10 +140,14 @@ import { fromNow } from "@/utils";
 import { defineComponent } from "vue";
 const dayjs = require("dayjs");
 const { ipcRenderer } = require("electron");
+import { Down, Left, ToTopOne } from "@icon-park/vue-next";
 export default defineComponent({
   components: {
     contextMenu,
     noteEditor,
+    Down,
+    Left,
+    ToTopOne,
   },
   props: {
     leftItem: {},
@@ -523,6 +545,7 @@ h4 {
   right: 11px;
   bottom: 20px;
   z-index: 10;
+  width: 24px;
   cursor: pointer;
   .el-icon {
     font-size: 19px;
@@ -575,10 +598,8 @@ li {
     background: #fff;
     .ArrowDownBold {
       position: absolute;
-      font-size: 14px;
       background: #f2f2f2;
       border-radius: 5px;
-      padding: 3px;
       z-index: 1;
       right: 6px;
       opacity: 0.6;

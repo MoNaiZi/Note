@@ -119,9 +119,13 @@
             >
               <setting-two theme="outline" size="22" fill="#979797" />
             </i>
-            <el-icon v-show="isLeft && !note.modeType" @click="showToolBarFn">
+            <!-- <el-icon v-show="isLeft && !note.modeType" @click="showToolBarFn">
               <Edit />
-            </el-icon>
+            </el-icon> -->
+            <i v-show="isLeft && !note.modeType" @click.stop="showToolBarFn">
+              <edit theme="outline" size="22" fill="#979797" />
+            </i>
+
             <i>
               <close theme="outline" size="22" fill="#979797" @click="close" />
             </i>
@@ -177,6 +181,7 @@ import {
   FullScreenOne,
   FullScreenTwo,
   SettingTwo,
+  Edit,
 } from "@icon-park/vue-next";
 export default defineComponent({
   components: {
@@ -190,6 +195,7 @@ export default defineComponent({
     FullScreenOne,
     FullScreenTwo,
     SettingTwo,
+    Edit,
   },
   computed: {
     ...mapState("note", {
@@ -348,7 +354,7 @@ export default defineComponent({
 
 .edited {
   .iconfont {
-    @include iconfont(20px);
+    @include iconfont(28px);
   }
   .input_title {
     width: 100%;
