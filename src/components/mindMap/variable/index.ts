@@ -36,7 +36,7 @@ export let scaleExtent: TwoNumber = [0.1, 8]
 emitter.on('scale-extent', (value: TwoNumber) => scaleExtent = value || scaleExtent)
 
 // 可编辑指示
-export let editFlag = false
+export let editFlag = true
 emitter.on('edit-flag', (val: any) => {
     editFlag = !!val
     console.log('editFlag', editFlag)

@@ -48,8 +48,10 @@ export const onSelect = (e: MouseEvent, d: Mdata): void => {
 export function onEdit(this: SVGGElement, _e: MouseEvent, d: Mdata): void {
     const gNode = this.parentNode?.parentNode as SVGGElement
     const { foreign } = selection
-
-    if (editFlag && foreign && foreignDivEle.value) {
+    // console.log('editFlag', editFlag)
+    // console.log('foreignDivEle.value', foreignDivEle.value)
+    // console.log('foreign', foreign)
+    if (foreign && foreignDivEle.value) {
 
         gNode.classList.add(style.edited)
         emitter.emit('edit-flag', false)

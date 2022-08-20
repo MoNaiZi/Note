@@ -7,7 +7,7 @@ This project is an enhanced version of the post it note pad function. Vue is not
 ### Update function record
 outline mode
 
-Mind mapping (under development)
+Mind mapping (Development completed, grinding in progress)
 
 ### You are welcome to give suggestions and questions, (๑ • ̀ ㅂ• ́)و ✧ stars, thank you
 
