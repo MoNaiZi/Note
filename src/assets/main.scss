@@ -118,6 +118,24 @@ body {
 
 }
 
+.mind_map {
+    .hasPrevAndNextActive {
+        svg {
+            path {
+                stroke: #979797;
+            }
+        }
+    }
+
+    .hasPrevAndNextDef {
+        svg {
+            path {
+                stroke: #c2c2c2;
+            }
+        }
+    }
+}
+
 .dark {
     // background: #393939;
     $darkBg: #393939;
@@ -133,6 +151,8 @@ body {
     --el-fill-color-blank: $darkBg; //树组件背景颜色
     --el-text-color-regular: #fff; //树组件文字颜色
     --el-fill-color-light: #5b5b5b; //树组件行鼠标停留
+    --mind-map-has-prev: #979797;
+    --mind-map-has-prev-active: #c2c2c2;
     // --w-e-toolbar-disabled-color: red;
     // --w-e-toolbar-border-color: red; //分割线，还有边框颜色
     // --w-e-modal-button-bg-color: red;
@@ -194,6 +214,22 @@ body {
 
             text {
                 fill: #fff;
+            }
+        }
+
+        .hasPrevAndNextActive {
+            svg {
+                path {
+                    stroke: #c2c2c2;
+                }
+            }
+        }
+
+        .hasPrevAndNextDef {
+            svg {
+                path {
+                    stroke: #979797;
+                }
             }
         }
     }

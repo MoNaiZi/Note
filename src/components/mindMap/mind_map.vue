@@ -13,35 +13,7 @@
     <div :class="[style['button-list'], style['right-bottom']]">
       <!-- <button @click="centerView()"></button> -->
       <button @click="fitView()">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 48 48"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M9.85786 32.7574C6.23858 33.8432 4 35.3432 4 37C4 40.3137 12.9543 43 24 43C35.0457 43 44 40.3137 44 37C44 35.3432 41.7614 33.8432 38.1421 32.7574"
-            stroke="#979797"
-            stroke-width="4"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M24 35C24 35 37 26.504 37 16.6818C37 9.67784 31.1797 4 24 4C16.8203 4 11 9.67784 11 16.6818C11 26.504 24 35 24 35Z"
-            fill="none"
-            stroke="#979797"
-            stroke-width="4"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M24 22C26.7614 22 29 19.7614 29 17C29 14.2386 26.7614 12 24 12C21.2386 12 19 14.2386 19 17C19 19.7614 21.2386 22 24 22Z"
-            fill="none"
-            stroke="#979797"
-            stroke-width="4"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <local theme="outline" size="24" fill="#979797" />
       </button>
       <!-- <button v-if="downloadBtn" @click="download()">
         <i :class="style['download']"></i>
@@ -49,42 +21,18 @@
     </div>
     <div v-if="timetravel" :class="[style['button-list'], style['right-top']]">
       <button @click="prev" :class="{ [style['disabled']]: !hasPrev }">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 48 48"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M44 40.8361C39.1069 34.8632 34.7617 31.4739 30.9644 30.6682C27.1671 29.8625 23.5517 29.7408 20.1182 30.303V41L4 23.5453L20.1182 7V17.167C26.4667 17.2172 31.8638 19.4948 36.3095 24C40.7553 28.5052 43.3187 34.1172 44 40.8361Z"
-            fill="none"
-            :stroke="hasPrev ? '#979797' : '#c4c4c4'"
-            stroke-width="4"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <back
+          :class="[hasPrev ? 'hasPrevAndNextActive' : 'hasPrevAndNextDef']"
+          theme="outline"
+          size="24"
+        />
       </button>
       <button @click="next" :class="{ [style['disabled']]: !hasNext }">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 48 48"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M4 40.8361C8.89307 34.8632 13.2383 31.4739 17.0356 30.6682C20.8329 29.8625 24.4483 29.7408 27.8818 30.303V41L44 23.5453L27.8818 7V17.167C21.5333 17.2172 16.1362 19.4948 11.6905 24C7.24474 28.5052 4.68126 34.1172 4 40.8361Z"
-            fill="none"
-            :stroke="hasNext ? '#979797' : '#c4c4c4'"
-            stroke-width="4"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <next
+          :class="[hasNext ? 'hasPrevAndNextActive' : 'hasPrevAndNextDef']"
+          theme="outline"
+          size="24"
+        />
       </button>
     </div>
     <contextmenu
@@ -94,6 +42,7 @@
       @click-item="onClickMenu"
     ></contextmenu>
   </div>
+  s
 </template>
 
 <script lang="ts">
@@ -144,15 +93,19 @@ import {
 import Contextmenu from "./Contextmenu.vue";
 import { afterOperation, mmdata, ImData } from "./data/index";
 import { mapState } from "vuex";
+import { Local, Back, Next } from "@icon-park/vue-next";
 export default defineComponent({
   name: "Mindmap",
   computed: {
     ...mapState("user", {
-      user: (state: any) => state.user,
+      dark: (state: any) => state.user.dark,
     }),
   },
   components: {
     Contextmenu,
+    Local,
+    Back,
+    Next,
   },
   emits: ["update:modelValue"],
   props: {

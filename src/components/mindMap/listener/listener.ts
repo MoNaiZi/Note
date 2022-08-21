@@ -241,6 +241,7 @@ export function onDragMove(this: SVGGElement, e: d3.D3DragEvent<SVGGElement, Mda
  * @param this - gText
  */
 export function onDragEnd(this: SVGGElement, e: d3.D3DragEvent<SVGGElement, Mdata, Mdata>, d: Mdata): void {
+
     const gNode = this.parentNode?.parentNode as SVGGElement
     if (svgEle.value) { svgEle.value.classList.remove(style.dragging) }
     // 判断是否找到了新的父节点
@@ -274,8 +275,7 @@ export function onDragEnd(this: SVGGElement, e: d3.D3DragEvent<SVGGElement, Mdat
         if ((lr || b.y > d.y) && b.y < endY && b.y > upD.y) { upD = b } // 找新哥哥节点
         if ((lr || b.y < d.y) && b.y > endY && b.y < downD.y) { downD = b } // 找新弟弟节点
     })
-    // debugger
-    let left = false
+
     if (downD.id !== d.id) {
         d.px = 0
         d.py = 0
@@ -288,10 +288,11 @@ export function onDragEnd(this: SVGGElement, e: d3.D3DragEvent<SVGGElement, Mdat
     } else if (lr) {
         d.px = 0
         d.py = 0
-        left = true
+        changeLeft(d.id, !d.left)
     } else {
         // 复原
         moveNode(gNode, d, [0, 0], 500)
     }
-    changeLeft(d.id, left)
+
+
 }

@@ -452,6 +452,7 @@ class ImData {
 
     changeLeft(id: string, left: boolean): IsMdata {
         const d = this.find(id)
+
         if (d) {
             d.left = left
             d.rawData.left = left
