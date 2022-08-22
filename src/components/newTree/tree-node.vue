@@ -28,7 +28,7 @@
       class="el-tree-node__content"
       @mouseover="hover"
       @mouseout="mouseout"
-      :style="{ 'padding-left': (node.level - 1) * tree.indent + 'px' }"
+      :style="{ 'padding-left': (node.level - 1) * tree.indent - -2 + 'px' }"
     >
       <!-- <i class="el-icon-more"></i> -->
       <div
@@ -37,23 +37,23 @@
         @mouseout="mouseout($event)"
         :style="styleFn(node)"
       >
-        <el-icon @click.stop="more(node)">
-          <MoreFilled />
-        </el-icon>
-        <el-icon
-          :size="16"
-          @click.stop="handleExpandIconClick"
-          :class="[
-            {
-              'is-leaf': node.isLeaf,
-              expanded: !node.isLeaf && expanded,
-              'no-left': !node.isLeaf,
-            },
-            'el-tree-node__expand-icon',
-          ]"
-        >
-          <component :is="'CaretRight'"></component>
-        </el-icon>
+        <i @click.stop="more(node)">
+          <more theme="outline" size="22" fill="#979797" />
+        </i>
+        <i @click.stop="handleExpandIconClick" class="expandedBtn">
+          <triangle
+            :class="[
+              {
+                'is-leaf': node.isLeaf,
+                expanded: !node.isLeaf && expanded,
+                'no-left': !node.isLeaf,
+              },
+            ]"
+            theme="filled"
+            size="10"
+            fill="#979797"
+          />
+        </i>
       </div>
       <div class="line" :id="`line_${node.data.id}}`"></div>
       <span
@@ -98,6 +98,7 @@
 // import ElCollapseTransition from "element-ui/src/transitions/collapse-transition";
 // import ElCheckbox from "element-ui/packages/checkbox";
 // import collapseTransition from "../collapse-transition";
+import { More, Triangle } from "@icon-park/vue-next";
 import emitter from "./model/emitter";
 import { getNodeKey } from "./model/util";
 import mitt from "mitt";
@@ -126,8 +127,8 @@ export default {
   },
 
   components: {
-    // ElCheckbox,
-    // collapseTransition,
+    More,
+    Triangle,
     NodeContent: {
       props: {
         node: {
@@ -395,9 +396,10 @@ export default {
     position: relative;
     top: 2px;
   }
+  .is-leaf,
   .no-left {
     position: relative;
-    top: 2px;
+    top: -5px;
   }
   .no-left:hover {
     color: #000;

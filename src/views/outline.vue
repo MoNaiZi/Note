@@ -506,6 +506,7 @@ export default {
     },
     findNodeId(data, bool) {
       data.isExpand = bool;
+      this.showMenu = false;
       this.updateTree();
     },
     handleDragStart(node) {
@@ -587,7 +588,7 @@ export default {
       }
     },
     mouseover() {
-      event.currentTarget.style.background = "rgb(148 148 148)";
+      event.currentTarget.style.background = "rgb(201 201 201)";
     },
     mouseout(node) {
       console.log("node", node);
@@ -844,7 +845,7 @@ export default {
                 background:
                   node.childNodes && !node.childNodes.length
                     ? ""
-                    : "rgb(148 148 148)",
+                    : "rgb(201 201 201)",
               }}
             ></li>
             <div

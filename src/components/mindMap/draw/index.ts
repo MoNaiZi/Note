@@ -118,7 +118,6 @@ const appendNode = (enter: d3.Selection<d3.EnterElement, Mdata, SVGGElement, IsM
 }
 
 const updateNode = (update: SelectionG) => {
-
     const isRoot = !update.data()[0]?.depth
     const tran = makeTransition(500, d3.easePolyOut)
     attrG(update, tran)
@@ -134,6 +133,7 @@ const updateNode = (update: SelectionG) => {
         .join(appendTspan, updateTspan, exit => exit.remove())
     let gAddBtn = gContent.select<SVGGElement>(`g.${style['add-btn']}`)
     const gExpandBtn = gContent.select<SVGGElement>(`g.${style['expand-btn']}`)
+    console.log('gAddBtn.node()', gAddBtn.node())
     if (addNodeBtn.value) {
         if (!gAddBtn.node()) { gAddBtn = appendAndBindAddBtn(gContent) }
     } else {
