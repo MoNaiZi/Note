@@ -209,8 +209,12 @@ export default {
   methods: {
     changeMindMap(treeList) {
       if (!treeList.length) return;
-
-      // const title = treeList[0].title;
+      const header = this.header;
+      const title = treeList[0].name;
+      if (title) {
+        header.title = title;
+      }
+      store.dispatch("header/setNote", header);
       const list = JSON.parse(JSON.stringify(treeList[0].children));
       this.tree = list;
       this.treeData = list;
