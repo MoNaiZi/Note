@@ -2,6 +2,7 @@ import * as d3ScaleChromatic from 'd3-scale-chromatic'
 import * as d3Scale from 'd3-scale'
 import { Data, Mdata, IsMdata } from '@/components/mindMap/interface'
 import { BoundingBox, Layout } from './flextree'
+import { createNumberString } from '@/utils/index'
 
 type GetSize = (text: string) => { width: number, height: number }
 type Processer = (d: Mdata, id: string) => void
@@ -125,7 +126,7 @@ class ImData {
             left = parent.left
         }
         const data: Mdata = {
-            id, name, rawData, parent, left, color, depth,
+            id, name, rawData, parent, left, color, depth, level: rawData?.level,
             x: 0, y: 0, dx: 0, dy: 0, px: 0, py: 0,
             width, height, children: [], _children: [],
             isExpand: !!isExpand,
@@ -291,7 +292,7 @@ class ImData {
             if (typeof variable === 'string') {
                 const name = variable
                 const size = this.getSize(name)
-                const rawData: Data = { name }
+                const rawData: Data = { name, id: createNumberString(), level: p.level + 1 }
                 const color = p.color ? p.color : this.colorScale(`${this.colorNumber += 1}`)
                 const d: Mdata = {
                     id: `${p.id}-${p.children.length}`,
@@ -299,6 +300,7 @@ class ImData {
                     rawData,
                     parent: p,
                     left: p.left,
+                    level: p.level,
                     isExpand: true,
                     color,
                     gKey: this.gKey += 1,
@@ -379,8 +381,8 @@ class ImData {
         const d = this.find(id)
         if (d && d.parent) {
             const index = parseInt(id.split('-').pop() as string, 10)
-            const { parent, left } = d
-            const rawSibling: Data = { name, left }
+            const { parent, left, level } = d
+            const rawSibling: Data = { name, left, id: createNumberString(), level }
             const size = this.getSize(name)
             const start = before ? index : index + 1
             const color = parent.color ? parent.color : this.colorScale(`${this.colorNumber += 1}`)
@@ -393,6 +395,7 @@ class ImData {
                 isExpand: false,
                 rawData: rawSibling,
                 id: `${parent.id}-${start}`,
+                level,
                 left,
                 gKey: this.gKey += 1,
                 depth: d.depth,
@@ -419,14 +422,17 @@ class ImData {
             const { parent: oldP, left, color } = d
             const size = this.getSize(name)
             const index = parseInt(d.id.split('-').pop() as string, 10)
-            const rawP: Data = { name, children: [d.rawData], left }
+            const level = d.level
+            d.rawData.level++
+            const rawP: Data = { name, children: [d.rawData], left, id: createNumberString(), level, isExpand: true }
             oldP.rawData.children?.splice(index, 1, rawP)
             const p: Mdata = {
                 rawData: rawP,
                 left,
+                level,
                 name,
                 color,
-                isExpand: false,
+                isExpand: true,
                 parent: oldP,
                 id: d.id,
                 depth: d.depth,

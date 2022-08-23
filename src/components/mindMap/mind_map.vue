@@ -107,6 +107,17 @@ export default defineComponent({
     Back,
     Next,
   },
+  watch: {
+    modelValue: {
+      deep: true,
+      handler: function (val) {
+        const data = cloneDeep(val[0]);
+        const result = new ImData(data, xGap, yGap, getSize);
+        emitter.emit("mmdata", result);
+        draw(mmdata);
+      },
+    },
+  },
   emits: ["update:modelValue"],
   props: {
     modelValue: {
@@ -196,7 +207,6 @@ export default defineComponent({
       switchZoom(props.zoom);
       switchContextmenu(props.ctm);
     });
-    // watch
     watch(
       () => [props.branch, addNodeBtn.value, props.sharpCorner],
       () => {

@@ -208,7 +208,10 @@ export default {
 
   methods: {
     changeMindMap(treeList) {
-      const list = JSON.parse(JSON.stringify(treeList));
+      if (!treeList.length) return;
+
+      // const title = treeList[0].title;
+      const list = JSON.parse(JSON.stringify(treeList[0].children));
       this.tree = list;
       this.treeData = list;
     },

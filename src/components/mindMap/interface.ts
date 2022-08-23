@@ -4,7 +4,9 @@ export interface Data {
     name: string
     children?: Array<Data>
     left?: boolean
-    isExpand?: boolean
+    isExpand?: boolean,
+    id?: string,
+    level?: number,
 }
 
 export interface TreeData {
@@ -20,6 +22,7 @@ export interface TreeData {
 }
 
 export interface Mdata {
+    level?: number,
     rawData: Data
     name: string
     parent: IsMdata

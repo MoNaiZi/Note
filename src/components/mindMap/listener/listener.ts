@@ -17,6 +17,7 @@ import { MenuEvent } from '../variable/contextmenu'
  */
 export function onMouseEnter(this: SVGGElement): void {
     const temp = this.querySelector<HTMLElement>(`g.${style['add-btn']}`)
+
     if (temp) { temp.style.opacity = '1' }
 }
 

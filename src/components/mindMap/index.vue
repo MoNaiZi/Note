@@ -51,10 +51,26 @@ export default {
         "y-gap": { value: 18, min: 0, max: 100 },
       },
       tempData,
-      tree: this.treeData,
+      tree: [],
     };
   },
+  created() {
+    this.init();
+  },
   methods: {
+    init() {
+      const treeData = JSON.parse(JSON.stringify(this.treeData));
+      const title = JSON.parse(JSON.stringify(this.header.title));
+      this.tree = [
+        {
+          name: title,
+          level: 0,
+          id: "root",
+          children: treeData,
+          isExpand: true,
+        },
+      ];
+    },
     onChange() {
       this.$emit("change", this.tree);
     },
@@ -71,11 +87,13 @@ export default {
     treeData: [],
   },
   watch: {
+    "header.title": function () {
+      this.init();
+    },
     treeData: {
       deep: true,
-      handler(val) {
-        const that = this;
-        that.tree = JSON.parse(JSON.stringify(val));
+      handler() {
+        this.init();
       },
     },
   },
