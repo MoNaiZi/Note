@@ -17,7 +17,6 @@ type note = {
 
 
 ipcMain.on('saveDataSetting', (event, winId, setting) => {
-    console.log('setting', setting)
     db.get('NoteList').find({ _id: winId }).assign({ setting }).write()
 })
 

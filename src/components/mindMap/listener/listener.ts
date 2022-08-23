@@ -32,7 +32,7 @@ export function onMouseLeave(this: SVGGElement): void {
 export const scaleData: Ref<ScaleData> = ref({ x: 0, y: 0, k: 0 })
 export const onZoomMove = (e: any): void => {
     const { g, svg } = selection
-    if (!g) { return }
+    if (!g || !e) { return }
     let data = e.transform || {}
     if (e.k) {
         data = e
