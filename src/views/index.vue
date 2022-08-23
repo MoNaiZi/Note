@@ -27,7 +27,7 @@
                 class="el-icon--right"
                 theme="outline"
                 size="22"
-                fill="#fff"
+                fill="var( --index-main-icon)"
               />
             </span>
             <template #dropdown>
@@ -78,13 +78,13 @@
                     v-show="item.isOpenDetaile"
                     theme="outline"
                     size="21"
-                    fill="#fff"
+                    fill="var( --index-main-icon)"
                   />
                   <left
                     v-show="!item.isOpenDetaile"
                     theme="outline"
                     size="21"
-                    fill="#fff"
+                    fill="var( --index-main-icon)"
                   />
                   <!-- <ArrowLeftBold v-show="!item.isOpenDetaile" /> -->
                 </i>

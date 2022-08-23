@@ -153,6 +153,7 @@ body {
     --el-fill-color-light: #5b5b5b; //树组件行鼠标停留
     --mind-map-has-prev: #979797;
     --mind-map-has-prev-active: #c2c2c2;
+
     // --w-e-toolbar-disabled-color: red;
     // --w-e-toolbar-border-color: red; //分割线，还有边框颜色
     // --w-e-modal-button-bg-color: red;
@@ -162,6 +163,9 @@ body {
         color: #fff !important;
     }
 
+    .index_main {
+        --index-main-icon: #fff; //首页图标
+    }
 
     .wrap,
     .context_menu,
@@ -253,6 +257,10 @@ body {
         }
 
     }
+}
+
+.index_main {
+    --index-main-icon: #717171
 }
 
 .isLeft {
