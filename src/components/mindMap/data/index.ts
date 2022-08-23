@@ -11,7 +11,7 @@ export { ImData }
 export let mmdata: any
 emitter.on('mmdata', (val) => {
     val ? mmdata = val : null
-    console.log('设置数据', mmdata)
+    // console.log('设置数据', mmdata)
 })
 
 export const afterOperation = (snap = true): void => {

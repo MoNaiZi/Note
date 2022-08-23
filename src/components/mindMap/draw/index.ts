@@ -87,7 +87,7 @@ const appendNode = (enter: d3.Selection<d3.EnterElement, Mdata, SVGGElement, IsM
     const gTrigger = gContent.append('rect')
     // 绘制文本
     const gText = gContent.append('g').attr('class', (d) => {
-        console.log('d', d)
+        // console.log('d', d)
         let result = style.text
         if (d.depth === 0) {
             result += ' ' + 'root_rect'
@@ -133,7 +133,7 @@ const updateNode = (update: SelectionG) => {
         .join(appendTspan, updateTspan, exit => exit.remove())
     let gAddBtn = gContent.select<SVGGElement>(`g.${style['add-btn']}`)
     const gExpandBtn = gContent.select<SVGGElement>(`g.${style['expand-btn']}`)
-    console.log('gAddBtn.node()', gAddBtn.node())
+    // console.log('gAddBtn.node()', gAddBtn.node())
     if (addNodeBtn.value) {
         if (!gAddBtn.node()) { gAddBtn = appendAndBindAddBtn(gContent) }
     } else {

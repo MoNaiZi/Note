@@ -9,7 +9,6 @@ export let foreign: any
 
 emitter.on('selection-svg', (val) => svg = val)
 emitter.on('selection-g', (val) => {
-
     g = val
 })
 emitter.on('selection-asstSvg', (val) => asstSvg = val)

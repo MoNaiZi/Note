@@ -17,7 +17,9 @@
       :ctm="checkboxList['contextmenu'].value"
       :timetravel="checkboxList['timetravel'].value"
       @update:model-value="onChange"
+      @changeScaleData="changeScaleData"
       :locale="locale"
+      :setting="setting"
     />
   </div>
 </template>
@@ -74,6 +76,9 @@ export default {
     onChange() {
       this.$emit("change", this.tree);
     },
+    changeScaleData(data) {
+      this.$emit("changeScaleData", data);
+    },
   },
   components: {
     Mindmap,
@@ -85,6 +90,7 @@ export default {
   },
   props: {
     treeData: [],
+    setting: {},
   },
   watch: {
     "header.title": function () {

@@ -15,6 +15,12 @@ type note = {
     modeType: number | undefined
 }
 
+
+ipcMain.on('saveDataSetting', (event, winId, setting) => {
+    console.log('setting', setting)
+    db.get('NoteList').find({ _id: winId }).assign({ setting }).write()
+})
+
 ipcMain.handle('openLeft', (event, bool = true) => {
     const webContents = event.sender
     const win: any = BrowserWindow.fromWebContents(webContents)
@@ -36,8 +42,6 @@ ipcMain.handle('openLeft', (event, bool = true) => {
     win.setSize(bounds.width, 600)
     win.setPosition(bounds.x, bounds.y)
 })
-
-
 
 const getUser = function () {
     return db.get('User').valueOf()
@@ -195,12 +199,6 @@ const suspensionWin = function (itemList?: any) {
     win.loadURL(url)
     return win
 }
-
-
-ipcMain.handle('theme', (event, temp) => {
-    // nativeTheme.themeSource = 'dark'
-    // return nativeTheme.shouldUseDarkColors
-})
 
 
 const getNoteList = async function (page = 0, pageSize = 10) {

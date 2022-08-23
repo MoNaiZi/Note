@@ -50,6 +50,12 @@ export interface TspanData {
     height: number
 }
 
+export interface ScaleData {
+    k?: number,
+    x?: number,
+    y?: number
+}
+
 export type Transition = d3.Transition<d3.BaseType, Mdata, d3.BaseType, unknown>
 export type SelectionG = d3.Selection<SVGGElement, Mdata, SVGGElement, IsMdata>
 export type SelectionRect = d3.Selection<SVGRectElement, Mdata, SVGGElement, IsMdata>

@@ -5,7 +5,9 @@
         <mindMap
           :treeData="treeData"
           @change="changeMindMap"
+          @changeScaleData="changeScaleData"
           :key="mindMapKey"
+          :setting="setting"
         ></mindMap>
       </template>
     </transition>
@@ -134,6 +136,7 @@ export default {
       isCNInput: false,
       operationRecord: [],
       keyId: this.$createdId(),
+      setting: {},
     };
   },
   props: {
@@ -169,10 +172,17 @@ export default {
         this.saveTree();
       },
     },
-    // tree: {
-    //   deep: true,
-    //   handler(newValue, oldValue) {},
-    // },
+    setting: {
+      deep: true,
+      handler() {
+        const note = this.header;
+        ipcRenderer.send(
+          "saveDataSetting",
+          note._id,
+          JSON.parse(JSON.stringify(this.setting))
+        );
+      },
+    },
   },
   async created() {
     if (this.isLeft) {
@@ -207,6 +217,9 @@ export default {
   },
 
   methods: {
+    changeScaleData(data) {
+      this.setting.scaleData = data;
+    },
     changeMindMap(treeList) {
       if (!treeList.length) return;
       const header = this.header;
@@ -428,7 +441,9 @@ export default {
       } else {
         this.refresh();
       }
+      this.setting = note.setting || {};
       delete note.tree;
+      delete note.setting;
       store.dispatch("header/setNote", note || {});
     },
     saveTree(typeText) {

@@ -8,7 +8,7 @@ import * as element from './element'
 import { getDragContainer, moveView } from '../assistant'
 
 export * as ctm from './contextmenu'
-export { selection, element }
+export { selection, element, onZoomMove }
 
 // 连线样式
 type CurveStepLink = ({ source, target }: { source: TwoNumber, target: TwoNumber }) => string | null
@@ -33,7 +33,9 @@ emitter.on('branch', (value: number) => branch = value || branch)
 
 // 缩放程度
 export let scaleExtent: TwoNumber = [0.1, 8]
-emitter.on('scale-extent', (value: TwoNumber) => scaleExtent = value || scaleExtent)
+emitter.on('scale-extent', (value: TwoNumber) => {
+    return scaleExtent = value || scaleExtent
+})
 
 // 可编辑指示
 export let editFlag = true

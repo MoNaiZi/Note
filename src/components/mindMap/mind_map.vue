@@ -72,6 +72,7 @@ import {
   changeSharpCorner,
   addNodeBtn,
   mmprops,
+  onZoomMove,
 } from "./variable";
 import {
   wrapperEle,
@@ -89,6 +90,7 @@ import {
   switchContextmenu,
   switchDrag,
   onClickMenu,
+  scaleData,
 } from "./listener";
 import Contextmenu from "./Contextmenu.vue";
 import { afterOperation, mmdata, ImData } from "./data/index";
@@ -117,8 +119,14 @@ export default defineComponent({
         draw(mmdata);
       },
     },
+    scaleData: {
+      deep: true,
+      handler(val) {
+        this.$emit("changeScaleData", val);
+      },
+    },
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "changeScaleData"],
   props: {
     modelValue: {
       type: Array as PropType<Data[]>,
@@ -150,10 +158,13 @@ export default defineComponent({
     zoom: Boolean,
     // i18n
     locale: { type: String as PropType<Locale>, default: "zh" },
+    setting: {
+      type: Object,
+      default: () => {},
+    },
   },
   setup(props, context) {
     // 立即执行
-
     // watchEffect(() => i18next.changeLanguage(props.locale));
     watchEffect(() => emitter.emit("scale-extent", props.scaleExtent));
     watchEffect(() => emitter.emit("branch", props.branch));
@@ -206,6 +217,7 @@ export default defineComponent({
       });
       switchZoom(props.zoom);
       switchContextmenu(props.ctm);
+      onZoomMove(props.setting.scaleData);
     });
     watch(
       () => [props.branch, addNodeBtn.value, props.sharpCorner],
@@ -256,6 +268,7 @@ export default defineComponent({
       prev,
       hasPrev,
       hasNext,
+      scaleData,
     };
   },
 });

@@ -1,7 +1,7 @@
 import style from '../css'
-import { ctm, editFlag, selection, textRectPadding, zoomTransform } from '../variable/index'
+import { ctm, zoom, selection, textRectPadding, zoomTransform } from '../variable/index'
 import * as d3 from '../d3'
-import { Mdata } from '../interface'
+import { Mdata, ScaleData } from '../interface'
 import { fitView, getRelativePos, getSelectedGData, isData, moveNode, moveView, scaleView, selectGNode } from '../assistant'
 import {
     add, addParent, addSibling, changeLeft, collapse, del,
@@ -11,7 +11,7 @@ import { svgEle, gEle, foreignDivEle, wrapperEle, foreignEle } from '../variable
 import emitter from '@/mitt'
 import { getDataId, getSiblingGClass } from '../attribute'
 import { MenuEvent } from '../variable/contextmenu'
-
+import { ref, Ref } from 'vue'
 /**
  * @param this - gContent
  */
@@ -29,11 +29,19 @@ export function onMouseLeave(this: SVGGElement): void {
     if (temp) { temp.style.opacity = '0' }
 }
 
-export const onZoomMove = (e: d3.D3ZoomEvent<SVGSVGElement, null>): void => {
-    const { g } = selection
+export const scaleData: Ref<ScaleData> = ref({ x: 0, y: 0, k: 0 })
+export const onZoomMove = (e: any): void => {
+    const { g, svg } = selection
     if (!g) { return }
-    zoomTransform.value = e.transform
-    g.attr('transform', e.transform.toString())
+    let data = e.transform || {}
+    if (e.k) {
+        data = e
+        svg.transition().call(zoom.transform, d3.zoomIdentity.translate(e.x, e.y).scale(e.k));
+    } else {
+        g.attr('transform', data.toString())
+    }
+    zoomTransform.value = data
+    scaleData.value = data
 }
 
 export const onSelect = (e: MouseEvent, d: Mdata): void => {
