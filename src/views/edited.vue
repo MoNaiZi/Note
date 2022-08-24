@@ -4,6 +4,7 @@
   <div class="edited_main">
     <div style="height: 100%">
       <Toolbar
+        v-show="showToolBar"
         id="toolbar-container"
         ref="Toolbar"
         style="border-bottom: 1px solid #ccc"
@@ -18,6 +19,7 @@
         :defaultConfig="editorConfig"
         :mode="mode"
         @onCreated="onCreated"
+        @onChange="onChange"
       />
     </div>
   </div>
@@ -29,7 +31,7 @@ const { ipcRenderer } = require("electron");
 const dayjs = require("dayjs");
 // import Tree from "@/components/Tree/index.vue";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
-import { DomEditor, Boot } from "@wangeditor/editor";
+import { DomEditor } from "@wangeditor/editor";
 import { getQueryByName } from "@/utils";
 export default {
   components: {
@@ -42,18 +44,40 @@ export default {
     ...mapState("header", {
       header: (state) => state.note,
       headerClose: (state) => state.close,
+      timing: (state) => state.timing,
     }),
     ...mapState("note", {
       list: (state) => state.list,
+      showToolBar: (state) => state.showToolBar,
     }),
   },
+  props: {
+    currentItem: {},
+    isLeft: {
+      type: Boolean,
+      default: false,
+    },
+  },
   watch: {
+    isLeft: function (val) {
+      console.log("监听val", val);
+    },
+    currentItem: {
+      deep: true,
+      handler(val) {
+        this.note.html = val.html;
+      },
+    },
     headerClose: {
       deep: true,
       handler(val) {
         if (val) return;
         this.saveEdited();
       },
+    },
+    timing: function (val) {
+      if (!val) return;
+      this.saveEdited("timing");
     },
   },
   data() {
@@ -74,8 +98,13 @@ export default {
     };
   },
   methods: {
+    onChange(ediotr) {
+      const currentItem = this.currentItem;
+      let html = ediotr.getHtml();
+      this.$emit("onChange", { html, _id: currentItem._id });
+    },
     saveEdited(typeText) {
-      let { timing } = this.header;
+      const timing = this.timing;
       const note = this.header;
       const html = this.editor.getHtml();
       // // const text = this.editor.getText();
@@ -94,7 +123,7 @@ export default {
         JSON.parse(JSON.stringify(tempOjb)),
         typeText
       );
-      if (typeText != "save") {
+      if (!typeText) {
         store.dispatch("header/setHeaderClose", false);
       }
     },
@@ -160,14 +189,13 @@ export default {
   mounted() {
     setTimeout(() => {
       const toolbar = DomEditor.getToolbar(this.editor);
-
+      // console.log("toolbar", toolbar);
+      if (!toolbar) return;
       let toolbarKeys = toolbar.getConfig().toolbarKeys;
-      console.log("toolbarKeys", toolbarKeys);
+      // console.log("toolbarKeys", toolbarKeys);
       toolbarKeys.push("|");
       let obj = { toolbarKeys };
       this.toolbarConfig = obj;
-
-      console.log("toolbar", toolbar);
     }, 1000);
 
     let edited_main = document.querySelector(".edited_main");
@@ -183,42 +211,47 @@ export default {
     // const MyDropPanelMenu = class IDropPanelMenu {
     //   // 菜单配置，代码可参考“颜色”菜单源码
     // };
-    const menu3Conf = {
-      key: "timing", // menu key ，唯一。注册之后，可配置到工具栏
-      title: "定时",
-      factory() {},
-    };
-    Boot.registerMenu(menu3Conf);
-    this.watchKey();
-
-    let winId = getQueryByName("winId");
-    let note = {};
-    if (winId === "undefined") {
-      note._id = this.$createdId();
-    } else {
-      note = await ipcRenderer.invoke("getNote", winId);
-    }
-
-    let skipPageType = getQueryByName("skipPageType");
-    if (typeof skipPageType != "undefined" && !isNaN(parseInt(skipPageType))) {
-      skipPageType = parseInt(skipPageType);
-      if (skipPageType === 1) {
-        note.timing = "";
-      }
-      this.skipPageType = skipPageType;
-    }
-    this.note = note || {};
-    if (note.title) {
-      store.dispatch("header/setIsEditedTitle", false);
-    }
-    console.log("note", note);
-    store.dispatch("header/setNote", note || {});
-    store.dispatch("header/setPageTypeText", "edited");
-
-    // window.onbeforeunload = (e) => {
-    //   console.log("I do not want to be closed", this);
-    //   e.returnValue = false;
+    // const menu3Conf = {
+    //   key: "timing", // menu key ，唯一。注册之后，可配置到工具栏
+    //   title: "定时",
+    //   factory() {},
     // };
+    // Boot.registerMenu(menu3Conf);
+    this.watchKey();
+    const isLeft = this.isLeft;
+    if (!isLeft) {
+      let winId = getQueryByName("winId");
+      if (!winId) return;
+      let note = {};
+      if (winId === "undefined") {
+        note._id = this.$createdId();
+      } else {
+        note = await ipcRenderer.invoke("getNote", winId);
+      }
+
+      let skipPageType = getQueryByName("skipPageType");
+      if (
+        typeof skipPageType != "undefined" &&
+        !isNaN(parseInt(skipPageType))
+      ) {
+        skipPageType = parseInt(skipPageType);
+        if (skipPageType === 1) {
+          note.timing = "";
+        }
+        this.skipPageType = skipPageType;
+      }
+      note = note || {};
+      this.note = note;
+      if (note.title) {
+        store.dispatch("header/setIsEditedTitle", false);
+      }
+
+      store.dispatch("header/setNote", note || {});
+      store.dispatch("header/setPageTypeText", "edited");
+      store.dispatch("note/setShowToolBar", true);
+    } else {
+      this.note = { html: this.currentItem.html };
+    }
 
     ipcRenderer.once("provide-worker-channel", (event) => {
       console.log("收到回复");

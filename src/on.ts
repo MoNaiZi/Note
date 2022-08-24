@@ -280,9 +280,14 @@ ipcMain.on('closeEdited', (event, winId, tempOjb = {}, typeText) => {
     const getValue = db.get('NoteList').find({ _id: winId }).value()
     tempOjb._id = winId
     tempOjb.winAttribute = bounds
-
     tempOjb.timeStamp = dayjs().valueOf()
     tempOjb.time = dayjs().format('YYYY-MM-DD HH:mm')
+
+    if (typeText != 'timing') {
+        delete tempOjb.timing
+        delete tempOjb.timinGtimeStamp
+        delete tempOjb.timingStatus
+    }
 
     delete tempOjb.winId;
     if (!getValue) {
@@ -290,9 +295,9 @@ ipcMain.on('closeEdited', (event, winId, tempOjb = {}, typeText) => {
     } else if (getValue) {
         db.get('NoteList').find({ _id: winId }).assign(tempOjb).write()
     }
-
+    console.log('typeText', typeText)
     global.mainWin.webContents.send('getEdited', tempOjb)
-    if (typeText != 'save') {
+    if (!['timing', 'save'].includes(typeText)) {
         win.close()
     }
 

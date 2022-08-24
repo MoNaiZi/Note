@@ -177,7 +177,7 @@ export default defineComponent({
     upCurrentItem: {
       deep: true,
       handler: function (val) {
-        let item = val; //this.leftItem;
+        let item = val;
         if (!item._id) return;
         const cuttentIndex = this.list.findIndex(
           (j: any) => j._id === item._id
@@ -198,18 +198,16 @@ export default defineComponent({
         item.timeStamp = dayjs().valueOf();
         item.time = dayjs().format("YYYY-MM-DD HH:mm");
         this.list[cuttentIndex] = item;
-        // console.log("leftItem", item);
       },
     },
     isLeft: function () {
-      // console.log("isLeft", val);
       store.dispatch("note/setShowToolBar", false);
       ipcRenderer.invoke("openLeft", this.isLeft);
     },
     list: {
       deep: true,
       handler(val) {
-        // console.log("监听list", val);
+        console.log("监听list", val);
         const cuttentIndex = this.cuttentIndex;
         let list = val;
         if (cuttentIndex != -1) {
@@ -238,14 +236,8 @@ export default defineComponent({
       return result;
     },
   },
-  beforeCreate() {
-    // console.log("实例化初始之后");
-  },
+  beforeCreate() {},
   created() {
-    // console.log("在实例创建完成");
-
-    // const channel = new MessageChannel();
-    // console.log("ipcRenderer", ipcRenderer);
     store.dispatch("header/setPageTypeText", "home");
 
     window.onmessage = (event) => {
@@ -417,7 +409,7 @@ export default defineComponent({
         typeof item.isOpenDetaile === "undefined" ? false : item.isOpenDetaile;
       item.isOpenDetaile = isOpenDetaile ? false : true;
       // const that = this;
-      ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
+      // ipcRenderer.send("updateNote", JSON.parse(JSON.stringify(item)));
       //isOpenDetaile
     },
     search() {

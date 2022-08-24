@@ -10,12 +10,13 @@
           @close="openLeft"
         ></noteHeader>
 
-        <noteEditor
+        <edited
           v-if="!currentItem.modeType"
-          ref="noteEditor"
+          ref="edited"
           key="home_index"
           :currentItem="currentItem"
-          @onChange="onChange"
+          @onChange="changeEditor"
+          :isLeft="isLeft"
           style="height: 90%; overflow-y: auto"
         />
         <outline
@@ -46,9 +47,10 @@
 <script lang="ts">
 import { mapState } from "vuex";
 import { store } from "@/store";
-import noteEditor from "@/components/note_editor.vue";
+
 import noteHeader from "@/components/note_header.vue";
 import outline from "./outline.vue";
+import edited from "./edited.vue";
 import { defineComponent } from "vue";
 
 interface CurrentItem {
@@ -60,9 +62,9 @@ interface CurrentItem {
 }
 export default defineComponent({
   components: {
-    noteEditor,
     noteHeader,
     outline,
+    edited,
   },
   computed: {
     ...mapState("header", {
@@ -109,12 +111,9 @@ export default defineComponent({
     onChangeTree(tree: any) {
       this.currentItem.tree = tree;
     },
-    onChange({ html }: { html: string; _id: string }) {
+    changeEditor({ html }: { html: string; _id: string }) {
+      console.log("html", html);
       this.currentItem.html = html;
-    },
-    changeEditor(editor: any) {
-      // console.log("editor", editor);
-      this.currentItem.html = editor.getHtml();
     },
     openLeft(item: any, bool = null) {
       // console.log("打开右侧", bool, item);
@@ -148,6 +147,7 @@ export default defineComponent({
 
       if (this.isLeft) {
         this.currentItem = item;
+        store.dispatch("header/setNote", item || {});
       } else {
         this.$nextTick(() => {
           this.currentItem = {

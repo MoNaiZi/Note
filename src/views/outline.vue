@@ -94,12 +94,13 @@ export default {
     ...mapState("header", {
       header: (state) => state.note,
       headerClose: (state) => state.close,
+      timing: (state) => state.timing,
     }),
   },
   data() {
     return {
       mindMapKey: this.$createdId(),
-      modeType: 2, //0.文本，1.大纲，2.思维导图
+      modeType: 1, //0.文本，1.大纲，2.思维导图
       X: 0,
       Y: 0,
       showMenu: false,
@@ -183,14 +184,12 @@ export default {
         );
       },
     },
+    timing: function (val) {
+      if (!val) return;
+      this.saveTree("timing");
+    },
   },
   async created() {
-    if (this.isLeft) {
-      const that = this;
-      this.$nextTick(() => {
-        that.mindMapKey = that.$createdId();
-      });
-    }
     store.dispatch("header/setPageTypeText", this.setPageTypeText);
     await this.init();
 
@@ -442,12 +441,15 @@ export default {
         this.refresh();
       }
       this.setting = note.setting || {};
+      if (this.isLeft) {
+        note.modeType = 1;
+      }
       delete note.tree;
       delete note.setting;
       store.dispatch("header/setNote", note || {});
     },
     saveTree(typeText) {
-      let { timing } = this.header;
+      const timing = this.timing;
       const note = this.header;
       const tree = this.tree;
 
@@ -467,7 +469,7 @@ export default {
         JSON.parse(JSON.stringify(tempOjb)),
         typeText
       );
-      if (typeText != "save") {
+      if (!typeText) {
         store.dispatch("header/setHeaderClose", false);
       }
     },

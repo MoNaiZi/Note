@@ -10,24 +10,22 @@
           ]"
         >
           <div class="left">
-            <template v-if="['edited', 'outline'].includes(pageTypeText)">
-              <i>
-                <minus
-                  theme="outline"
-                  size="20"
-                  fill="#979797"
-                  @click="minimize"
-                />
-              </i>
-              <i>
-                <remind
-                  theme="outline"
-                  size="18"
-                  fill="#979797"
-                  @click="showTiming"
-                />
-              </i>
-            </template>
+            <i v-show="['edited', 'outline'].includes(pageTypeText)">
+              <minus
+                theme="outline"
+                size="20"
+                fill="#979797"
+                @click="minimize"
+              />
+            </i>
+            <i v-show="isLeft || ['edited', 'outline'].includes(pageTypeText)">
+              <remind
+                theme="outline"
+                size="18"
+                fill="#979797"
+                @click="showAndSaveTiming"
+              />
+            </i>
             <i
               v-show="pageTypeText === 'home' && typeText === ''"
               class="iconfont icon-add"
@@ -119,9 +117,6 @@
             >
               <setting-two theme="outline" size="22" fill="#979797" />
             </i>
-            <!-- <el-icon v-show="isLeft && !note.modeType" @click="showToolBarFn">
-              <Edit />
-            </el-icon> -->
             <i v-show="isLeft && !note.modeType" @click.stop="showToolBarFn">
               <edit theme="outline" size="22" fill="#979797" />
             </i>
@@ -142,13 +137,14 @@
       <el-dialog
         v-model="isShowTiming"
         title="定时提醒"
-        width="60%"
-        :before-close="showTiming"
+        width="40%"
+        :before-close="showAndSaveTiming"
+        custom-class="dialog_main"
         draggable
       >
         <div>
           <el-date-picker
-            v-model="note.timing"
+            v-model="timing"
             type="datetime"
             placeholder="请选择提醒时间"
             popper-class="timing_date_picker"
@@ -157,7 +153,9 @@
         <template #footer>
           <span class="dialog-footer">
             <!-- <el-button @click="showTiming(0)">取消</el-button> -->
-            <el-button type="primary" @click="showTiming(1)">确认</el-button>
+            <el-button type="primary" @click="showAndSaveTiming(1)"
+              >确认</el-button
+            >
           </span>
         </template>
       </el-dialog>
@@ -172,6 +170,7 @@ const { ipcRenderer } = require("electron");
 import drag from "@/components/drag.vue";
 import { defineComponent } from "vue";
 import contextMenu from "@/components/context_menu.vue";
+// const dayjs = require("dayjs");
 import {
   Minus,
   Remind,
@@ -229,6 +228,7 @@ export default defineComponent({
       Y: 30,
       isTopping: false,
       isShowTiming: false,
+      timing: "",
       currentItem: {},
       menuList: [
         {
@@ -266,14 +266,7 @@ export default defineComponent({
       store.dispatch("header/setNote", note);
     },
     changeMenu(number: number) {
-      console.log("选择类型", number);
       ipcRenderer.invoke("newWindow", { modeType: number });
-      // switch (number) {
-      //   case 0:
-      //     break;
-      //   default:
-      //     break;
-      // }
     },
     showToolBarFn() {
       store.dispatch("note/setShowToolBar", !this.showToolBar);
@@ -287,10 +280,14 @@ export default defineComponent({
       store.dispatch("header/setNote", note);
       ipcRenderer.send("zoomInAndOut");
     },
-    showTiming(type: number) {
+    showAndSaveTiming(type: number) {
       this.isShowTiming = !this.isShowTiming;
+
       if (type === 1) {
-        store.dispatch("header/setNote", this.note);
+        store.dispatch("header/setTiming", this.timing);
+        this.$nextTick(() => {
+          this.timing = "";
+        });
       }
     },
     minimize() {
@@ -305,6 +302,7 @@ export default defineComponent({
     },
     async close() {
       const pageTypeText = this.pageTypeText;
+      console.log("pageTypeText", pageTypeText);
       const typeText = this.typeText;
       if (typeText != "") {
         this.$emit("close");
@@ -332,6 +330,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+i {
+  cursor: pointer;
+}
+::v-deep(.el-dialog) {
+  border-radius: 20px;
+}
+
 .wrap {
   display: flex;
   .left_main {

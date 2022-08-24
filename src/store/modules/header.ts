@@ -6,6 +6,7 @@ export default {
             note: {},
             isEditedTitle: true,
             close: true,
+            timing: ''
         }
     },
     getters: {
@@ -14,6 +15,9 @@ export default {
         }
     },
     actions: {
+        setTiming(context: any, str: string) {
+            context.commit('setTiming', str)
+        },
         setPageTypeText(context: any, txt: string) {
             context.commit('setPageTypeText', txt)
         },
@@ -28,6 +32,9 @@ export default {
         }
     },
     mutations: {
+        setTiming(state: any, str: string) {
+            state.timing = str
+        },
         setPageTypeText(state: any, txt: string) {
             state.pageTypeText = txt
         },
