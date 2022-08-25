@@ -260,7 +260,7 @@ ipcMain.handle('search', (_event, key, modeType) => {
                 }
                 return idBool
             } else {
-                const idBool = o.modeType === 1
+                const idBool = o.modeType === 1 || o.modeType === 2
                 if (key) {
                     return isKeyBool && idBool
                 }
