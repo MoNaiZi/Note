@@ -147,7 +147,7 @@ export const centerView = (): void => {
 /**
  * 缩放至合适大小并移动至全部可见
  */
-export const fitView = (): void => {
+export const fitView = (e: any): void => {
     const { svg }: { svg: any } = selection
     if (!svg || !gEle.value || !svgEle.value) { return }
     const gBB = gEle.value.getBBox()
@@ -156,11 +156,15 @@ export const fitView = (): void => {
     const svgCenter = { x: svgBCR.width / 2, y: svgBCR.height / 2 }
     // after scale
     const gCenter = { x: gBB.width * multiple / 2, y: gBB.height * multiple / 2 }
-    const center = d3.zoomIdentity.translate(
-        -gBB.x * multiple + svgCenter.x - gCenter.x,
-        -gBB.y * multiple + svgCenter.y - gCenter.y
-    ).scale(multiple)
-    zoom.transform(svg, center)
+    if (e && e.k) {
+        svg.transition().call(zoom.transform, d3.zoomIdentity.translate(e.x, e.y).scale(e.k));
+    } else {
+        const center = d3.zoomIdentity.translate(
+            -gBB.x * multiple + svgCenter.x - gCenter.x,
+            -gBB.y * multiple + svgCenter.y - gCenter.y
+        ).scale(multiple)
+        zoom.transform(svg, center)
+    }
 }
 
 /**

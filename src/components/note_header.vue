@@ -243,8 +243,6 @@ export default defineComponent({
     };
   },
   created() {
-    // this.$router.psuh('/set')
-    console.log("home_note", this.note, "typeText", this.typeText);
     if (this.note && this.note.title) {
       store.dispatch("header/setIsEditedTitle", false);
     }
@@ -302,7 +300,7 @@ export default defineComponent({
     },
     async close() {
       const pageTypeText = this.pageTypeText;
-      console.log("pageTypeText", pageTypeText);
+
       const typeText = this.typeText;
       if (typeText != "") {
         this.$emit("close");

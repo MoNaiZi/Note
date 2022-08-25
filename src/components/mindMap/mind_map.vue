@@ -12,7 +12,7 @@
     <svg ref="asstSvgEle" :class="style['asst-svg']"></svg>
     <div :class="[style['button-list'], style['right-bottom']]">
       <!-- <button @click="centerView()"></button> -->
-      <button @click="fitView()">
+      <button @click="fitView">
         <local theme="outline" size="24" fill="#979797" />
       </button>
       <!-- <button v-if="downloadBtn" @click="download()">
@@ -72,7 +72,7 @@ import {
   changeSharpCorner,
   addNodeBtn,
   mmprops,
-  onZoomMove,
+  // onZoomMove,
 } from "./variable";
 import {
   wrapperEle,
@@ -122,7 +122,7 @@ export default defineComponent({
     scaleData: {
       deep: true,
       handler(val) {
-        this.$emit("changeScaleData", val);
+        this.$emit("changeScaleData", JSON.parse(JSON.stringify(val)));
       },
     },
   },
@@ -187,12 +187,13 @@ export default defineComponent({
       ) {
         return;
       }
-      console.log("mounted");
       emitter.emit("selection-svg", d3.select(svgEle.value));
       emitter.emit("selection-g", d3.select(gEle.value));
       emitter.emit("selection-asstSvg", d3.select(asstSvgEle.value));
       emitter.emit("selection-foreign", d3.select(foreignEle.value));
-
+      setTimeout(() => {
+        fitView(props.setting.scaleData);
+      }, 300);
       const data = cloneDeep(props.modelValue[0]);
 
       const result = new ImData(data, xGap, yGap, getSize);
@@ -206,7 +207,7 @@ export default defineComponent({
       foreign?.raise();
 
       bindForeignDiv();
-      fitView();
+
       // window.addEventListener("resize", () => {
       //   fitView();
       // });
@@ -217,8 +218,15 @@ export default defineComponent({
       });
       switchZoom(props.zoom);
       switchContextmenu(props.ctm);
-      onZoomMove(props.setting.scaleData);
     });
+    // const watchScale = watch(
+    //   () => [props.setting.scaleData],
+    //   () => {
+    //     console.log("1111111111111111111111", props.setting.scaleData);
+    //     // fitView(props.setting.scaleData);
+    //     watchScale();
+    //   }
+    // );
     watch(
       () => [props.branch, addNodeBtn.value, props.sharpCorner],
       () => {

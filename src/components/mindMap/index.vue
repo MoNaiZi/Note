@@ -63,13 +63,14 @@ export default {
     init() {
       const treeData = JSON.parse(JSON.stringify(this.treeData));
       const title = JSON.parse(JSON.stringify(this.header.title));
+      const setting = this.setting;
       this.tree = [
         {
           name: title,
           level: 0,
           id: "root",
           children: treeData,
-          isExpand: true,
+          isExpand: !!setting.rootIsExpand,
         },
       ];
     },
@@ -93,6 +94,12 @@ export default {
     setting: {},
   },
   watch: {
+    setting: {
+      deep: true,
+      handler() {
+        this.init();
+      },
+    },
     "header.title": function () {
       this.init();
     },

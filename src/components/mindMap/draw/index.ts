@@ -61,6 +61,7 @@ export const appendExpandBtn = (g: SelectionG): d3.Selection<SVGGElement, Mdata,
 const bindEvent = (g: SelectionG, isRoot: boolean) => {
     const gExpandBtn = g.select(`:scope > g.${style.content} > g.${style['expand-btn']}`)
     gExpandBtn.on('click', onClickExpandBtn)
+
     if (mmprops.value.drag || mmprops.value.edit) {
         const gText: any = g.select<SVGGElement>(`:scope > g.${style.content} > g.${style.text}`)
         gText.on('click', onSelect)

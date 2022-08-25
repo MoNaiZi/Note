@@ -112,7 +112,7 @@ export default defineComponent({
       this.currentItem.tree = tree;
     },
     changeEditor({ html }: { html: string; _id: string }) {
-      console.log("html", html);
+      // console.log("html", html);
       this.currentItem.html = html;
     },
     openLeft(item: any, bool = null) {

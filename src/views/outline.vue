@@ -175,12 +175,13 @@ export default {
     },
     setting: {
       deep: true,
-      handler() {
+      handler(val) {
+        if (JSON.stringify(val) === "{}") return;
         const note = this.header;
         ipcRenderer.send(
           "saveDataSetting",
           note._id,
-          JSON.parse(JSON.stringify(this.setting))
+          JSON.parse(JSON.stringify(val))
         );
       },
     },
@@ -223,6 +224,7 @@ export default {
       if (!treeList.length) return;
       const header = this.header;
       const title = treeList[0].name;
+      this.setting.rootIsExpand = treeList[0].isExpand;
       if (title) {
         header.title = title;
       }

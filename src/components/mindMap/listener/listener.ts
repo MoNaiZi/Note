@@ -31,6 +31,7 @@ export function onMouseLeave(this: SVGGElement): void {
 
 export const scaleData: Ref<ScaleData> = ref({ x: 0, y: 0, k: 0 })
 export const onZoomMove = (e: any): void => {
+
     const { g, svg } = selection
     if (!g || !e) { return }
     let data = e.transform || {}
@@ -55,6 +56,7 @@ export const onSelect = (e: MouseEvent, d: Mdata): void => {
  * @param this - gText
  */
 export function onEdit(this: SVGGElement, _e: MouseEvent, d: Mdata): void {
+
     const gNode = this.parentNode?.parentNode as SVGGElement
     const { foreign } = selection
     // console.log('editFlag', editFlag)
@@ -129,7 +131,7 @@ export const onContextmenu = (e: MouseEvent): void => {
 export const onClickMenu = (name: MenuEvent): void => {
 
     switch (name) {
-        case 'zoomfit': fitView(); break
+        case 'zoomfit': fitView(scaleData); break
         case 'zoomin': scaleView(true); break
         case 'zoomout': scaleView(true); break
         case 'add': addAndEdit(new MouseEvent('click'), getSelectedGData()); break
