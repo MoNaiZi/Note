@@ -40,6 +40,7 @@ ipcMain.handle('openLeft', (event, bool = true) => {
     win.flashFrame(false)
     win.setSize(bounds.width, 600)
     win.setPosition(bounds.x, bounds.y)
+    win.setResizable(bool)
 })
 
 const getUser = function () {

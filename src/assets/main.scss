@@ -263,10 +263,15 @@ body {
     --index-main-icon: #717171
 }
 
+.right_main {
+    width: 100%;
+    position: absolute;
+    right: 0px;
+}
+
 .isLeft {
     .left_main {
-        width: 75% !important;
-        transition: all 0.5;
+        width: 69%;
 
         .header_main {
             padding: 8px 5px;
@@ -283,8 +288,8 @@ body {
     }
 
     .right_main {
-        width: 40% !important;
-        transition: all 1s;
+        width: 30%;
+        // transition: all 0.5s;
 
         .index_main {
             width: 100%;

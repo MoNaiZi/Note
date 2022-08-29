@@ -58,6 +58,7 @@ async function createWindow() {
   const size = screen.getPrimaryDisplay().workAreaSize
   config.x = size.width - 380
   config.y = size.height - 700
+  config.resizable = false
   const win = new BrowserWindow(config)
   const bounds = win.getBounds()
   console.log('初始bounds', bounds)
