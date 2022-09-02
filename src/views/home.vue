@@ -33,17 +33,39 @@
       </div>
     </transition>
     <div
-      v-show="isLeft"
+      v-show="isLeft && isRight"
       @mousedown="splitLineDown"
       @mousemove="splitLineMove"
       @mouseup="splitLineUp"
+      @mouseover="splitLineHover"
+      @mouseout="splitLineHover"
       @pointerdown="beginSliding"
       @pointerup="stopSliding"
       @pointermove="splitLineMove"
       class="split_line"
-    ></div>
+    >
+      <right-c
+        v-show="isCollapsed"
+        class="item"
+        theme="outline"
+        size="23"
+        fill="#797979"
+      />
+    </div>
+    <left-c
+      v-show="isExpand"
+      @click="openRight"
+      class="left_c"
+      theme="outline"
+      size="24"
+      fill="#797979"
+    />
     <transition name="main-fade">
-      <div class="right_main" :style="{ width: rightWidth + 'px' }">
+      <div
+        class="right_main"
+        v-show="isRight"
+        :style="{ width: rightWidth + 'px' }"
+      >
         <noteHeader></noteHeader>
         <router-view
           @openLeft="openLeft"
@@ -65,7 +87,7 @@ import noteHeader from "@/components/note_header.vue";
 import outline from "./outline.vue";
 import edited from "./edited.vue";
 import { defineComponent } from "vue";
-
+import { RightC, LeftC } from "@icon-park/vue-next";
 interface CurrentItem {
   _id: string | undefined | null;
   html: string | undefined | null;
@@ -78,6 +100,8 @@ export default defineComponent({
     noteHeader,
     outline,
     edited,
+    RightC,
+    LeftC,
   },
   computed: {
     ...mapState("header", {
@@ -96,6 +120,9 @@ export default defineComponent({
       isSplitLineMove: false,
       leftWidth: 478 as number,
       rightWidth: 340 as number,
+      isCollapsed: false,
+      isExpand: false,
+      isRight: true,
     };
   },
   watch: {
@@ -104,7 +131,9 @@ export default defineComponent({
         this.rightWidth = 208;
         return;
       }
+      window.removeEventListener("mousemove", () => {});
       this.rightWidth = 340;
+      this.isRight = true;
     },
   },
   provide: {
@@ -133,16 +162,40 @@ export default defineComponent({
       "resize",
       this.debounce(() => {
         //你的代码块
-        const wrap: any = document.querySelector(".wrap");
-        let { rightWidth } = that;
+        const wrap = document.querySelector(".wrap") as HTMLDivElement;
+        let { rightWidth, isRight } = that;
         const clientWidth = wrap.clientWidth;
-        that.leftWidth = clientWidth - rightWidth;
+        let width = clientWidth - rightWidth;
+        if (!isRight) {
+          width = clientWidth;
+        }
+        that.leftWidth = width;
       }, 0)
     );
+
+    window.addEventListener("mousemove", (e) => {
+      if (this.isLeft && !this.isRight) {
+        console.log("鼠标移动", e);
+        if (e.clientX + 10 > that.leftWidth) {
+          that.isExpand = true;
+        } else {
+          that.isExpand = false;
+        }
+      }
+    });
   },
   mounted() {},
   methods: {
-    debounce(fn: any, delay: any) {
+    openRight() {
+      this.isRight = true;
+      this.isExpand = false;
+      this.isSplitLineMove = false;
+      this.leftWidth = this.leftWidth - this.rightWidth;
+    },
+    splitLineHover() {
+      this.isCollapsed = !this.isCollapsed;
+    },
+    debounce(fn: () => void, delay: number) {
       let time: number = 0;
       let timer: any = null;
       let newTime = null;
@@ -165,17 +218,29 @@ export default defineComponent({
       };
     },
     stopSliding(e: any) {
+      this.isSplitLineMove = false;
       e.currentTarget.releasePointerCapture(e.pointerId);
     },
     beginSliding(e: any) {
-      e.currentTarget.setPointerCapture(e.pointerId);
+      console.log(e.target.nodeName);
+      if (e.target.nodeName === "svg" || e.target.nodeName === "path") {
+        this.isRight = !this.isRight;
+        if (this.isRight) {
+          this.leftWidth = this.leftWidth - this.rightWidth;
+        } else {
+          this.leftWidth = this.leftWidth + this.rightWidth;
+        }
+      } else {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      }
     },
     getDom() {
       this.$nextTick(() => {
+        const isRight = this.isRight;
         const left_main: any = document.querySelector(".left_main");
         if (left_main) this.leftWidth = left_main.clientWidth;
         const right_main: any = document.querySelector(".right_main");
-        if (right_main) this.rightWidth = right_main.clientWidth;
+        if (right_main && isRight) this.rightWidth = right_main.clientWidth;
       });
     },
     splitLineUp() {
@@ -191,18 +256,20 @@ export default defineComponent({
       const offsetX = e.offsetX;
       const rightWidth: any = this.rightWidth;
       const leftWidth: any = this.leftWidth;
+      const isRight = this.isRight;
       if (offsetX > 0) {
         //右
         let result = rightWidth - offsetX;
         if (result < 200) return;
-        this.rightWidth = result;
+        if (isRight) this.rightWidth = result;
+
         this.leftWidth = leftWidth + Math.abs(offsetX);
       } else {
         // 左
         let result = leftWidth + offsetX;
         if (result < 200) return;
         this.leftWidth = result;
-        this.rightWidth = rightWidth + Math.abs(offsetX);
+        if (isRight) this.rightWidth = rightWidth + Math.abs(offsetX);
       }
     },
     onChangeTree(tree: any) {
@@ -262,12 +329,33 @@ export default defineComponent({
 });
 </script>
 
+<style>
+</style>
 <style lang="scss" scoped>
+.left_c :deep(svg path) {
+  fill: #fff;
+}
+.split_line :deep(svg path) {
+  fill: #fff;
+}
+.left_c {
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  cursor: pointer;
+}
 .split_line {
   border-left: 3px dashed #d0d0d0;
-  width: 5px;
+  margin-left: -5px;
   cursor: col-resize;
   z-index: 100;
+  .item {
+    position: relative;
+    top: 50px;
+    left: -14px;
+    z-index: 110;
+    cursor: pointer;
+  }
 }
 .wrap {
   position: relative;
