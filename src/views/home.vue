@@ -126,6 +126,16 @@ export default defineComponent({
     };
   },
   watch: {
+    pageTypeText: function (val) {
+      this.$nextTick(() => {
+        if (val != "home") {
+          const wrap = document.querySelector(".wrap") as HTMLDivElement;
+          if (wrap) {
+            this.rightWidth = wrap.clientWidth;
+          }
+        }
+      });
+    },
     isLeft: function (val) {
       if (val) {
         this.rightWidth = 208;
@@ -163,13 +173,17 @@ export default defineComponent({
       this.debounce(() => {
         //你的代码块
         const wrap = document.querySelector(".wrap") as HTMLDivElement;
-        let { rightWidth, isRight } = that;
+        let { rightWidth, isRight, isLeft } = that;
         const clientWidth = wrap.clientWidth;
-        let width = clientWidth - rightWidth;
-        if (!isRight) {
-          width = clientWidth;
+        if (isLeft) {
+          let width = clientWidth - rightWidth;
+          if (!isRight) {
+            width = clientWidth;
+          }
+          that.leftWidth = width;
+        } else {
+          that.rightWidth = clientWidth;
         }
-        that.leftWidth = width;
       }, 0)
     );
 
