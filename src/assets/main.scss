@@ -267,6 +267,7 @@ body {
     width: 100%;
     position: absolute;
     right: 0px;
+    height: 100%;
 }
 
 .isLeft {
@@ -346,6 +347,8 @@ body {
     padding: 0px 20px 20px 38px;
     white-space: normal !important;
     word-wrap: break-word !important;
+    height: 80%;
+    overflow: auto;
 
     span {
         font-size: 14px;

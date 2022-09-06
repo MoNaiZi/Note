@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <transition name="main-fade">
       <template v-if="header.modeType === 2">
         <mindMap
@@ -13,7 +13,7 @@
     </transition>
     <transition name="main-fade">
       <template v-if="header.modeType === 1">
-        <div>
+        <div style="height: 100%">
           <div class="divider"></div>
           <div class="header">
             <el-breadcrumb separator=">">
