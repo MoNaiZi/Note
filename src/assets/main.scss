@@ -274,6 +274,10 @@ body {
     .left_main {
         width: 69%;
 
+        .ly-tree-container {
+            width: 86% !important;
+        }
+
         .header_main {
             padding: 8px 5px;
 
@@ -290,7 +294,9 @@ body {
 
     .right_main {
         width: 30%;
+
         // transition: all 0.5s;
+
 
         .index_main {
             width: 100%;
