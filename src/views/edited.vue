@@ -132,7 +132,7 @@ export default {
         let keyCode = e.keyCode;
         // console.log("key", e);
         if (e.key === "s" && keyCode === 83) {
-          console.log("保存");
+          console.log("文本保存");
           this.saveEdited("save");
           this.$message({
             message: "保存成功",

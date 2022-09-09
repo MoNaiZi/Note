@@ -46,6 +46,7 @@ function logo() {
 }
 
 
+
 module.exports = {
     mainWindows,
     initDevTool,

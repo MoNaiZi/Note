@@ -15,28 +15,7 @@ const { ipcRenderer } = require("electron");
 import { mapState } from "vuex";
 import { defineComponent } from "vue";
 let mouseX: number, mouseY: number;
-let beforeX: number, beforeY: number, afterX: number, afterY: number;
-// const debounce = function (func: any, wait: number, immediate: boolean | null) {
-//   let timeout: any;
-//   return () => {
-//     console.log("2", timeout);
-//     let context: any = this;
-//     let args = arguments;
 
-//     if (timeout) clearTimeout(timeout);
-//     if (immediate) {
-//       let callNow = !timeout;
-//       timeout = setTimeout(function () {
-//         timeout = null;
-//       }, wait);
-//       if (callNow) func.apply(context, args);
-//     } else {
-//       timeout = setTimeout(function () {
-//         func.apply(context, args);
-//       }, wait);
-//     }
-//   };
-// };
 export default defineComponent({
   computed: {
     ...mapState("header", {
@@ -54,6 +33,8 @@ export default defineComponent({
       isDrag: false,
       width: 100,
       height: 600,
+      downScreenX: 0,
+      downScreenY: 0,
     };
   },
   created() {
@@ -104,19 +85,20 @@ export default defineComponent({
       }
     },
     end(e: any) {
-      [afterX, afterY] = [e.offsetX, e.offsetY];
+      // console.log("结束", e);
+      const [x, y] = [e.screenX, e.screenY];
+      const { downScreenX, downScreenY } = this;
       this.isDrag = false;
-      if (beforeX === afterX && beforeY === afterY) {
-        this.$emit("click");
+      if (downScreenX === x && downScreenY === y) {
+        this.$emit("dragClick");
       }
-
-      // this.debounce(this.openMenu, 500, true);
     },
     onMouseDown(e: any) {
+      // console.log("按下", e);
       mouseX = e.clientX;
       mouseY = e.clientY;
-      beforeX = e.offsetX;
-      beforeY = e.offsetY;
+      this.downScreenX = e.screenX;
+      this.downScreenY = e.screenY;
       this.isDrag = true;
     },
     move() {

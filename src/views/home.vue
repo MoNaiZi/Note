@@ -1,11 +1,7 @@
 <template>
   <div :class="['wrap', { isLeft }]">
     <transition name="main-fade">
-      <div
-        class="left_main"
-        :style="{ width: leftWidth + 'px' }"
-        v-show="isLeft"
-      >
+      <div class="left_main" :style="{ width: leftWidth + 'px' }" v-if="isLeft">
         <noteHeader
           key="editor_home"
           :typeText="'left'"
@@ -82,7 +78,7 @@
 <script lang="ts">
 import { mapState } from "vuex";
 import { store } from "@/store";
-
+import { debounce } from "@/utils";
 import noteHeader from "@/components/note_header.vue";
 import outline from "./outline.vue";
 import edited from "./edited.vue";
@@ -170,7 +166,7 @@ export default defineComponent({
 
     window.addEventListener(
       "resize",
-      this.debounce(() => {
+      debounce(() => {
         //你的代码块
         const wrap = document.querySelector(".wrap") as HTMLDivElement;
         let { rightWidth, isRight, isLeft } = that;
@@ -209,28 +205,7 @@ export default defineComponent({
     splitLineHover() {
       this.isCollapsed = !this.isCollapsed;
     },
-    debounce(fn: () => void, delay: number) {
-      let time: number = 0;
-      let timer: any = null;
-      let newTime = null;
-      function task() {
-        newTime = +new Date();
-        if (newTime - time < delay) {
-          timer = setTimeout(task, delay);
-        } else {
-          fn();
-          timer = null;
-        }
-        time = newTime;
-      }
-      return function () {
-        // 更新时间戳
-        time = +new Date();
-        if (!timer) {
-          timer = setTimeout(task, delay);
-        }
-      };
-    },
+
     stopSliding(e: any) {
       this.isSplitLineMove = false;
       e.currentTarget.releasePointerCapture(e.pointerId);

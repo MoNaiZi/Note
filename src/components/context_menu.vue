@@ -71,7 +71,7 @@ export default defineComponent({
         if (val.isTopping) {
           txt = "取消置顶";
         }
-        let index = this.list.findIndex((item) => item.key === 0);
+        let index = this.list.findIndex((item: any) => item.key === 0);
         if (index >= 0) {
           this.list[index].name = txt;
         }

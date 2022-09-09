@@ -10,7 +10,7 @@ type note = {
     _id: string,
     title: string,
     isTopping: boolean | undefined | null,
-    timingStatus: number | undefined,
+    timingStatus: number | undefined,  // 0:未发送 1：发送中，2.已发送
     timinGtimeStamp: any,
     modeType: number | undefined
 }
@@ -100,6 +100,8 @@ app.whenReady().then(() => {
     }, 2000);
 })
 
+
+
 const selfStarting = function (openAtLogin: boolean = true) {
     // const isAutoApp = app.getLoginItemSettings()
     const appFolder = path.dirname(process.execPath)
@@ -123,7 +125,7 @@ const selfStarting = function (openAtLogin: boolean = true) {
 ipcMain.on('closeSuspensionWin', (event, id) => {
     const webContents = event.sender
     const win: any = BrowserWindow.fromWebContents(webContents)
-    db.get('NoteList').find({ _id: id }).assign({ timing: '' }).write()
+    db.get('NoteList').find({ _id: id }).assign({ timing: '', timingStatus: 2 }).write()
     win.close()
 })
 

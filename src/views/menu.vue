@@ -1,7 +1,7 @@
 <template>
   <div class="menu_main">
-    <drag>
-      <div :class="['main', { open: open }]" @click.stop="openMenu">
+    <drag @dragClick="openMenu">
+      <div :class="['main', { open: open }]">
         <menuStyle></menuStyle>
       </div>
       <!-- <div :class="['item_main', { item_main_open: open }]">
@@ -15,11 +15,11 @@
 <script lang="ts">
 import { store } from "@/store";
 import menuStyle from "@/components/menu_style.vue";
-import { getQueryByName } from "@/utils";
+import { getQueryByName, debounce } from "@/utils";
 import drag from "@/components/drag.vue";
 const { ipcRenderer } = require("electron");
 import { defineComponent } from "vue";
-let timeout: any;
+
 export default defineComponent({
   components: {
     menuStyle,
@@ -77,48 +77,23 @@ export default defineComponent({
 
       return result;
     },
-    debounce(func: any, wait: any, immediate: Boolean) {
-      console.log("1");
-      return () => {
-        console.log("2");
-        let context: any = this;
-        let args = arguments;
 
-        if (timeout) clearTimeout(timeout);
-        if (immediate) {
-          let callNow = !timeout;
-          timeout = setTimeout(function () {
-            timeout = null;
-          }, wait);
-          if (callNow) func.apply(context, args);
-        } else {
-          timeout = setTimeout(function () {
-            func.apply(context, args);
-          }, wait);
-        }
-      };
-    },
-    openMenu() {
-      const that = this;
-      let fn = function () {
-        that.open = !that.open;
-        const itemList: any = that.itemList;
-        for (const item of itemList) {
-          ipcRenderer.invoke("newWindow", {
-            _id: item._id,
-            pageType: 1,
-            modeType: item.modeType,
-          });
-          ipcRenderer.send("closeSuspensionWin", item._id);
-        }
-
-        setTimeout(() => {
-          that.open_item = !that.open_item;
-        }, 1000);
-      };
-
-      this.debounce(fn, 1000, true)();
-    },
+    openMenu: debounce(function () {
+      const that: any = this;
+      that.open = !that.open;
+      const itemList: any = that.itemList;
+      for (const item of itemList) {
+        ipcRenderer.invoke("newWindow", {
+          _id: item._id,
+          pageType: 1,
+          modeType: item.modeType,
+        });
+        ipcRenderer.send("closeSuspensionWin", item._id);
+      }
+      setTimeout(() => {
+        that.open_item = !that.open_item;
+      }, 1000);
+    }),
   },
   mounted() {
     // this.wrap = document.querySelector(".wrap");

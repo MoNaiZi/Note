@@ -79,11 +79,8 @@ import { store } from "@/store";
 import { mapState } from "vuex";
 const { ipcRenderer } = require("electron");
 const dayjs = require("dayjs");
-import { getQueryByName } from "@/utils";
-// import mitt from "mitt";
+import { getQueryByName, debounce } from "@/utils";
 
-// const mittExample = mitt();
-let timeout;
 export default {
   components: {
     Tree,
@@ -197,23 +194,21 @@ export default {
     window.addEventListener("click", () => {
       this.showMenu = false;
     });
-    window.addEventListener("keydown", (e) => {
-      let keyCode = e.keyCode;
-      const that = this;
-
-      if (e.key === "s" && keyCode === 83) {
-        const fun = function () {
+    window.addEventListener(
+      "keydown",
+      debounce((e) => {
+        let keyCode = e.keyCode;
+        const that = this;
+        if (e.key === "s" && keyCode === 83) {
           that.saveTree("save");
           that.$message({
             message: "保存成功",
             type: "success",
             duration: 1000,
           });
-        };
-
-        that.debounce(fun, 500, true)();
-      }
-    });
+        }
+      })
+    );
   },
 
   methods: {
@@ -269,25 +264,7 @@ export default {
         this.operationRecord.push(JSON.parse(JSON.stringify(this.treeData)));
       }
     },
-    debounce(func, wait, immediate) {
-      return () => {
-        let context = this;
-        let args = arguments;
 
-        if (timeout) clearTimeout(timeout);
-        if (immediate) {
-          let callNow = !timeout;
-          timeout = setTimeout(function () {
-            timeout = null;
-          }, wait);
-          if (callNow) func.apply(context, args);
-        } else {
-          timeout = setTimeout(function () {
-            func.apply(context, args);
-          }, wait);
-        }
-      };
-    },
     dragEnd(event) {
       // console.log("结束", event, that.node);
       let { targetNode, dragNode, targetElement, insertionType } =

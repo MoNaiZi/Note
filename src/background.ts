@@ -7,6 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
 const mainProcess = require('./mainProcess')
 const logo = mainProcess.logo()
+import db from './server'
 
 import('@/on')
 // Scheme must be registered before the app is ready
@@ -75,13 +76,11 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL(winURL)
   }
-  win.on('closed', () => {
+  win.on('closed', async () => {
     console.log('主窗口关闭')
+    await db.get('NoteList').find({ timingStatus: 1 }).assign({ timingStatus: 0 }).write()
     app.exit()
   })
-  type MainWin = {
-    mainWin: any
-  }
   global.mainWin = win
 
 
