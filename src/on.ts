@@ -24,10 +24,14 @@ ipcMain.handle('openLeft', (event, bool = true) => {
     const webContents = event.sender
     const win: any = BrowserWindow.fromWebContents(webContents)
     let bounds = win.getBounds()
-
+    win.on('will-resize', (event: any, newBounds: { width: number; height: number, x: number, y: number },) => {
+        const width = newBounds.width
+        if (width < 700) event.preventDefault()
+    })
     if (bool) {
         bounds.width = bounds.width + 350
         bounds.x = bounds.x - 350
+
         // bounds = { x: 806, y: 116, width: 701, height: 600 }
     } else {
         bounds.width = 350
@@ -36,6 +40,7 @@ ipcMain.handle('openLeft', (event, bool = true) => {
     }
     // win.setBackgroundColor('#fff')
     // win.setBounds(bounds)
+
     console.log('bounds', bounds)
     win.flashFrame(false)
     win.setSize(bounds.width, 600)
