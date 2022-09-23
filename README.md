@@ -1,7 +1,7 @@
 <p align="center">
-  <img width="650px" src="https://github.com/MoNaiZi/Note/blob/master/src/assets/logo.png" />
-  <h1>Note</h1>
+  <img width="150px" src="https://github.com/MoNaiZi/Note/blob/master/src/assets/logo.png" />
 </p>
+  <h1 align="center">Note</h1>
 
 English | [简体中文](./README.CN.md)
 # Introduction
