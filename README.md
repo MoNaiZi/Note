@@ -1,3 +1,8 @@
+<p align="center">
+  <img width="650px" src="https://github.com/MoNaiZi/Note/blob/master/src/assets/logo.png" />
+  <h1>Note</h1>
+</p>
+
 English | [简体中文](./README.CN.md)
 # Introduction
 
