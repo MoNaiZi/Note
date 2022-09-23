@@ -1,3 +1,8 @@
+<p align="center">
+  <img width="150px" src="https://github.com/MoNaiZi/Note/blob/master/src/assets/logo.png" />
+</p>
+  <h1 align="center">Note</h1>
+
 # 介绍
 现在很多electron项目都是11版本的或者之前的有点落后了，electron11版本之后进行了重大更改去除了remote模块禁止在渲染层调用主进程的api。
 本次项目是一个加强版的便利贴记事本功能。vue方面就不过多介绍了，electron实现点：开机自启，黑夜模式，悬浮窗，用于定时提醒，优化的窗口拖动，优雅丝滑的改变窗口大小和位置显示界面，自定义安装，以及自定义图标，最小化，自定义托盘。
