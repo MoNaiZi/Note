@@ -48,15 +48,16 @@ export default defineComponent({
   watch: {
     isZoomInAndOut: function (val) {
       this.$nextTick(() => {
-        let app: any = document.querySelector("#app");
-        let wrap: any = document.querySelector(".wrap");
+        let app: HTMLElement | null = document.querySelector("#app");
+        let wrap: HTMLElement | null = document.querySelector(".wrap");
         let height = "100vh";
         let margin = "0px";
         if (!val) {
           height = "98vh";
           margin = "5px";
         }
-        app.style.height = height;
+        if (app) app.style.height = height;
+
         if (wrap) {
           wrap.style.margin = margin;
         }
@@ -72,7 +73,7 @@ export default defineComponent({
     });
   },
   methods: {
-    setConfig(config: Object) {
+    setConfig(config: Object): void {
       if (config) {
         store.dispatch("user/setUser", config);
       }
