@@ -226,9 +226,13 @@ export default defineComponent({
     getDom() {
       this.$nextTick(() => {
         const isRight = this.isRight;
-        const left_main: any = document.querySelector(".left_main");
+        const left_main = document.querySelector(
+          ".left_main"
+        ) as HTMLDivElement;
         if (left_main) this.leftWidth = left_main.clientWidth;
-        const right_main: any = document.querySelector(".right_main");
+        const right_main = document.querySelector(
+          ".right_main"
+        ) as HTMLDivElement;
         if (right_main && isRight) this.rightWidth = right_main.clientWidth;
       });
     },
@@ -239,12 +243,12 @@ export default defineComponent({
       this.getDom();
       this.isSplitLineMove = true;
     },
-    splitLineMove(e: any) {
+    splitLineMove(e: MouseEvent) {
       const isSplitLineMove = this.isSplitLineMove;
       if (!isSplitLineMove) return;
       const offsetX = e.offsetX;
-      const rightWidth: any = this.rightWidth;
-      const leftWidth: any = this.leftWidth;
+      const rightWidth: number = this.rightWidth;
+      const leftWidth: number = this.leftWidth;
       const isRight = this.isRight;
       if (offsetX > 0) {
         //右
