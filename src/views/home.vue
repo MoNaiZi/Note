@@ -171,6 +171,7 @@ export default defineComponent({
         const wrap = document.querySelector(".wrap") as HTMLDivElement;
         let { rightWidth, isRight, isLeft } = that;
         const clientWidth = wrap.clientWidth;
+
         if (isLeft) {
           let width = clientWidth - rightWidth;
           if (!isRight) {
@@ -180,7 +181,7 @@ export default defineComponent({
         } else {
           that.rightWidth = clientWidth;
         }
-      }, 0)
+      }, 1000)
     );
 
     window.addEventListener("mousemove", (e) => {

@@ -76,6 +76,12 @@ body {
 }
 
 .w-e-hover-bar {
+    border: 1px solid var(--w-e-toolbar-border-color);
+    border-radius: 3px;
+    box-shadow: 0 2px 5px #0000001f;
+    position: absolute;
+    top: 28px;
+
     .w-e-select-list ul li {
         margin: 0px !important;
     }
@@ -99,13 +105,6 @@ body {
     height: 100%
 }
 
-.w-e-hover-bar {
-    border: 1px solid var(--w-e-toolbar-border-color);
-    border-radius: 3px;
-    box-shadow: 0 2px 5px #0000001f;
-    position: absolute;
-    top: 28px;
-}
 
 .w-e-text-container [data-slate-editor] .table-container {
     width: 99%;
@@ -141,26 +140,60 @@ body {
     $darkBg: #393939;
     height: 100vh;
     width: 100vw;
-    --w-e-toolbar-color: #fff; //文字svg颜色
-    --w-e-toolbar-active-color: #fff !important; //提示框颜色
+    // --w-e-toolbar-color: #fff; //文字svg颜色
+
+    // --w-e-toolbar-active-color: #fff !important; //提示框文字颜色
+    // --w-e-toolbar-active-bg-color: #000 !important; //button 背景active颜色
     // --el-bg-color: #393939;
-    --w-e-toolbar-bg-color: $darkBg; //menu背景颜色
-    --w-e-toolbar-active-bg-color: rgb(150, 150, 150); //hover 的背景颜色
-    --w-e-toolbar-active-color: #333;
-    --w-e-textarea-slight-bg-color: #333; //表格头部栏
-    --el-fill-color-blank: $darkBg; //树组件背景颜色
-    --el-text-color-regular: #fff; //树组件文字颜色
-    --el-fill-color-light: #5b5b5b; //树组件行鼠标停留
-    --mind-map-has-prev: #979797;
-    --mind-map-has-prev-active: #c2c2c2;
+    // --w-e-toolbar-bg-color: $darkBg; //menu背景颜色
+
+    // --w-e-toolbar-active-bg-color: rgb(150, 150, 150); //hover 的背景颜色
+    // --w-e-toolbar-active-color: #333;
+    // --w-e-textarea-slight-bg-color: #333; //表格头部栏
+    // --el-fill-color-blank: $darkBg; //树组件背景颜色
+    // --el-text-color-regular: #fff; //树组件文字颜色
+    // --el-fill-color-light: #5b5b5b; //树组件行鼠标停留
+    // --mind-map-has-prev: #979797;
+    // --mind-map-has-prev-active: #c2c2c2;
 
     // --w-e-toolbar-disabled-color: red;
     // --w-e-toolbar-border-color: red; //分割线，还有边框颜色
     // --w-e-modal-button-bg-color: red;
+    ////
+
+    --w-e-textarea-bg-color: #fff;
+    --w-e-textarea-color: #333;
+    --w-e-textarea-border-color: #ccc;
+    --w-e-textarea-slight-border-color: #e8e8e8;
+    --w-e-textarea-slight-color: #d4d4d4;
+    --w-e-textarea-slight-bg-color: #f5f2f0;
+    --w-e-textarea-selected-border-color: #B4D5FF; // 选中的元素，如选中了分割线
+    --w-e-textarea-handler-bg-color: #4290f7; // 工具，如图片拖拽按钮
+
+    // toolbar - css vars
+    --w-e-toolbar-color: #eaeaea;
+    --w-e-toolbar-bg-color: #fff;
+    --w-e-toolbar-active-color: #333;
+    --w-e-toolbar-active-bg-color: #000;
+    --w-e-toolbar-disabled-color: #999;
+    --w-e-toolbar-border-color: #000;
+
+    // modal - css vars
+    --w-e-modal-button-bg-color: #fafafa;
+    --w-e-modal-button-border-color: #d9d9d9;
 
     @mixin drak {
         background: $darkBg  !important;
         color: #fff !important;
+    }
+
+    .w-e-bar-item-menus-container {
+        background: #2d2d2d;
+
+        .w-e-bar-item button:hover {
+            background-color: #2d2d2d;
+            color: #fff
+        }
     }
 
     .index_main {
@@ -256,6 +289,14 @@ body {
             background-color: #fff !important;
         }
 
+    }
+
+    .w-e-hover-bar {
+        background: #2d2d2d;
+
+        .w-e-select-list ul li {
+            background: #3a3a3a;
+        }
     }
 }
 

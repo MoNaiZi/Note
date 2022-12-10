@@ -52,7 +52,12 @@ export default {
     }),
   },
   props: {
-    currentItem: {},
+    currentItem: {
+      type: Object,
+      default: function () {
+        return {};
+      },
+    },
     isLeft: {
       type: Boolean,
       default: false,
@@ -100,6 +105,8 @@ export default {
   methods: {
     onChange(ediotr) {
       const currentItem = this.currentItem;
+      console.log("currentItem", currentItem);
+
       let html = ediotr.getHtml();
       this.$emit("onChange", { html, _id: currentItem._id });
     },
