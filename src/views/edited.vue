@@ -135,16 +135,15 @@ export default {
       }
     },
     watchKey() {
-      window.addEventListener("keydown", (e) => {
-        let keyCode = e.keyCode;
-        // console.log("key", e);
-        if (e.key === "s" && keyCode === 83) {
+      window.addEventListener("keyup", (e) => {
+        if (e.key === "s" && e.ctrlKey) {
           console.log("文本保存");
           this.saveEdited("save");
           this.$message({
             message: "保存成功",
             type: "success",
             duration: 1000,
+            showClose:true
           });
         }
       });

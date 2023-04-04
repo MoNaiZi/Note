@@ -8,6 +8,8 @@
           :title="currentItem.title"
           :isLeft="isLeft"
           @close="openLeft"
+          :showEdit="true"
+          showRemind
         ></noteHeader>
 
         <edited
@@ -62,7 +64,7 @@
         v-show="isRight"
         :style="{ width: rightWidth + 'px' }"
       >
-        <noteHeader></noteHeader>
+        <noteHeader :isLeft="isLeft"></noteHeader>
         <router-view
           @openLeft="openLeft"
           :isLeft="isLeft"
@@ -335,7 +337,7 @@ export default defineComponent({
 .left_c {
   position: absolute;
   right: -9px;
-  top: 50%;
+  top: 50px;
   cursor: pointer;
 }
 .split_line {

@@ -195,16 +195,16 @@ export default {
       this.showMenu = false;
     });
     window.addEventListener(
-      "keydown",
+      "keyup",
       debounce((e) => {
-        let keyCode = e.keyCode;
         const that = this;
-        if (e.key === "s" && keyCode === 83) {
+        if (e.key === "s" && e.ctrlKey) {
           that.saveTree("save");
           that.$message({
             message: "保存成功",
             type: "success",
             duration: 1000,
+            showClose:true
           });
         }
       })

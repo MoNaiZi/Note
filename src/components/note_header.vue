@@ -18,7 +18,7 @@
                 @click="minimize"
               />
             </i>
-            <i v-show="isLeft || ['edited', 'outline'].includes(pageTypeText)">
+            <i v-show="showRemind || ['edited', 'outline'].includes(pageTypeText)">
               <remind
                 theme="outline"
                 size="18"
@@ -112,12 +112,12 @@
               @click="topping"
             ></i>
             <i
-              v-show="pageTypeText === 'home' && typeText === ''"
+              v-show="pageTypeText === 'home' && typeText === '' && !isLeft "
               @click.stop="toSet"
             >
               <setting-two theme="outline" size="22" fill="#979797" />
             </i>
-            <i v-show="isLeft && !note.modeType" @click.stop="showToolBarFn">
+            <i v-show="isLeft && !note.modeType && showEdit" @click.stop="showToolBarFn">
               <edit theme="outline" size="22" fill="#979797" />
             </i>
 
@@ -219,6 +219,14 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    showEdit:{
+      type: Boolean,
+      default: false,
+    },
+    showRemind:{
+      type: Boolean,
+      default: false,
+    }
   },
   watch: {},
   data() {
@@ -246,12 +254,6 @@ export default defineComponent({
     if (this.note && this.note.title) {
       store.dispatch("header/setIsEditedTitle", false);
     }
-    window.addEventListener("keydown", () => {
-      // let keyCode = e.keyCode;
-      // if (keyCode === 13) {
-      //   store.dispatch("header/setIsEditedTitle", false);
-      // }
-    });
     window.addEventListener("click", () => {
       this.showMenu = false;
     });
