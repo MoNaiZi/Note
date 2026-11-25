@@ -15,6 +15,7 @@
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
     "@types/lowdb": "1.0.9",
+    "@vueuse/core": "^14.4.0",
     "@wangeditor/editor": "^5.1.1",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "core-js": "^3.6.5",
@@ -29,7 +30,7 @@
     "d3-zoom": "2.0.0",
     "dayjs": "^1.11.3",
     "electron-rebuild": "^3.2.7",
-    "element-plus": "^2.2.6",
+    "element-plus": "2.14.5",
     "i18next": "^21.9.1",
     "javascript-obfuscator": "^4.0.0",
     "lodash": "^4.17.21",
@@ -77,6 +78,9 @@
   },
   "peerDependencies": {
     "snabbdom": "^3.5.1"
+  },
+  "resolutions": {
+    "@types/node": "16.11.26"
   },
   "eslintConfig": {
     "root": true,

@@ -66,7 +66,7 @@ export class Layout {
       treeData.width,
       treeData.height
     )
-    const children = []
+    const children: Tree[] = []
     if (treeData.children && treeData.children.length) {
       for (let i = 0; i < treeData.children.length; i++) {
         children[i] = this.convert(treeData.children[i], y + height)

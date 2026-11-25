@@ -215,7 +215,7 @@ const getNoteList = async function (page = 0, pageSize = 10) {
     const noToppingList = await NoteList.filter((item: note) => !item.isTopping).orderBy('timeStamp', 'desc').value() || []
     const toppingList = await NoteList.filter((item: note) => item.isTopping).value() || []
     const list = toppingList.concat(noToppingList)
-    let result = []
+    let result: any[] = []
 
     if (Array.isArray(list) && list.length) {
         result = list.splice(page, pageSize)

@@ -71,7 +71,7 @@
   ></contextMenu>
 </template>
 
-<script>
+<script lang="jsx">
 import Tree from "@/components/newTree/tree.vue";
 import mindMap from "@/components/mindMap/index.vue";
 import contextMenu from "@/components/context_menu.vue";

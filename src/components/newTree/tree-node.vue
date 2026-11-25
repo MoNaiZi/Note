@@ -94,7 +94,7 @@
   </div>
 </template>
 
-<script type="text/jsx">
+<script lang="jsx">
 // import ElCollapseTransition from "element-ui/src/transitions/collapse-transition";
 // import ElCheckbox from "element-ui/packages/checkbox";
 // import collapseTransition from "../collapse-transition";
